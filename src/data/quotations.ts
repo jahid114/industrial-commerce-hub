@@ -1,0 +1,14 @@
+import type { Quotation } from "./types";
+
+export const quotations: Quotation[] = [
+  { id: "RFQ-2026-0188", productId: "abb-acs580", productName: "ABB ACS580 Variable Frequency Drive 11kW", customerName: "Bengal Power Ltd.", customerEmail: "tender@bengalpower.bd", company: "Bengal Power Ltd.", quantity: 12, message: "Urgent requirement for new substation. Please include installation support pricing.", date: "2026-06-11", status: "Quoted", quotedPrice: 138000 },
+  { id: "RFQ-2026-0187", productId: "siemens-s7-1200", productName: "Siemens SIMATIC S7-1200 PLC CPU 1214C", customerName: "AutoSys Engineering", customerEmail: "design@autosys.bd", company: "AutoSys Engineering", quantity: 8, message: "Need with TIA Portal license bundle. Delivery to Dhaka within 3 weeks.", date: "2026-06-10", status: "Open" },
+  { id: "RFQ-2026-0186", productId: "cat-skid-steer", productName: "Caterpillar 246D3 Skid Steer Loader", customerName: "Rangs Construction", customerEmail: "imports@rangsconst.bd", quantity: 2, message: "Please quote CFR Chittagong with full attachment package.", date: "2026-06-09", status: "Quoted", quotedPrice: 5650000 },
+  { id: "RFQ-2026-0185", productId: "festo-dnc-32", productName: "Festo DNC-32-100-PPV-A Pneumatic Cylinder", customerName: "Sumaiya Textile Mills", customerEmail: "ops@sumaiyatextile.bd", quantity: 50, message: "Bulk order for new production line. Need spare seals included.", date: "2026-06-07", status: "Accepted", quotedPrice: 17500 },
+  { id: "RFQ-2026-0184", productId: "hilti-te-60", productName: "Hilti TE 60-A36 Cordless Combi Hammer", customerName: "Khan Brothers Construction", customerEmail: "info@khanbrothers.com.bd", quantity: 5, message: "Please confirm warranty terms and local service availability.", date: "2026-06-05", status: "Closed", quotedPrice: 159000 },
+  { id: "RFQ-2026-0183", productId: "bosch-gbh-2-26", productName: "Bosch GBH 2-26 Rotary Hammer Drill", customerName: "Mahmud Hardware", customerEmail: "mahmud.hardware@gmail.com", quantity: 20, message: "Reseller order. Need best wholesale pricing with extra bit set.", date: "2026-06-03", status: "Open" },
+  { id: "RFQ-2026-0182", productId: "karcher-hd-6-15", productName: "Kärcher HD 6/15 C Pressure Washer", customerName: "Chittagong Marine Works", customerEmail: "purchase@ctgmarine.com.bd", quantity: 6, message: "Required for ship cleaning operations. Need spare nozzle kit.", date: "2026-06-01", status: "Quoted", quotedPrice: 75000 },
+  { id: "RFQ-2026-0181", productId: "abb-robot", productName: "ABB IRB 1200 Industrial Robot", customerName: "Smart Factory Solutions", customerEmail: "ali@smartfactory.bd", company: "Smart Factory Solutions", quantity: 1, message: "Need full integration quote including end effector and safety cage.", date: "2026-05-28", status: "Quoted", quotedPrice: 2850000 },
+];
+
+export const getQuotation = (id: string) => quotations.find((q) => q.id === id);
