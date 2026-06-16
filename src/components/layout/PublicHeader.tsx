@@ -1,0 +1,166 @@
+import { Link } from "@tanstack/react-router";
+import { useState } from "react";
+import { Search, ShoppingCart, User, Menu, X, ChevronDown } from "lucide-react";
+import { Logo } from "@/components/Logo";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { useStore } from "@/lib/store";
+import { categories } from "@/data/categories";
+import { useNavigate } from "@tanstack/react-router";
+
+export function PublicHeader() {
+  const { cartCount, isAuthenticated, isAdmin, user } = useStore();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [query, setQuery] = useState("");
+  const navigate = useNavigate();
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate({ to: "/products", search: { q: query || undefined } as never });
+  };
+
+  return (
+    <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+      {/* Top utility strip */}
+      <div className="bg-industrial text-industrial-foreground text-xs">
+        <div className="container mx-auto flex h-8 items-center justify-between px-4">
+          <span className="hidden sm:inline">Global Industrial Products · Delivered to Bangladesh</span>
+          <div className="flex items-center gap-4">
+            <span className="hidden md:inline">+880 1978 981818</span>
+            <span className="hidden md:inline">info@megahaus.com</span>
+            <span className="text-accent font-medium">EN | BN</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Main bar */}
+      <div className="container mx-auto flex h-16 items-center gap-4 px-4">
+        <Logo />
+
+        <form onSubmit={submitSearch} className="hidden flex-1 max-w-2xl md:flex">
+          <div className="relative flex w-full">
+            <Input
+              type="search"
+              placeholder="Search products, brands, SKU…"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              className="rounded-r-none border-r-0 h-11"
+            />
+            <Button type="submit" className="rounded-l-none h-11 px-5">
+              <Search className="size-4" />
+            </Button>
+          </div>
+        </form>
+
+        <div className="ml-auto flex items-center gap-1">
+          {isAuthenticated ? (
+            <Link to={isAdmin ? "/admin" : "/account"} className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+              <User className="size-4" />
+              <span>{user?.name.split(" ")[0]}</span>
+            </Link>
+          ) : (
+            <Link to="/auth/login" className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+              <User className="size-4" /> Login
+            </Link>
+          )}
+          <Link to="/cart" className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+            <ShoppingCart className="size-5" />
+            {cartCount > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{cartCount}</Badge>
+            )}
+            <span className="hidden lg:inline">Cart</span>
+          </Link>
+          <button className="md:hidden ml-1 p-2" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+            {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+          </button>
+        </div>
+      </div>
+
+      {/* Category nav */}
+      <nav className="hidden md:block border-t border-border bg-card">
+        <div className="container mx-auto flex items-center gap-1 px-4">
+          <div className="relative">
+            <button
+              onClick={() => setCategoriesOpen((v) => !v)}
+              onBlur={() => setTimeout(() => setCategoriesOpen(false), 200)}
+              className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 text-sm font-bold uppercase tracking-wide"
+            >
+              <Menu className="size-4" /> All Categories <ChevronDown className="size-3" />
+            </button>
+            {categoriesOpen && (
+              <div className="absolute left-0 top-full z-50 w-72 border border-border bg-card shadow-xl">
+                {categories.map((c) => (
+                  <Link
+                    key={c.id}
+                    to="/products"
+                    search={{ category: c.id } as never}
+                    className="flex items-center justify-between border-b border-border px-4 py-3 text-sm hover:bg-secondary hover:text-primary last:border-0"
+                  >
+                    <span className="font-medium">{c.name}</span>
+                    <span className="text-xs text-muted-foreground">{c.subcategories.length} types</span>
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+          {[
+            { to: "/", label: "Home" },
+            { to: "/products", label: "Products" },
+            { to: "/industries", label: "Industries" },
+            { to: "/suppliers", label: "Suppliers" },
+            { to: "/agents", label: "Agents" },
+            { to: "/partners", label: "Partnership" },
+            { to: "/about", label: "About" },
+            { to: "/contact", label: "Contact" },
+          ].map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              activeOptions={{ exact: item.to === "/" }}
+              className="px-4 py-3 text-sm font-medium hover:text-primary"
+              activeProps={{ className: "text-primary border-b-2 border-primary" }}
+            >
+              {item.label}
+            </Link>
+          ))}
+        </div>
+      </nav>
+
+      {/* Mobile drawer */}
+      {mobileOpen && (
+        <div className="md:hidden border-t border-border bg-background">
+          <form onSubmit={submitSearch} className="p-4">
+            <div className="flex">
+              <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search…" className="rounded-r-none" />
+              <Button type="submit" className="rounded-l-none"><Search className="size-4" /></Button>
+            </div>
+          </form>
+          <nav className="flex flex-col">
+            {[
+              { to: "/", label: "Home" },
+              { to: "/products", label: "Products" },
+              { to: "/industries", label: "Industries" },
+              { to: "/suppliers", label: "Suppliers" },
+              { to: "/agents", label: "Agents" },
+              { to: "/partners", label: "Partnership" },
+              { to: "/about", label: "About" },
+              { to: "/contact", label: "Contact" },
+              { to: isAuthenticated ? (isAdmin ? "/admin" : "/account") : "/auth/login", label: isAuthenticated ? "My Account" : "Login / Register" },
+            ].map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                onClick={() => setMobileOpen(false)}
+                className="border-t border-border px-4 py-3 text-sm font-medium hover:bg-secondary"
+              >
+                {item.label}
+              </Link>
+            ))}
+          </nav>
+        </div>
+      )}
+    </header>
+  );
+}
