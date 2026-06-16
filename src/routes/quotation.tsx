@@ -22,7 +22,7 @@ const formSchema = z.object({
   phone: z.string().min(8),
   company: z.string().optional(),
   productId: z.string().min(1, "Select a product"),
-  quantity: z.coerce.number().int().min(1),
+  quantity: z.number().int().min(1),
   message: z.string().min(10, "Tell us about your requirement"),
 });
 type FormData = z.infer<typeof formSchema>;
@@ -118,7 +118,7 @@ function QuotationPage() {
             </select>
           </Field>
           <Field label="Required quantity" error={form.formState.errors.quantity?.message}>
-            <Input type="number" min={1} {...form.register("quantity")} />
+            <Input type="number" min={1} {...form.register("quantity", { valueAsNumber: true })} />
           </Field>
           <Field label="Message / requirements" error={form.formState.errors.message?.message}>
             <Textarea rows={5} {...form.register("message")} placeholder="Specs, delivery location, payment preference, certifications needed…" />
