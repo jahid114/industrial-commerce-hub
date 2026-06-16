@@ -9,13 +9,25 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as IndustriesRouteImport } from './routes/industries'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
+import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
 
+const SuppliersRoute = SuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const QuotationRoute = QuotationRouteImport.update({
   id: '/quotation',
   path: '/quotation',
@@ -26,6 +38,26 @@ const ProductsRoute = ProductsRouteImport.update({
   path: '/products',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndustriesRoute = IndustriesRouteImport.update({
+  id: '/industries',
+  path: '/industries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const CheckoutRoute = CheckoutRouteImport.update({
   id: '/checkout',
   path: '/checkout',
@@ -34,6 +66,16 @@ const CheckoutRoute = CheckoutRouteImport.update({
 const CartRoute = CartRouteImport.update({
   id: '/cart',
   path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,66 +91,122 @@ const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/agents': typeof AgentsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
+  '/contact': typeof ContactRoute
+  '/industries': typeof IndustriesRoute
+  '/partners': typeof PartnersRoute
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
+  '/suppliers': typeof SuppliersRoute
   '/products/$productId': typeof ProductsProductIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/agents': typeof AgentsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
+  '/contact': typeof ContactRoute
+  '/industries': typeof IndustriesRoute
+  '/partners': typeof PartnersRoute
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
+  '/suppliers': typeof SuppliersRoute
   '/products/$productId': typeof ProductsProductIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/about': typeof AboutRoute
+  '/agents': typeof AgentsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
+  '/compare': typeof CompareRoute
+  '/contact': typeof ContactRoute
+  '/industries': typeof IndustriesRoute
+  '/partners': typeof PartnersRoute
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
+  '/suppliers': typeof SuppliersRoute
   '/products/$productId': typeof ProductsProductIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/about'
+    | '/agents'
     | '/cart'
     | '/checkout'
+    | '/compare'
+    | '/contact'
+    | '/industries'
+    | '/partners'
     | '/products'
     | '/quotation'
+    | '/suppliers'
     | '/products/$productId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/about'
+    | '/agents'
     | '/cart'
     | '/checkout'
+    | '/compare'
+    | '/contact'
+    | '/industries'
+    | '/partners'
     | '/products'
     | '/quotation'
+    | '/suppliers'
     | '/products/$productId'
   id:
     | '__root__'
     | '/'
+    | '/about'
+    | '/agents'
     | '/cart'
     | '/checkout'
+    | '/compare'
+    | '/contact'
+    | '/industries'
+    | '/partners'
     | '/products'
     | '/quotation'
+    | '/suppliers'
     | '/products/$productId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AboutRoute: typeof AboutRoute
+  AgentsRoute: typeof AgentsRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
+  CompareRoute: typeof CompareRoute
+  ContactRoute: typeof ContactRoute
+  IndustriesRoute: typeof IndustriesRoute
+  PartnersRoute: typeof PartnersRoute
   ProductsRoute: typeof ProductsRouteWithChildren
   QuotationRoute: typeof QuotationRoute
+  SuppliersRoute: typeof SuppliersRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/suppliers': {
+      id: '/suppliers'
+      path: '/suppliers'
+      fullPath: '/suppliers'
+      preLoaderRoute: typeof SuppliersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/quotation': {
       id: '/quotation'
       path: '/quotation'
@@ -123,6 +221,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/industries': {
+      id: '/industries'
+      path: '/industries'
+      fullPath: '/industries'
+      preLoaderRoute: typeof IndustriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/checkout': {
       id: '/checkout'
       path: '/checkout'
@@ -135,6 +261,20 @@ declare module '@tanstack/react-router' {
       path: '/cart'
       fullPath: '/cart'
       preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -168,10 +308,17 @@ const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AboutRoute: AboutRoute,
+  AgentsRoute: AgentsRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
+  CompareRoute: CompareRoute,
+  ContactRoute: ContactRoute,
+  IndustriesRoute: IndustriesRoute,
+  PartnersRoute: PartnersRoute,
   ProductsRoute: ProductsRouteWithChildren,
   QuotationRoute: QuotationRoute,
+  SuppliersRoute: SuppliersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
