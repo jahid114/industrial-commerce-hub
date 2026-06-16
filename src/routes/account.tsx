@@ -11,13 +11,13 @@ export const Route = createFileRoute("/account")({
   component: AccountLayout,
 });
 
-const navItems = [
+const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof User; exact?: boolean }> = [
   { to: "/account", label: "Overview", icon: LayoutDashboard, exact: true },
   { to: "/account/orders", label: "My Orders", icon: Package },
   { to: "/account/quotations", label: "My Quotations", icon: FileText },
   { to: "/account/wishlist", label: "Wishlist", icon: Heart },
   { to: "/account/profile", label: "Profile", icon: User },
-] as const;
+];
 
 function AccountLayout() {
   const { isAuthenticated, isAdmin, user, dispatch } = useStore();
