@@ -24,7 +24,7 @@ function OrderDetail() {
     <div className="space-y-4">
       <Link to="/account/orders" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="size-4 mr-1" /> Back to orders</Link>
 
-      <div className="border border-border bg-card">
+      <div className="rounded-lg border border-border bg-card">
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border p-5">
           <div>
             <h2 className="font-display text-2xl font-bold">Order {order.id}</h2>

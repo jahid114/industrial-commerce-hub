@@ -45,7 +45,7 @@ function AgentsPage() {
               { Icon: Users, title: "Dedicated support", desc: "Bangla-speaking back-office, product training and lead routing." },
               { Icon: MapPin, title: "Protected territory", desc: "Exclusive area assignment — no agent-on-agent overlap." },
             ].map(({ Icon, title, desc }) => (
-              <div key={title} className="border border-white/10 bg-white/5 p-6">
+              <div key={title} className="rounded-lg border border-white/10 bg-white/5 p-6">
                 <Icon className="size-8 text-accent" />
                 <h3 className="mt-4 font-display text-xl font-bold">{title}</h3>
                 <p className="mt-2 text-sm text-white/70">{desc}</p>
@@ -77,7 +77,7 @@ function AgentsPage() {
             </ol>
           </div>
 
-          <div className="border border-border bg-card p-6">
+          <div className="rounded-lg border border-border bg-card p-6">
             {done ? (
               <div className="py-12 text-center">
                 <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success/10"><Check className="size-8 text-success" /></div>

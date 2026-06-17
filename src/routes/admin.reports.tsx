@@ -102,7 +102,7 @@ function AdminReportsPage() {
 
 function ReportCard({ icon: Icon, title, desc, action }: { icon: typeof Package; title: string; desc: string; action: () => void }) {
   return (
-    <div className="border border-border bg-card p-5">
+    <div className="rounded-lg border border-border bg-card p-5">
       <div className="flex size-12 items-center justify-center bg-primary text-primary-foreground"><Icon className="size-6" /></div>
       <h3 className="mt-4 font-display text-lg font-bold">{title}</h3>
       <p className="mt-1 text-sm text-muted-foreground">{desc}</p>

@@ -21,19 +21,19 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.3) }}
-      className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all hover:border-primary hover:shadow-lg"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary hover:shadow-lg"
     >
       <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
         <button
           onClick={(e) => { e.preventDefault(); dispatch({ type: "TOGGLE_WISHLIST", productId: product.id }); toast.success(inWishlist ? "Removed from wishlist" : "Added to wishlist"); }}
-          className={cn("flex size-8 items-center justify-center border bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary", inWishlist && "bg-primary text-primary-foreground border-primary")}
+          className={cn("flex size-8 items-center justify-center rounded-full border bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary", inWishlist && "bg-primary text-primary-foreground border-primary")}
           aria-label="Wishlist"
         >
           <Heart className="size-4" fill={inWishlist ? "currentColor" : "none"} />
         </button>
         <button
           onClick={(e) => { e.preventDefault(); dispatch({ type: "TOGGLE_COMPARE", productId: product.id }); toast.success(inCompare ? "Removed from compare" : "Added to compare"); }}
-          className={cn("flex size-8 items-center justify-center border bg-card hover:bg-accent hover:text-accent-foreground hover:border-accent", inCompare && "bg-accent text-accent-foreground border-accent")}
+          className={cn("flex size-8 items-center justify-center rounded-full border bg-card hover:bg-accent hover:text-accent-foreground hover:border-accent", inCompare && "bg-accent text-accent-foreground border-accent")}
           aria-label="Compare"
         >
           <GitCompare className="size-4" />

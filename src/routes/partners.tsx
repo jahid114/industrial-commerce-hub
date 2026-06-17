@@ -74,7 +74,7 @@ function PartnersPage() {
             </ul>
           </div>
 
-          <div className="border border-border bg-card p-6">
+          <div className="rounded-lg border border-border bg-card p-6">
             {done ? (
               <div className="py-12 text-center">
                 <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success/10"><Check className="size-8 text-success" /></div>

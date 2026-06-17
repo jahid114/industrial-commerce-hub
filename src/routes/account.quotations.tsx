@@ -13,7 +13,7 @@ function QuotationsPage() {
   const mine = quotations.filter((q) => q.customerEmail === user?.email);
 
   return (
-    <div className="border border-border bg-card">
+    <div className="rounded-lg border border-border bg-card">
       <div className="border-b border-border p-5">
         <h2 className="font-display text-xl font-bold">My Quotation Requests</h2>
         <p className="text-sm text-muted-foreground">{mine.length} requests</p>

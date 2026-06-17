@@ -39,7 +39,7 @@ function HomePage() {
         />
         <div className="container relative mx-auto grid gap-8 px-4 py-20 md:grid-cols-2 md:py-28 lg:py-36">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="flex flex-col justify-center">
-            <div className="mb-5 inline-flex items-center gap-2 self-start border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">
+            <div className="mb-5 inline-flex items-center gap-2 self-start rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">
               <span className="size-1.5 rounded-full bg-accent animate-pulse" /> Industrial Marketplace · BD
             </div>
             <h1 className="font-display text-4xl font-bold leading-[1.05] md:text-5xl lg:text-6xl">
@@ -79,7 +79,7 @@ function HomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + i * 0.1 }}
-                  className={`relative overflow-hidden border border-white/10 bg-white/5 backdrop-blur ${i % 2 === 0 ? "translate-y-4" : ""}`}
+                  className={`relative overflow-hidden rounded-lg border border-white/10 bg-white/5 backdrop-blur ${i % 2 === 0 ? "translate-y-4" : ""}`}
                 >
                   <div className="aspect-square overflow-hidden">
                     <img src={p.image} alt={p.name} className="size-full object-cover" />
@@ -118,7 +118,7 @@ function HomePage() {
                   <Link
                     to="/products"
                     search={{ category: c.id } as never}
-                    className="group flex h-full flex-col border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-md"
+                    className="group flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-md"
                   >
                     <div className="mb-4 flex size-12 items-center justify-center bg-secondary text-industrial transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                       <Icon className="size-6" />

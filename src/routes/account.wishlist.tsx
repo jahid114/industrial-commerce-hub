@@ -16,7 +16,7 @@ function WishlistPage() {
   const products = wishlist.map((id) => getProduct(id)).filter(Boolean) as NonNullable<ReturnType<typeof getProduct>>[];
 
   return (
-    <div className="border border-border bg-card">
+    <div className="rounded-lg border border-border bg-card">
       <div className="border-b border-border p-5">
         <h2 className="font-display text-xl font-bold">My Wishlist</h2>
         <p className="text-sm text-muted-foreground">{products.length} saved products</p>

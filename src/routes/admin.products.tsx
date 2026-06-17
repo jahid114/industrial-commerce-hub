@@ -57,7 +57,7 @@ function AdminProductsPage() {
         </Dialog>
       </div>
 
-      <div className="border border-border bg-card">
+      <div className="rounded-lg border border-border bg-card">
         <div className="flex items-center gap-2 border-b border-border p-3">
           <Search className="size-4 text-muted-foreground" />
           <Input placeholder="Search products by name or SKU…" value={search} onChange={(e) => setSearch(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" />

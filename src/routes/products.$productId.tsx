@@ -163,10 +163,10 @@ function ProductDetailPage() {
               <TabsTrigger value="specs">Specifications</TabsTrigger>
               <TabsTrigger value="supplier">Supplier Info</TabsTrigger>
             </TabsList>
-            <TabsContent value="description" className="mt-4 border border-border bg-card p-6">
+            <TabsContent value="description" className="mt-4 rounded-lg border border-border bg-card p-6">
               <p className="leading-relaxed text-foreground/90">{product.description}</p>
             </TabsContent>
-            <TabsContent value="specs" className="mt-4 border border-border bg-card">
+            <TabsContent value="specs" className="mt-4 rounded-lg border border-border bg-card">
               <table className="w-full text-sm">
                 <tbody>
                   {product.specs.map((s: { label: string; value: string }, i: number) => (
@@ -178,7 +178,7 @@ function ProductDetailPage() {
                 </tbody>
               </table>
             </TabsContent>
-            <TabsContent value="supplier" className="mt-4 border border-border bg-card p-6">
+            <TabsContent value="supplier" className="mt-4 rounded-lg border border-border bg-card p-6">
               {supplier && (
                 <div className="grid gap-6 md:grid-cols-2">
                   <div>
@@ -224,7 +224,7 @@ function ProductDetailPage() {
 
 function Stat({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3 border border-border bg-card p-3">
+    <div className="flex items-start gap-3 rounded-lg border border-border bg-card p-3">
       <Icon className="size-4 mt-0.5 text-primary" />
       <div>
         <div className="text-[10px] uppercase tracking-wider text-muted-foreground">{label}</div>

@@ -19,7 +19,7 @@ function AboutPage() {
     <PublicLayout>
       <section className="bg-industrial text-industrial-foreground py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">A Project of Protocol Cashmere Limited</div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">A Project of Protocol Cashmere Limited</div>
           <h1 className="mt-5 font-display text-4xl font-bold md:text-6xl">Building Bangladesh's <br /><span className="text-primary">Industrial Supply Backbone</span></h1>
           <p className="mt-5 mx-auto max-w-2xl text-white/70">MegaHaus is Bangladesh's first integrated industrial marketplace, connecting global manufacturers with the factories, contractors and engineers shaping the country's future.</p>
         </div>
@@ -38,7 +38,7 @@ function AboutPage() {
               { n: "1.2K+", l: "Industrial SKUs", Icon: Truck },
               { n: "30+", l: "Field agents", Icon: Users },
             ].map(({ n, l, Icon }) => (
-              <div key={l} className="border border-border bg-card p-6">
+              <div key={l} className="rounded-lg border border-border bg-card p-6">
                 <Icon className="size-7 text-primary" />
                 <div className="mt-3 font-display text-3xl font-bold">{n}</div>
                 <div className="text-sm text-muted-foreground">{l}</div>
@@ -58,7 +58,7 @@ function AboutPage() {
               { t: "Admin Control Center", d: "Full inventory, supplier, order and agent management from a single command surface." },
               { t: "Agent & Partner Network", d: "Field agents drive sales; partners co-build distribution and infrastructure." },
             ].map((p) => (
-              <div key={p.t} className="border border-border bg-card p-5">
+              <div key={p.t} className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-display text-lg font-bold">{p.t}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
               </div>
