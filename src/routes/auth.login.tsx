@@ -37,7 +37,11 @@ function LoginPage() {
       },
     });
     toast.success("Welcome back!");
-    navigate({ to: role === "admin" ? "/admin" : "/account" });
+    const dest =
+      role === "admin" ? "/admin" :
+      role === "agent" || role === "partner" ? "/portal" :
+      "/account";
+    navigate({ to: dest });
   };
 
   return (
@@ -54,6 +58,8 @@ function LoginPage() {
               <Label className="mb-1.5 block text-sm">Sign in as (demo)</Label>
               <select value={role} onChange={(e) => setRole(e.target.value as Role)} className="h-10 w-full border border-input bg-background px-3 text-sm">
                 <option value="customer">Customer</option>
+                <option value="agent">Field Agent</option>
+                <option value="partner">Partner / Investor</option>
                 <option value="admin">Administrator</option>
               </select>
             </div>

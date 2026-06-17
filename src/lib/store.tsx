@@ -103,6 +103,8 @@ interface StoreContextValue extends State {
   cartSubtotal: (priceFn: (id: string) => number) => number;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isAgent: boolean;
+  isPartner: boolean;
 }
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -149,6 +151,8 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     cartSubtotal,
     isAuthenticated: !!state.user,
     isAdmin: state.user?.role === "admin",
+    isAgent: state.user?.role === "agent",
+    isPartner: state.user?.role === "partner",
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;
