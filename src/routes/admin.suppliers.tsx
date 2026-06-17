@@ -16,7 +16,7 @@ function AdminSuppliersPage() {
         <p className="text-sm text-muted-foreground">{suppliers.length} verified suppliers</p>
       </div>
 
-      <div className="border border-border bg-card overflow-x-auto">
+      <div className="rounded-lg border border-border bg-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-spec text-xs uppercase tracking-wider text-muted-foreground">
             <tr>

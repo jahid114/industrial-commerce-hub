@@ -48,7 +48,7 @@ function CartPage() {
       <div className="container mx-auto grid gap-8 px-4 py-10 lg:grid-cols-[1fr_360px]">
         <div className="space-y-3">
           {items.map(({ product, quantity }) => (
-            <div key={product.id} className="flex gap-4 border border-border bg-card p-4">
+            <div key={product.id} className="flex gap-4 rounded-lg border border-border bg-card p-4">
               <img src={product.image} alt={product.name} className="size-24 object-cover bg-spec" />
               <div className="flex flex-1 flex-col">
                 <Link to="/products/$productId" params={{ productId: product.id }} className="font-semibold hover:text-primary">{product.name}</Link>
@@ -77,7 +77,7 @@ function CartPage() {
         </div>
 
         <aside className="space-y-4">
-          <div className="border border-border bg-card p-5">
+          <div className="rounded-lg border border-border bg-card p-5">
             <h2 className="font-display text-lg font-bold border-b border-border pb-3">Order Summary</h2>
             <div className="mt-4 space-y-2 text-sm">
               <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatBDT(subtotal)}</span></div>

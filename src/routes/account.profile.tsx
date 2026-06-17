@@ -29,7 +29,7 @@ function ProfilePage() {
   };
 
   return (
-    <div className="border border-border bg-card">
+    <div className="rounded-lg border border-border bg-card">
       <div className="border-b border-border p-5">
         <h2 className="font-display text-xl font-bold">My Profile</h2>
         <p className="text-sm text-muted-foreground">Manage your account information.</p>

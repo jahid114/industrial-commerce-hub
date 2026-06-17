@@ -26,7 +26,7 @@ function OrdersPage() {
   const myOrders = orders.filter((o) => o.customerEmail === user?.email);
 
   return (
-    <div className="border border-border bg-card">
+    <div className="rounded-lg border border-border bg-card">
       <div className="border-b border-border p-5">
         <h2 className="font-display text-xl font-bold">Order History</h2>
         <p className="text-sm text-muted-foreground">{myOrders.length} orders</p>

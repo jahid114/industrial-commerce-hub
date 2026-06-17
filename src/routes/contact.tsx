@@ -38,7 +38,7 @@ function ContactPage() {
           <div className="aspect-video border border-border bg-spec industrial-grid flex items-center justify-center text-muted-foreground text-sm">Map placeholder · Chittagong, Bangladesh</div>
         </div>
 
-        <div className="border border-border bg-card p-6">
+        <div className="rounded-lg border border-border bg-card p-6">
           {done ? (
             <div className="py-12 text-center">
               <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success/10"><Check className="size-8 text-success" /></div>
@@ -65,7 +65,7 @@ function ContactPage() {
 
 function ContactRow({ icon: Icon, title, children }: { icon: React.ComponentType<{ className?: string }>; title: string; children: React.ReactNode }) {
   return (
-    <div className="flex gap-4 border border-border bg-card p-5">
+    <div className="flex gap-4 rounded-lg border border-border bg-card p-5">
       <div className="flex size-10 shrink-0 items-center justify-center bg-primary text-primary-foreground"><Icon className="size-5" /></div>
       <div>
         <div className="font-display text-base font-bold">{title}</div>

@@ -28,7 +28,7 @@ function SuppliersPage() {
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
           {suppliers.map((s) => (
-            <div key={s.id} className="border border-border bg-card p-5 hover:border-primary transition-colors">
+            <div key={s.id} className="rounded-lg border border-border bg-card p-5 hover:border-primary transition-colors">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wider text-primary">{s.country}</div>

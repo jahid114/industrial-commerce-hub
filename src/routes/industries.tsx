@@ -42,7 +42,7 @@ function IndustriesPage() {
               <h2 className="mt-3 font-display text-3xl font-bold">{ind.name}</h2>
               <p className="mt-3 text-muted-foreground">{ind.desc}</p>
               <ul className="mt-4 grid grid-cols-2 gap-2 text-sm">
-                {ind.solutions.map((s) => <li key={s} className="border border-border bg-card px-3 py-2 font-medium">{s}</li>)}
+                {ind.solutions.map((s) => <li key={s} className="rounded-lg border border-border bg-card px-3 py-2 font-medium">{s}</li>)}
               </ul>
               <Button asChild className="mt-6 font-semibold"><Link to="/products">Explore Products <ArrowRight className="size-4 ml-2" /></Link></Button>
             </div>

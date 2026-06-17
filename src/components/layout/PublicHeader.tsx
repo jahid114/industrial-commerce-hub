@@ -90,7 +90,7 @@ export function PublicHeader() {
               <Menu className="size-4" /> All Categories <ChevronDown className="size-3" />
             </button>
             {categoriesOpen && (
-              <div className="absolute left-0 top-full z-50 w-72 border border-border bg-card shadow-xl">
+              <div className="absolute left-0 top-full z-50 w-72 rounded-lg border border-border bg-card shadow-xl">
                 {categories.map((c) => (
                   <Link
                     key={c.id}

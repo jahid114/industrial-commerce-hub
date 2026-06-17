@@ -93,7 +93,7 @@ function CheckoutPage() {
           </div>
           <h1 className="mt-6 font-display text-4xl font-bold">Order Placed!</h1>
           <p className="mt-2 text-muted-foreground">Thank you for your order. Confirmation #{placedOrder.id}</p>
-          <div className="mt-8 border border-border bg-card p-6 text-left">
+          <div className="mt-8 rounded-lg border border-border bg-card p-6 text-left">
             <div className="flex justify-between border-b border-border pb-3 text-sm">
               <span className="text-muted-foreground">Order ID</span><span className="font-bold">{placedOrder.id}</span>
             </div>
@@ -138,7 +138,7 @@ function CheckoutPage() {
           <Section title="Payment Method">
             <RadioGroup value={form.watch("paymentMethod")} onValueChange={(v) => form.setValue("paymentMethod", v as FormData["paymentMethod"])} className="grid grid-cols-2 gap-3">
               {(["Bank Transfer", "bKash", "Nagad", "COD"] as const).map((m) => (
-                <label key={m} className="flex cursor-pointer items-center gap-3 border border-border bg-card p-4 hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5">
+                <label key={m} className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-card p-4 hover:border-primary has-[:checked]:border-primary has-[:checked]:bg-primary/5">
                   <RadioGroupItem value={m} />
                   <span className="font-semibold">{m}</span>
                 </label>
@@ -152,7 +152,7 @@ function CheckoutPage() {
         </div>
 
         <aside>
-          <div className="sticky top-32 border border-border bg-card p-5">
+          <div className="sticky top-32 rounded-lg border border-border bg-card p-5">
             <h2 className="font-display text-lg font-bold border-b border-border pb-3">Order Summary</h2>
             <div className="my-4 max-h-64 space-y-2 overflow-y-auto">
               {items.map(({ product, quantity }) => (
@@ -183,7 +183,7 @@ function CheckoutPage() {
 
 function Section({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="border border-border bg-card p-5">
+    <div className="rounded-lg border border-border bg-card p-5">
       <h2 className="font-display text-lg font-bold border-b border-border pb-3 mb-4">{title}</h2>
       {children}
     </div>

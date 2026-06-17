@@ -38,7 +38,7 @@ function AboutPage() {
               { n: "1.2K+", l: "Industrial SKUs", Icon: Truck },
               { n: "30+", l: "Field agents", Icon: Users },
             ].map(({ n, l, Icon }) => (
-              <div key={l} className="border border-border bg-card p-6">
+              <div key={l} className="rounded-lg border border-border bg-card p-6">
                 <Icon className="size-7 text-primary" />
                 <div className="mt-3 font-display text-3xl font-bold">{n}</div>
                 <div className="text-sm text-muted-foreground">{l}</div>
@@ -58,7 +58,7 @@ function AboutPage() {
               { t: "Admin Control Center", d: "Full inventory, supplier, order and agent management from a single command surface." },
               { t: "Agent & Partner Network", d: "Field agents drive sales; partners co-build distribution and infrastructure." },
             ].map((p) => (
-              <div key={p.t} className="border border-border bg-card p-5">
+              <div key={p.t} className="rounded-lg border border-border bg-card p-5">
                 <h3 className="font-display text-lg font-bold">{p.t}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{p.d}</p>
               </div>

@@ -43,7 +43,7 @@ function LoginPage() {
   return (
     <PublicLayout>
       <div className="container mx-auto grid min-h-[70vh] place-items-center px-4 py-12">
-        <div className="w-full max-w-md border border-border bg-card p-8">
+        <div className="w-full max-w-md rounded-lg border border-border bg-card p-8">
           <h1 className="font-display text-3xl font-bold">Welcome back</h1>
           <p className="mt-1 text-sm text-muted-foreground">Sign in to your MegaHaus account.</p>
 

@@ -53,7 +53,7 @@ function AdminQuotationsPage() {
 
       <div className="space-y-3">
         {filtered.map((q) => (
-          <div key={q.id} className="border border-border bg-card p-5">
+          <div key={q.id} className="rounded-lg border border-border bg-card p-5">
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="flex-1 min-w-0">
                 <div className="text-xs font-semibold text-muted-foreground">{q.id} · {formatDate(q.date)}</div>

@@ -21,7 +21,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3, delay: Math.min(index * 0.04, 0.3) }}
-      className="group relative flex flex-col overflow-hidden border border-border bg-card transition-all hover:border-primary hover:shadow-lg"
+      className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary hover:shadow-lg"
     >
       <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
         <button

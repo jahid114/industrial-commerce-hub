@@ -87,7 +87,7 @@ function ProductsPage() {
       <div className="container mx-auto grid gap-6 px-4 py-8 lg:grid-cols-[280px_1fr]">
         {/* Filters */}
         <aside className={`${showFilters ? "block" : "hidden"} lg:block`}>
-          <div className="sticky top-32 space-y-6 border border-border bg-card p-5">
+          <div className="sticky top-32 space-y-6 rounded-lg border border-border bg-card p-5">
             <div className="flex items-center justify-between border-b border-border pb-3">
               <h2 className="font-display text-lg font-bold flex items-center gap-2"><Filter className="size-4" /> Filters</h2>
               {activeFilterCount > 0 && (
@@ -184,7 +184,7 @@ function ProductsPage() {
             <div className="space-y-3">
               {filtered.map((p, i) => (
                 <motion.div key={p.id} initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.03 }}>
-                  <Link to="/products/$productId" params={{ productId: p.id }} className="flex gap-4 border border-border bg-card p-3 hover:border-primary hover:shadow-sm">
+                  <Link to="/products/$productId" params={{ productId: p.id }} className="flex gap-4 rounded-lg border border-border bg-card p-3 hover:border-primary hover:shadow-sm">
                     <img src={p.image} alt={p.name} className="size-28 object-cover bg-spec" />
                     <div className="flex flex-1 flex-col">
                       <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground">{brands.find((b) => b.id === p.brandId)?.name} · {p.country}</div>

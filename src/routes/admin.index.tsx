@@ -56,7 +56,7 @@ function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        <div className="border border-border bg-card p-5 lg:col-span-2">
+        <div className="rounded-lg border border-border bg-card p-5 lg:col-span-2">
           <h2 className="font-display text-lg font-bold mb-4">Revenue by Month</h2>
           <ResponsiveContainer width="100%" height={280}>
             <LineChart data={lineData}>
@@ -69,7 +69,7 @@ function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        <div className="border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <h2 className="font-display text-lg font-bold mb-4">Orders by Status</h2>
           <ResponsiveContainer width="100%" height={280}>
             <PieChart>
@@ -83,7 +83,7 @@ function AdminDashboard() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <div className="border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <h2 className="font-display text-lg font-bold mb-4">Products per Category</h2>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={barData}>
@@ -96,7 +96,7 @@ function AdminDashboard() {
           </ResponsiveContainer>
         </div>
 
-        <div className="border border-border bg-card p-5">
+        <div className="rounded-lg border border-border bg-card p-5">
           <div className="flex items-center justify-between mb-4">
             <h2 className="font-display text-lg font-bold">Recent Orders</h2>
             <Users className="size-5 text-muted-foreground" />
@@ -125,7 +125,7 @@ function AdminDashboard() {
 
 function Kpi({ label, value, icon: Icon, color }: { label: string; value: string; icon: typeof Package; color: string }) {
   return (
-    <div className="border border-border bg-card p-5">
+    <div className="rounded-lg border border-border bg-card p-5">
       <div className="flex items-center justify-between">
         <div className={`flex size-10 items-center justify-center ${color} text-white`}><Icon className="size-5" /></div>
       </div>

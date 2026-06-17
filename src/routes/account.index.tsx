@@ -24,7 +24,7 @@ function AccountIndex() {
     <div className="space-y-6">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {stats.map((s) => (
-          <Link key={s.label} to={s.to} className="border border-border bg-card p-5 hover:border-primary transition-colors">
+          <Link key={s.label} to={s.to} className="rounded-lg border border-border bg-card p-5 hover:border-primary transition-colors">
             <div className={`flex size-10 items-center justify-center ${s.color} text-white`}><s.icon className="size-5" /></div>
             <div className="mt-4 font-display text-3xl font-bold">{s.value}</div>
             <div className="text-sm text-muted-foreground">{s.label}</div>
@@ -32,7 +32,7 @@ function AccountIndex() {
         ))}
       </div>
 
-      <div className="border border-border bg-card">
+      <div className="rounded-lg border border-border bg-card">
         <div className="flex items-center justify-between border-b border-border p-5">
           <h2 className="font-display text-lg font-bold">Recent Orders</h2>
           <Link to="/account/orders" className="text-sm font-medium text-primary hover:underline">View all →</Link>

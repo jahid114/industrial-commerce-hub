@@ -17,7 +17,7 @@ function AdminAgentsPage() {
         <p className="text-sm text-muted-foreground">{agents.length} field agents · Total commission paid: <strong className="text-primary">{formatBDT(totalCommission)}</strong></p>
       </div>
 
-      <div className="border border-border bg-card overflow-x-auto">
+      <div className="rounded-lg border border-border bg-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-spec text-xs uppercase tracking-wider text-muted-foreground">
             <tr>

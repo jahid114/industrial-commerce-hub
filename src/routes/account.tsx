@@ -44,7 +44,7 @@ function AccountLayout() {
             <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
           </div>
           <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
-            <aside className="space-y-1 border border-border bg-card p-3 h-fit">
+            <aside className="space-y-1 rounded-lg border border-border bg-card p-3 h-fit">
               {navItems.map((it) => {
                 const isActive = it.exact ? pathname === it.to : pathname.startsWith(it.to);
                 return (

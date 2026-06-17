@@ -79,7 +79,7 @@ function HomePage() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.3 + i * 0.1 }}
-                  className={`relative overflow-hidden border border-white/10 bg-white/5 backdrop-blur ${i % 2 === 0 ? "translate-y-4" : ""}`}
+                  className={`relative overflow-hidden rounded-lg border border-white/10 bg-white/5 backdrop-blur ${i % 2 === 0 ? "translate-y-4" : ""}`}
                 >
                   <div className="aspect-square overflow-hidden">
                     <img src={p.image} alt={p.name} className="size-full object-cover" />
@@ -118,7 +118,7 @@ function HomePage() {
                   <Link
                     to="/products"
                     search={{ category: c.id } as never}
-                    className="group flex h-full flex-col border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-md"
+                    className="group flex h-full flex-col rounded-lg border border-border bg-card p-6 transition-all hover:border-primary hover:shadow-md"
                   >
                     <div className="mb-4 flex size-12 items-center justify-center bg-secondary text-industrial transition-colors group-hover:bg-primary group-hover:text-primary-foreground">
                       <Icon className="size-6" />

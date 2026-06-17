@@ -104,7 +104,7 @@ function QuotationPage() {
       </div>
 
       <div className="container mx-auto grid gap-8 px-4 py-10 lg:grid-cols-[1fr_360px]">
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 border border-border bg-card p-6">
+        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5 rounded-lg border border-border bg-card p-6">
           <div className="grid grid-cols-2 gap-4">
             <Field label="Full Name" error={form.formState.errors.name?.message}><Input {...form.register("name")} /></Field>
             <Field label="Company"><Input {...form.register("company")} /></Field>
@@ -139,7 +139,7 @@ function QuotationPage() {
               ].map((t) => <li key={t} className="flex gap-2"><Check className="size-4 text-accent shrink-0 mt-0.5" /> {t}</li>)}
             </ul>
           </div>
-          <div className="border border-border bg-card p-5 text-sm">
+          <div className="rounded-lg border border-border bg-card p-5 text-sm">
             <h3 className="font-display text-base font-bold">Need help?</h3>
             <p className="mt-1 text-muted-foreground">Call our procurement desk:</p>
             <p className="mt-2 font-semibold text-primary">+880 1978 981818</p>
