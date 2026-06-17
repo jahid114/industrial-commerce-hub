@@ -27,7 +27,8 @@ export interface Product {
   brandId: string;
   categoryId: string;
   country: Country;
-  price: number; // BDT
+  price: number; // BDT — customer price
+  agentPrice?: number; // BDT — agent-only price (admin/agent visible). Defaults to ~8% off customer price.
   moq: number;
   deliveryDays: string;
   image: string;
@@ -102,4 +103,4 @@ export interface Quotation {
   quotedPrice?: number;
 }
 
-export type Role = "guest" | "customer" | "admin";
+export type Role = "guest" | "customer" | "admin" | "agent" | "partner";
