@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as ProductsRouteImport } from './routes/products'
+import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as IndustriesRouteImport } from './routes/industries'
 import { Route as ContactRouteImport } from './routes/contact'
@@ -23,9 +24,17 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
+import { Route as PortalOrdersRouteImport } from './routes/portal.orders'
+import { Route as PortalLeadsRouteImport } from './routes/portal.leads'
+import { Route as PortalKpisRouteImport } from './routes/portal.kpis'
+import { Route as PortalInquiriesRouteImport } from './routes/portal.inquiries'
+import { Route as PortalDocumentsRouteImport } from './routes/portal.documents'
+import { Route as PortalCommissionsRouteImport } from './routes/portal.commissions'
+import { Route as PortalCatalogRouteImport } from './routes/portal.catalog'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -53,6 +62,11 @@ const QuotationRoute = QuotationRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PartnersRoute = PartnersRouteImport.update({
@@ -110,6 +124,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalRoute,
+} as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -124,6 +143,41 @@ const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
   id: '/$productId',
   path: '/$productId',
   getParentRoute: () => ProductsRoute,
+} as any)
+const PortalOrdersRoute = PortalOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalLeadsRoute = PortalLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalKpisRoute = PortalKpisRouteImport.update({
+  id: '/kpis',
+  path: '/kpis',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalInquiriesRoute = PortalInquiriesRouteImport.update({
+  id: '/inquiries',
+  path: '/inquiries',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalDocumentsRoute = PortalDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCommissionsRoute = PortalCommissionsRouteImport.update({
+  id: '/commissions',
+  path: '/commissions',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCatalogRoute = PortalCatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => PortalRoute,
 } as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
@@ -203,6 +257,7 @@ export interface FileRoutesByFullPath {
   '/contact': typeof ContactRoute
   '/industries': typeof IndustriesRoute
   '/partners': typeof PartnersRoute
+  '/portal': typeof PortalRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
@@ -218,9 +273,17 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/portal/catalog': typeof PortalCatalogRoute
+  '/portal/commissions': typeof PortalCommissionsRoute
+  '/portal/documents': typeof PortalDocumentsRoute
+  '/portal/inquiries': typeof PortalInquiriesRoute
+  '/portal/kpis': typeof PortalKpisRoute
+  '/portal/leads': typeof PortalLeadsRoute
+  '/portal/orders': typeof PortalOrdersRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/portal/': typeof PortalIndexRoute
   '/account/orders/$orderId': typeof AccountOrdersOrderIdRoute
 }
 export interface FileRoutesByTo {
@@ -248,9 +311,17 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/portal/catalog': typeof PortalCatalogRoute
+  '/portal/commissions': typeof PortalCommissionsRoute
+  '/portal/documents': typeof PortalDocumentsRoute
+  '/portal/inquiries': typeof PortalInquiriesRoute
+  '/portal/kpis': typeof PortalKpisRoute
+  '/portal/leads': typeof PortalLeadsRoute
+  '/portal/orders': typeof PortalOrdersRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
+  '/portal': typeof PortalIndexRoute
   '/account/orders/$orderId': typeof AccountOrdersOrderIdRoute
 }
 export interface FileRoutesById {
@@ -266,6 +337,7 @@ export interface FileRoutesById {
   '/contact': typeof ContactRoute
   '/industries': typeof IndustriesRoute
   '/partners': typeof PartnersRoute
+  '/portal': typeof PortalRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
@@ -281,9 +353,17 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/portal/catalog': typeof PortalCatalogRoute
+  '/portal/commissions': typeof PortalCommissionsRoute
+  '/portal/documents': typeof PortalDocumentsRoute
+  '/portal/inquiries': typeof PortalInquiriesRoute
+  '/portal/kpis': typeof PortalKpisRoute
+  '/portal/leads': typeof PortalLeadsRoute
+  '/portal/orders': typeof PortalOrdersRoute
   '/products/$productId': typeof ProductsProductIdRoute
   '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
+  '/portal/': typeof PortalIndexRoute
   '/account/orders/$orderId': typeof AccountOrdersOrderIdRoute
 }
 export interface FileRouteTypes {
@@ -300,6 +380,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/industries'
     | '/partners'
+    | '/portal'
     | '/products'
     | '/quotation'
     | '/suppliers'
@@ -315,9 +396,17 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/portal/catalog'
+    | '/portal/commissions'
+    | '/portal/documents'
+    | '/portal/inquiries'
+    | '/portal/kpis'
+    | '/portal/leads'
+    | '/portal/orders'
     | '/products/$productId'
     | '/account/'
     | '/admin/'
+    | '/portal/'
     | '/account/orders/$orderId'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -345,9 +434,17 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/portal/catalog'
+    | '/portal/commissions'
+    | '/portal/documents'
+    | '/portal/inquiries'
+    | '/portal/kpis'
+    | '/portal/leads'
+    | '/portal/orders'
     | '/products/$productId'
     | '/account'
     | '/admin'
+    | '/portal'
     | '/account/orders/$orderId'
   id:
     | '__root__'
@@ -362,6 +459,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/industries'
     | '/partners'
+    | '/portal'
     | '/products'
     | '/quotation'
     | '/suppliers'
@@ -377,9 +475,17 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/portal/catalog'
+    | '/portal/commissions'
+    | '/portal/documents'
+    | '/portal/inquiries'
+    | '/portal/kpis'
+    | '/portal/leads'
+    | '/portal/orders'
     | '/products/$productId'
     | '/account/'
     | '/admin/'
+    | '/portal/'
     | '/account/orders/$orderId'
   fileRoutesById: FileRoutesById
 }
@@ -395,6 +501,7 @@ export interface RootRouteChildren {
   ContactRoute: typeof ContactRoute
   IndustriesRoute: typeof IndustriesRoute
   PartnersRoute: typeof PartnersRoute
+  PortalRoute: typeof PortalRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   QuotationRoute: typeof QuotationRoute
   SuppliersRoute: typeof SuppliersRoute
@@ -423,6 +530,13 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/partners': {
@@ -502,6 +616,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/': {
+      id: '/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
     '/admin/': {
       id: '/admin/'
       path: '/'
@@ -522,6 +643,55 @@ declare module '@tanstack/react-router' {
       fullPath: '/products/$productId'
       preLoaderRoute: typeof ProductsProductIdRouteImport
       parentRoute: typeof ProductsRoute
+    }
+    '/portal/orders': {
+      id: '/portal/orders'
+      path: '/orders'
+      fullPath: '/portal/orders'
+      preLoaderRoute: typeof PortalOrdersRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/leads': {
+      id: '/portal/leads'
+      path: '/leads'
+      fullPath: '/portal/leads'
+      preLoaderRoute: typeof PortalLeadsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/kpis': {
+      id: '/portal/kpis'
+      path: '/kpis'
+      fullPath: '/portal/kpis'
+      preLoaderRoute: typeof PortalKpisRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/inquiries': {
+      id: '/portal/inquiries'
+      path: '/inquiries'
+      fullPath: '/portal/inquiries'
+      preLoaderRoute: typeof PortalInquiriesRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/documents': {
+      id: '/portal/documents'
+      path: '/documents'
+      fullPath: '/portal/documents'
+      preLoaderRoute: typeof PortalDocumentsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/commissions': {
+      id: '/portal/commissions'
+      path: '/commissions'
+      fullPath: '/portal/commissions'
+      preLoaderRoute: typeof PortalCommissionsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/catalog': {
+      id: '/portal/catalog'
+      path: '/catalog'
+      fullPath: '/portal/catalog'
+      preLoaderRoute: typeof PortalCatalogRouteImport
+      parentRoute: typeof PortalRoute
     }
     '/auth/register': {
       id: '/auth/register'
@@ -670,6 +840,31 @@ const AdminRouteChildren: AdminRouteChildren = {
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
 
+interface PortalRouteChildren {
+  PortalCatalogRoute: typeof PortalCatalogRoute
+  PortalCommissionsRoute: typeof PortalCommissionsRoute
+  PortalDocumentsRoute: typeof PortalDocumentsRoute
+  PortalInquiriesRoute: typeof PortalInquiriesRoute
+  PortalKpisRoute: typeof PortalKpisRoute
+  PortalLeadsRoute: typeof PortalLeadsRoute
+  PortalOrdersRoute: typeof PortalOrdersRoute
+  PortalIndexRoute: typeof PortalIndexRoute
+}
+
+const PortalRouteChildren: PortalRouteChildren = {
+  PortalCatalogRoute: PortalCatalogRoute,
+  PortalCommissionsRoute: PortalCommissionsRoute,
+  PortalDocumentsRoute: PortalDocumentsRoute,
+  PortalInquiriesRoute: PortalInquiriesRoute,
+  PortalKpisRoute: PortalKpisRoute,
+  PortalLeadsRoute: PortalLeadsRoute,
+  PortalOrdersRoute: PortalOrdersRoute,
+  PortalIndexRoute: PortalIndexRoute,
+}
+
+const PortalRouteWithChildren =
+  PortalRoute._addFileChildren(PortalRouteChildren)
+
 interface ProductsRouteChildren {
   ProductsProductIdRoute: typeof ProductsProductIdRoute
 }
@@ -694,6 +889,7 @@ const rootRouteChildren: RootRouteChildren = {
   ContactRoute: ContactRoute,
   IndustriesRoute: IndustriesRoute,
   PartnersRoute: PartnersRoute,
+  PortalRoute: PortalRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   QuotationRoute: QuotationRoute,
   SuppliersRoute: SuppliersRoute,

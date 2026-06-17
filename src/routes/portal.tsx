@@ -15,20 +15,22 @@ export const Route = createFileRoute("/portal")({
   component: PortalLayout,
 });
 
-const agentNav = [
+type NavItem = { to: string; label: string; icon: typeof Package; exact?: boolean };
+
+const agentNav: ReadonlyArray<NavItem> = [
   { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/catalog", label: "Agent Catalog", icon: Package },
   { to: "/portal/orders", label: "My Orders", icon: ShoppingBag },
   { to: "/portal/leads", label: "Leads", icon: Users },
   { to: "/portal/commissions", label: "Commissions", icon: Wallet },
-] as const;
+];
 
-const partnerNav = [
+const partnerNav: ReadonlyArray<NavItem> = [
   { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/kpis", label: "KPIs", icon: BarChart3 },
   { to: "/portal/documents", label: "Deal Room", icon: FileText },
   { to: "/portal/inquiries", label: "Inquiries", icon: Briefcase },
-] as const;
+];
 
 function PortalLayout() {
   const { isAuthenticated, isAgent, isPartner, user, dispatch } = useStore();
