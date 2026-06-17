@@ -112,6 +112,7 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
     categoryId: categories[0].id,
     country: "Germany",
     price: 0,
+    agentPrice: undefined,
     moq: 1,
     deliveryDays: "7-10 days",
     image: "https://images.unsplash.com/photo-1581147036324-c47a03a81d48?w=800&q=80",
@@ -123,6 +124,8 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
     stock: 0,
     sku: "",
   });
+
+  const suggestedAgent = Math.round((form.price || 0) * 0.92);
 
   return (
     <DialogContent className="max-w-2xl">
@@ -141,7 +144,15 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </Field>
-          <Field label="Price (BDT)"><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
+          <Field label="Customer Price (BDT)"><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
+          <Field label={`Agent Price (BDT) — suggested ${suggestedAgent}`}>
+            <Input
+              type="number"
+              placeholder={`auto: ${suggestedAgent}`}
+              value={form.agentPrice ?? ""}
+              onChange={(e) => setForm({ ...form, agentPrice: e.target.value === "" ? undefined : Number(e.target.value) })}
+            />
+          </Field>
           <Field label="MOQ"><Input type="number" value={form.moq} onChange={(e) => setForm({ ...form, moq: Number(e.target.value) })} /></Field>
           <Field label="Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
           <Field label="Delivery"><Input value={form.deliveryDays} onChange={(e) => setForm({ ...form, deliveryDays: e.target.value })} /></Field>
