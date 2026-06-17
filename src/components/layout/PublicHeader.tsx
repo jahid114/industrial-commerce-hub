@@ -10,7 +10,8 @@ import { categories } from "@/data/categories";
 import { useNavigate } from "@tanstack/react-router";
 
 export function PublicHeader() {
-  const { cartCount, isAuthenticated, isAdmin, user } = useStore();
+  const { cartCount, isAuthenticated, isAdmin, isAgent, isPartner, user } = useStore();
+  const accountHref = isAdmin ? "/admin" : (isAgent || isPartner) ? "/portal" : "/account";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -56,7 +57,7 @@ export function PublicHeader() {
 
         <div className="ml-auto flex items-center gap-1">
           {isAuthenticated ? (
-            <Link to={isAdmin ? "/admin" : "/account"} className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+            <Link to={accountHref} className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
               <User className="size-4" />
               <span>{user?.name.split(" ")[0]}</span>
             </Link>
@@ -143,7 +144,7 @@ export function PublicHeader() {
               { to: "/partners", label: "Partnership" },
               { to: "/about", label: "About" },
               { to: "/contact", label: "Contact" },
-              { to: isAuthenticated ? (isAdmin ? "/admin" : "/account") : "/auth/login", label: isAuthenticated ? "My Account" : "Login / Register" },
+              { to: isAuthenticated ? accountHref : "/auth/login", label: isAuthenticated ? "My Account" : "Login / Register" },
             ].map((item) => (
               <Link
                 key={item.to}
