@@ -69,7 +69,8 @@ function AdminProductsPage() {
                 <th className="px-4 py-3 text-left">Product</th>
                 <th className="px-4 py-3 text-left">SKU</th>
                 <th className="px-4 py-3 text-left">Brand</th>
-                <th className="px-4 py-3 text-right">Price</th>
+                <th className="px-4 py-3 text-right">Customer ৳</th>
+                <th className="px-4 py-3 text-right">Agent ৳</th>
                 <th className="px-4 py-3 text-right">Stock</th>
                 <th className="px-4 py-3 text-right">Actions</th>
               </tr>
@@ -89,6 +90,7 @@ function AdminProductsPage() {
                   <td className="px-4 py-3 font-mono text-xs">{p.sku}</td>
                   <td className="px-4 py-3"><Badge variant="outline">{brands.find((b) => b.id === p.brandId)?.name}</Badge></td>
                   <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(p.price)}</td>
+                  <td className="px-4 py-3 text-right text-accent-foreground"><span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{formatBDT(p.agentPrice ?? Math.round(p.price * 0.92))}</span></td>
                   <td className="px-4 py-3 text-right">{p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
                     <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Edit className="size-4" /></Button>
