@@ -7,14 +7,17 @@ import type { Product } from "@/data/types";
 import { getBrand } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
+import { getAgentPrice, canSeeAgentPrice } from "@/lib/pricing";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
-  const { dispatch, wishlist, compare } = useStore();
+  const { dispatch, wishlist, compare, user } = useStore();
   const brand = getBrand(product.brandId);
   const inWishlist = wishlist.includes(product.id);
   const inCompare = compare.includes(product.id);
+  const showAgent = canSeeAgentPrice(user?.role);
+  const agentPrice = getAgentPrice(product);
 
   return (
     <motion.div
@@ -63,6 +66,11 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
           <div>
             <div className="text-[10px] uppercase text-muted-foreground">From</div>
             <div className="font-display text-lg font-bold text-primary">{formatBDT(product.price)}</div>
+            {showAgent && (
+              <div className="mt-0.5 inline-flex items-center gap-1 rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
+                Agent · {formatBDT(agentPrice)}
+              </div>
+            )}
           </div>
         </div>
         <div className="mt-3 grid grid-cols-2 gap-2">
