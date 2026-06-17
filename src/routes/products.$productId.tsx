@@ -14,6 +14,7 @@ import { getCategory } from "@/data/categories";
 import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
+import { getAgentPrice, canSeeAgentPrice } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/products/$productId")({
@@ -60,7 +61,8 @@ function ProductDetailPage() {
   const category = getCategory(product.categoryId);
   const supplier = getSupplier(product.supplierId);
   const related = getRelatedProducts(product.id);
-  const { dispatch, wishlist, compare } = useStore();
+  const { dispatch, wishlist, compare, user } = useStore();
+  const showAgent = canSeeAgentPrice(user?.role);
   const navigate = useNavigate();
   const [qty, setQty] = useState(product.moq);
   const [activeImage, setActiveImage] = useState(0);
@@ -108,6 +110,13 @@ function ProductDetailPage() {
           <div className="my-6 border-y border-border py-5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Starting from</div>
             <div className="font-display text-4xl font-bold text-primary">{formatBDT(product.price)}<span className="ml-2 text-sm font-normal text-muted-foreground">/ unit</span></div>
+            {showAgent && (
+              <div className="mt-3 flex items-center gap-2 rounded-md border border-accent/30 bg-accent/5 px-3 py-2">
+                <span className="rounded bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-foreground">Agent</span>
+                <span className="text-sm font-semibold text-foreground">{formatBDT(getAgentPrice(product))}</span>
+                <span className="text-xs text-muted-foreground">/ unit · visible to agents &amp; admin only</span>
+              </div>
+            )}
           </div>
 
           <dl className="grid grid-cols-2 gap-3 text-sm mb-6">
