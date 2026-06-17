@@ -19,7 +19,7 @@ function AboutPage() {
     <PublicLayout>
       <section className="bg-industrial text-industrial-foreground py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
-          <div className="inline-flex items-center gap-2 border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">A Project of Protocol Cashmere Limited</div>
+          <div className="inline-flex items-center gap-2 rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">A Project of Protocol Cashmere Limited</div>
           <h1 className="mt-5 font-display text-4xl font-bold md:text-6xl">Building Bangladesh's <br /><span className="text-primary">Industrial Supply Backbone</span></h1>
           <p className="mt-5 mx-auto max-w-2xl text-white/70">MegaHaus is Bangladesh's first integrated industrial marketplace, connecting global manufacturers with the factories, contractors and engineers shaping the country's future.</p>
         </div>

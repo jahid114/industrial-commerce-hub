@@ -39,7 +39,7 @@ function HomePage() {
         />
         <div className="container relative mx-auto grid gap-8 px-4 py-20 md:grid-cols-2 md:py-28 lg:py-36">
           <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ duration: 0.5 }} className="flex flex-col justify-center">
-            <div className="mb-5 inline-flex items-center gap-2 self-start border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">
+            <div className="mb-5 inline-flex items-center gap-2 self-start rounded-full border border-accent/40 bg-accent/10 px-3 py-1 text-xs font-bold uppercase tracking-widest text-accent">
               <span className="size-1.5 rounded-full bg-accent animate-pulse" /> Industrial Marketplace · BD
             </div>
             <h1 className="font-display text-4xl font-bold leading-[1.05] md:text-5xl lg:text-6xl">
