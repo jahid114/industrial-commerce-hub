@@ -12,7 +12,7 @@ export const Route = createFileRoute("/admin/")({
   component: AdminDashboard,
 });
 
-const COLORS = ["#E53935", "#FFA500", "#0E0E0E", "#3B82F6", "#10B981"];
+const COLORS = ["#DC2626", "#F97316", "#0F172A", "#3B82F6", "#10B981"];
 
 function AdminDashboard() {
   const { orders, quotations } = useStore();
@@ -64,7 +64,7 @@ function AdminDashboard() {
               <XAxis dataKey="month" fontSize={12} />
               <YAxis fontSize={12} tickFormatter={(v) => `${(v / 1000).toFixed(0)}K`} />
               <Tooltip formatter={(v: number) => formatBDT(v)} />
-              <Line type="monotone" dataKey="revenue" stroke="#E53935" strokeWidth={3} dot={{ r: 4 }} />
+              <Line type="monotone" dataKey="revenue" stroke="#DC2626" strokeWidth={3} dot={{ r: 4 }} />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -91,7 +91,7 @@ function AdminDashboard() {
               <XAxis dataKey="category" fontSize={11} />
               <YAxis fontSize={11} />
               <Tooltip />
-              <Bar dataKey="count" fill="#FFA500" />
+              <Bar dataKey="count" fill="#F97316" />
             </BarChart>
           </ResponsiveContainer>
         </div>
