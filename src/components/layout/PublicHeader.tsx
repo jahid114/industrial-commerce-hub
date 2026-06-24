@@ -112,6 +112,7 @@ export function PublicHeader() {
             { to: "/industries", label: "Industries" },
             { to: "/partners", label: "Partnership" },
             { to: "/about", label: "About" },
+            { to: "/portfolio", label: "Portfolio" },
             { to: "/contact", label: "Contact" },
           ].map((item) => (
             <Link
@@ -143,6 +144,7 @@ export function PublicHeader() {
               { to: "/industries", label: "Industries" },
               { to: "/partners", label: "Partnership" },
               { to: "/about", label: "About" },
+              { to: "/portfolio", label: "Portfolio" },
               { to: "/contact", label: "Contact" },
               { to: isAuthenticated ? accountHref : "/auth/login", label: isAuthenticated ? "My Account" : "Login / Register" },
             ].map((item) => (
