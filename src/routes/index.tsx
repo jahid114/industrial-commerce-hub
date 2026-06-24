@@ -40,7 +40,7 @@ function HomePage() {
   return (
     <PublicLayout>
       {/* ============ HERO ============ */}
-      <section className="relative isolate overflow-hidden bg-[#0a0705] text-white">
+      <section className="relative isolate overflow-hidden bg-industrial text-white">
         <img
           src={heroPort}
           alt="Industrial cargo port at sunset with cranes and container ship"
@@ -48,8 +48,8 @@ function HomePage() {
           width={1920}
           height={1280}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0a0705] via-[#0a0705]/85 to-[#0a0705]/30" aria-hidden />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0705] via-transparent to-[#0a0705]/60" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-r from-industrial via-industrial/85 to-industrial/30" aria-hidden />
+        <div className="absolute inset-0 bg-gradient-to-t from-industrial via-transparent to-industrial/60" aria-hidden />
 
         {/* Corner tickers */}
         <div className="pointer-events-none absolute inset-x-0 top-4 z-10 flex items-center justify-between px-6 text-[11px] font-mono uppercase tracking-[0.2em] text-white/60 md:px-10">
@@ -103,7 +103,7 @@ function HomePage() {
                 { n: "38", l: "Countries" },
                 { n: "7d", l: "Avg. Delivery" },
               ].map((s) => (
-                <div key={s.l} className="bg-[#0a0705]/70 p-5">
+                <div key={s.l} className="bg-industrial/70 p-5">
                   <div className="font-display text-3xl font-bold text-white md:text-4xl">{s.n}</div>
                   <div className="mt-1 font-mono text-[10px] uppercase tracking-[0.2em] text-white/50">{s.l}</div>
                 </div>
@@ -114,7 +114,7 @@ function HomePage() {
       </section>
 
       {/* ============ BRAND MARQUEE ============ */}
-      <section className="border-y border-border bg-[#0a0705] py-6 text-white">
+      <section className="border-y border-border bg-industrial py-6 text-white">
         <div className="mb-4 flex items-center justify-center gap-3 font-mono text-[10px] uppercase tracking-[0.25em] text-white/50">
           <span className="text-accent">◢</span>
           Trusted by 480+ verified manufacturers worldwide
@@ -251,7 +251,7 @@ function HomePage() {
       </section>
 
       {/* ============ QUOTATION CTA ============ */}
-      <section className="relative overflow-hidden bg-[#0a0705] py-20 text-white md:py-28">
+      <section className="relative overflow-hidden bg-industrial py-20 text-white md:py-28">
         <div className="absolute inset-0 industrial-grid opacity-20" aria-hidden />
         <div className="container relative mx-auto px-6 md:px-10">
           <div className="grid items-end gap-12 md:grid-cols-[1fr_auto]">
