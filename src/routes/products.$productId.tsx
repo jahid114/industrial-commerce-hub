@@ -75,8 +75,10 @@ function ProductDetailPage() {
         <div className="container mx-auto px-4 py-4 text-xs text-muted-foreground">
           <Link to="/" className="hover:text-primary">Home</Link> /{" "}
           <Link to="/products" className="hover:text-primary">Products</Link> /{" "}
-          <Link to="/products" search={{ category: category?.id } as never} className="hover:text-primary">{category?.name}</Link> /{" "}
+          <Link to="/products" search={{ category: category?.id } as never} className="hover:text-primary">{category?.name}</Link>
+          {product.subcategory && <> / <span className="hover:text-primary">{product.subcategory}</span></>} /{" "}
           <span className="text-foreground">{product.name}</span>
+
         </div>
       </div>
 
@@ -99,13 +101,22 @@ function ProductDetailPage() {
 
         {/* Info */}
         <div>
-          <div className="mb-2 flex items-center gap-2">
+          <div className="mb-2 flex flex-wrap items-center gap-2">
             <Badge variant="outline" className="font-bold uppercase">{brand?.name}</Badge>
             <Badge variant="outline">{product.country}</Badge>
+            {product.subcategory && <Badge variant="secondary">{product.subcategory}</Badge>}
             <span className="text-xs text-muted-foreground">SKU: {product.sku}</span>
           </div>
           <h1 className="font-display text-3xl font-bold leading-tight md:text-4xl">{product.name}</h1>
           <p className="mt-3 text-muted-foreground">{product.shortDescription}</p>
+          {product.tags && product.tags.length > 0 && (
+            <div className="mt-3 flex flex-wrap gap-1.5">
+              {product.tags.map((t: string) => (
+                <Badge key={t} variant="outline" className="text-[11px] font-normal">{t}</Badge>
+              ))}
+            </div>
+          )}
+
 
           <div className="my-6 border-y border-border py-5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Starting from</div>
