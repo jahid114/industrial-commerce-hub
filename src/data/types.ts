@@ -38,6 +38,9 @@ export interface Product {
   specs: ProductSpec[];
   supplierId: string;
   featured?: boolean;
+  tags?: string[];
+  slug?: string;
+  subcategory?: string;
   stock: number;
   sku: string;
 }
