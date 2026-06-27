@@ -41,7 +41,6 @@ function AdminLayout() {
   if (!isAuthenticated || !isAdmin) return null;
 
   return (
-  return (
     <InventoryProvider>
     <div className="flex min-h-screen bg-secondary">
       {/* Sidebar */}
