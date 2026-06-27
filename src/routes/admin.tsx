@@ -73,14 +73,31 @@ function AdminLayout() {
           <button className="lg:hidden" onClick={() => setOpen((v) => !v)}>{open ? <X className="size-5" /> : <Menu className="size-5" />}</button>
           <div className="text-sm text-muted-foreground hidden md:block">MegaHaus Industrial Hub · Administrator Console</div>
           <div className="flex items-center gap-3">
-            <Link to="/" className="text-sm font-medium hover:text-primary hidden sm:inline">← View Public Site</Link>
-            <Button
-              onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
-              variant="outline"
-              size="sm"
-            >
-              <LogOut className="size-4 sm:mr-2" /> <span className="hidden sm:inline">Sign Out</span>
-            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full" aria-label="Account menu">
+                  <User className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="font-semibold">{user?.name}</div>
+                  <div className="text-xs font-normal text-muted-foreground">{user?.email}</div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/account/profile" className="cursor-pointer">
+                    <User className="size-4 mr-2" /> My Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="size-4 mr-2" /> Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
         <main className="flex-1 p-4 lg:p-6">
