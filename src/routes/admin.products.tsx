@@ -10,9 +10,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { products as seedProducts } from "@/data/products";
 import { brands } from "@/data/brands";
 import { categories } from "@/data/categories";
+import { suppliers } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
-import type { Product } from "@/data/types";
+import type { Product, Country, ProductSpec } from "@/data/types";
+
+const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
 
 export const Route = createFileRoute("/admin/products")({
   head: () => ({ meta: [{ title: "Manage Products — Admin" }] }),
@@ -158,7 +161,8 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
   const submit = () => {
     const tags = tagInput.split(",").map((t) => t.trim()).filter(Boolean);
     const slug = form.slug?.trim() ? slugify(form.slug) : slugify(form.name);
-    onSave({ ...form, tags, slug });
+    const specs = form.specs.filter((s) => s.label.trim() && s.value.trim());
+    onSave({ ...form, tags, slug, specs });
   };
 
   return (
@@ -185,6 +189,16 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
               {(activeCategory?.subcategories ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </Field>
+          <Field label="Country of origin">
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value as Country })}>
+              {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </Field>
+          <Field label="Supplier">
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
+              {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </Field>
           <Field label="Customer Price (BDT)"><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
           <Field label={`Agent Price (BDT) — suggested ${suggestedAgent}`}>
             <Input
@@ -197,6 +211,12 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
           <Field label="MOQ"><Input type="number" value={form.moq} onChange={(e) => setForm({ ...form, moq: Number(e.target.value) })} /></Field>
           <Field label="Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
           <Field label="Delivery"><Input value={form.deliveryDays} onChange={(e) => setForm({ ...form, deliveryDays: e.target.value })} /></Field>
+          <Field label="Featured">
+            <label className="flex h-10 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm cursor-pointer">
+              <input type="checkbox" checked={!!form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} />
+              <span className="text-muted-foreground">Show on homepage & featured rails</span>
+            </label>
+          </Field>
         </div>
 
         <Field label="Tags (comma separated)">
@@ -245,6 +265,23 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
               ))}
             </div>
           )}
+        </Field>
+
+        <Field label="Specifications">
+          <div className="space-y-2">
+            {form.specs.map((s, i) => (
+              <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                <Input placeholder="Label (e.g. Voltage)" value={s.label} onChange={(e) => setForm((f) => ({ ...f, specs: f.specs.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x) }))} />
+                <Input placeholder="Value (e.g. 18V)" value={s.value} onChange={(e) => setForm((f) => ({ ...f, specs: f.specs.map((x, idx) => idx === i ? { ...x, value: e.target.value } : x) }))} />
+                <Button type="button" size="icon" variant="ghost" onClick={() => setForm((f) => ({ ...f, specs: f.specs.filter((_, idx) => idx !== i) }))}>
+                  <Trash2 className="size-4 text-destructive" />
+                </Button>
+              </div>
+            ))}
+            <Button type="button" variant="outline" size="sm" className="rounded-lg" onClick={() => setForm((f) => ({ ...f, specs: [...f.specs, { label: "", value: "" } as ProductSpec] }))}>
+              <Plus className="size-3.5 mr-1.5" /> Add specification
+            </Button>
+          </div>
         </Field>
       </div>
       <DialogFooter>
