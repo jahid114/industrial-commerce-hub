@@ -13,6 +13,7 @@ import { categories } from "@/data/categories";
 import { suppliers } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
+import { useInventory } from "@/lib/inventory-store";
 import type { Product, Country, ProductSpec } from "@/data/types";
 
 const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
