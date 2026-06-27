@@ -24,6 +24,7 @@ export const Route = createFileRoute("/admin/products")({
 });
 
 function AdminProductsPage() {
+  const inv = useInventory();
   const [products, setProducts] = useState<Product[]>(seedProducts);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Product | null>(null);
@@ -34,9 +35,11 @@ function AdminProductsPage() {
   const save = (data: Product) => {
     if (editing) {
       setProducts((ps) => ps.map((p) => (p.id === editing.id ? data : p)));
-      toast.success("Product updated");
+      toast.success("Product updated — adjust stock from Inventory");
     } else {
-      setProducts((ps) => [{ ...data, id: `new-${Date.now()}` }, ...ps]);
+      const id = `new-${Date.now()}`;
+      setProducts((ps) => [{ ...data, id }, ...ps]);
+      inv.registerProduct(id, data.stock);
       toast.success("Product created");
     }
     setEditing(null);
