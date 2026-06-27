@@ -16,6 +16,7 @@ export const Route = createFileRoute("/admin")({
 const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package; exact?: boolean }> = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/products", label: "Products", icon: Package },
+  { to: "/admin/inventory", label: "Inventory", icon: Boxes },
   { to: "/admin/suppliers", label: "Suppliers", icon: Building2 },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { to: "/admin/agents", label: "Agents", icon: Users },
