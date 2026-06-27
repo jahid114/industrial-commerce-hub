@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, GitCompare } from "lucide-react";
+import { Heart, GitCompare, Eye, Package, Truck, Check, ShieldCheck, ShoppingCart, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { Product } from "@/data/types";
 import { getBrand } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
@@ -13,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { dispatch, wishlist, compare, user } = useStore();
+  const [quickOpen, setQuickOpen] = useState(false);
   const brand = getBrand(product.brandId);
   const inWishlist = wishlist.includes(product.id);
   const inCompare = compare.includes(product.id);
@@ -20,6 +23,7 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const agentPrice = getAgentPrice(product);
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
@@ -27,6 +31,13 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
       className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary hover:shadow-lg"
     >
       <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
+        <button
+          onClick={(e) => { e.preventDefault(); setQuickOpen(true); }}
+          className="flex size-8 items-center justify-center rounded-full border bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary"
+          aria-label="Quick view"
+        >
+          <Eye className="size-4" />
+        </button>
         <button
           onClick={(e) => { e.preventDefault(); dispatch({ type: "TOGGLE_WISHLIST", productId: product.id }); toast.success(inWishlist ? "Removed from wishlist" : "Added to wishlist"); }}
           className={cn("flex size-8 items-center justify-center rounded-full border bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary", inWishlist && "bg-primary text-primary-foreground border-primary")}
