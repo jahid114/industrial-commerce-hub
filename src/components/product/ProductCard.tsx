@@ -59,14 +59,25 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </Link>
 
         <div className="flex flex-1 flex-col p-4">
-          <div className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground">{brand?.name}</div>
+          <div className="mb-1 flex items-center justify-between gap-2 text-xs font-bold uppercase tracking-wider text-muted-foreground">
+            <span className="truncate">{brand?.name}</span>
+            {product.subcategory && <span className="truncate text-[10px] font-medium text-primary/80">{product.subcategory}</span>}
+          </div>
           <Link to="/products/$productId" params={{ productId: product.id }}>
             <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug hover:text-primary">{product.name}</h3>
           </Link>
+          {product.tags && product.tags.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1">
+              {product.tags.slice(0, 3).map((t) => (
+                <Badge key={t} variant="secondary" className="px-1.5 py-0 text-[9px] font-normal">{t}</Badge>
+              ))}
+            </div>
+          )}
           <div className="my-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
             <span>MOQ: <strong className="text-foreground">{product.moq}</strong></span>
             <span>Delivery: <strong className="text-foreground">{product.deliveryDays}</strong></span>
           </div>
+
           <div className="mt-auto flex items-end justify-between">
             <div>
               <div className="text-[10px] uppercase text-muted-foreground">From</div>
