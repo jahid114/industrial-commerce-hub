@@ -125,25 +125,64 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
     supplierId: "bosch-de",
     stock: 0,
     sku: "",
+    tags: [],
+    slug: "",
+    subcategory: "",
   });
+  const [tagInput, setTagInput] = useState((editing?.tags ?? []).join(", "));
 
   const suggestedAgent = Math.round((form.price || 0) * 0.92);
+  const activeCategory = categories.find((c) => c.id === form.categoryId);
+
+  const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+  const handleImageUpload = async (files: FileList | null, target: "image" | "gallery") => {
+    if (!files || files.length === 0) return;
+    const readers = Array.from(files).map(
+      (f) =>
+        new Promise<string>((resolve, reject) => {
+          const r = new FileReader();
+          r.onload = () => resolve(String(r.result));
+          r.onerror = reject;
+          r.readAsDataURL(f);
+        }),
+    );
+    const urls = await Promise.all(readers);
+    if (target === "image") {
+      setForm((f) => ({ ...f, image: urls[0], gallery: [...urls.slice(1), ...f.gallery] }));
+    } else {
+      setForm((f) => ({ ...f, gallery: [...f.gallery, ...urls] }));
+    }
+  };
+
+  const submit = () => {
+    const tags = tagInput.split(",").map((t) => t.trim()).filter(Boolean);
+    const slug = form.slug?.trim() ? slugify(form.slug) : slugify(form.name);
+    onSave({ ...form, tags, slug });
+  };
 
   return (
     <DialogContent className="max-w-2xl">
       <DialogHeader><DialogTitle>{editing ? "Edit Product" : "Add Product"}</DialogTitle></DialogHeader>
-      <div className="grid gap-4 max-h-[60vh] overflow-y-auto">
+      <div className="grid gap-4 max-h-[60vh] overflow-y-auto pr-1">
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></Field>
+          <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} /></Field>
           <Field label="SKU"><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></Field>
+          <Field label="Slug"><Input value={form.slug ?? ""} placeholder="auto-generated from name" onChange={(e) => setForm({ ...form, slug: e.target.value })} /></Field>
           <Field label="Brand">
             <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.brandId} onChange={(e) => setForm({ ...form, brandId: e.target.value })}>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
           </Field>
           <Field label="Category">
-            <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value })}>
+            <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value, subcategory: "" })}>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+            </select>
+          </Field>
+          <Field label="Sub-category">
+            <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.subcategory ?? ""} onChange={(e) => setForm({ ...form, subcategory: e.target.value })}>
+              <option value="">— Select —</option>
+              {(activeCategory?.subcategories ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </Field>
           <Field label="Customer Price (BDT)"><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
@@ -159,15 +198,62 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
           <Field label="Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
           <Field label="Delivery"><Input value={form.deliveryDays} onChange={(e) => setForm({ ...form, deliveryDays: e.target.value })} /></Field>
         </div>
+
+        <Field label="Tags (comma separated)">
+          <Input value={tagInput} placeholder="e.g. cordless, 18V, professional" onChange={(e) => setTagInput(e.target.value)} />
+          {tagInput.trim() && (
+            <div className="mt-1.5 flex flex-wrap gap-1">
+              {tagInput.split(",").map((t) => t.trim()).filter(Boolean).map((t) => (
+                <Badge key={t} variant="secondary" className="text-xs">{t}</Badge>
+              ))}
+            </div>
+          )}
+        </Field>
+
         <Field label="Short description"><Input value={form.shortDescription} onChange={(e) => setForm({ ...form, shortDescription: e.target.value })} /></Field>
         <Field label="Description"><Textarea rows={3} value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })} /></Field>
+
+        <Field label="Primary image">
+          <div className="flex items-center gap-3">
+            {form.image && <img src={form.image} alt="" className="size-16 rounded-md object-cover bg-spec border border-border" />}
+            <label className="inline-flex h-9 cursor-pointer items-center rounded-md border border-input bg-background px-3 text-sm hover:bg-secondary">
+              <input type="file" accept="image/*" className="hidden" onChange={(e) => handleImageUpload(e.target.files, "image")} />
+              Upload image
+            </label>
+          </div>
+        </Field>
+
+        <Field label="Gallery images">
+          <label className="inline-flex h-9 cursor-pointer items-center rounded-md border border-input bg-background px-3 text-sm hover:bg-secondary">
+            <input type="file" accept="image/*" multiple className="hidden" onChange={(e) => handleImageUpload(e.target.files, "gallery")} />
+            Upload gallery images
+          </label>
+          {form.gallery.length > 0 && (
+            <div className="mt-2 grid grid-cols-5 gap-2">
+              {form.gallery.map((g, i) => (
+                <div key={i} className="relative group">
+                  <img src={g} alt="" className="aspect-square w-full rounded-md object-cover bg-spec border border-border" />
+                  <button
+                    type="button"
+                    onClick={() => setForm((f) => ({ ...f, gallery: f.gallery.filter((_, idx) => idx !== i) }))}
+                    className="absolute top-0.5 right-0.5 rounded bg-background/90 p-0.5 opacity-0 group-hover:opacity-100 transition"
+                    aria-label="Remove"
+                  >
+                    <Trash2 className="size-3 text-destructive" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+        </Field>
       </div>
       <DialogFooter>
-        <Button onClick={() => onSave(form)} className="font-bold uppercase">{editing ? "Save Changes" : "Create Product"}</Button>
+        <Button onClick={submit} className="font-bold uppercase">{editing ? "Save Changes" : "Create Product"}</Button>
       </DialogFooter>
     </DialogContent>
   );
 }
+
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return <div><Label className="mb-1.5 block text-xs uppercase tracking-wider">{label}</Label>{children}</div>;
