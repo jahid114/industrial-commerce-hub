@@ -103,5 +103,69 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
         </div>
       </div>
     </motion.div>
+
+    <Dialog open={quickOpen} onOpenChange={setQuickOpen}>
+      <DialogContent className="max-w-3xl p-0 overflow-hidden">
+        <div className="grid md:grid-cols-2">
+          <div className="aspect-square bg-spec">
+            <img src={product.image} alt={product.name} className="size-full object-cover" />
+          </div>
+          <div className="flex flex-col p-6">
+            <DialogHeader className="text-left space-y-2">
+              <div className="flex items-center gap-2">
+                <Badge variant="outline" className="font-bold uppercase">{brand?.name}</Badge>
+                <Badge variant="outline">{product.country}</Badge>
+              </div>
+              <DialogTitle className="font-display text-2xl leading-tight">{product.name}</DialogTitle>
+              <DialogDescription>{product.shortDescription}</DialogDescription>
+            </DialogHeader>
+
+            <div className="my-4 border-y border-border py-3">
+              <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Starting from</div>
+              <div className="font-display text-2xl font-bold text-primary">{formatBDT(product.price)}<span className="ml-1 text-xs font-normal text-muted-foreground">/ unit</span></div>
+              {showAgent && (
+                <div className="mt-1 inline-flex items-center gap-1 rounded bg-accent/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-accent">
+                  Agent · {formatBDT(agentPrice)}
+                </div>
+              )}
+            </div>
+
+            <dl className="grid grid-cols-2 gap-2 text-xs">
+              <MiniStat icon={Package} label="MOQ" value={`${product.moq} units`} />
+              <MiniStat icon={Truck} label="Delivery" value={product.deliveryDays} />
+              <MiniStat icon={Check} label="Stock" value={`${product.stock}`} />
+              <MiniStat icon={ShieldCheck} label="SKU" value={product.sku} />
+            </dl>
+
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              <Button
+                size="sm"
+                onClick={() => { dispatch({ type: "ADD_TO_CART", productId: product.id, quantity: product.moq }); toast.success("Added to cart"); setQuickOpen(false); }}
+              >
+                <ShoppingCart className="size-4 mr-2" /> Add to Cart
+              </Button>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/products/$productId" params={{ productId: product.id }} onClick={() => setQuickOpen(false)}>
+                  <FileText className="size-4 mr-2" /> Full Details
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
+    </>
+  );
+}
+
+function MiniStat({ icon: Icon, label, value }: { icon: React.ComponentType<{ className?: string }>; label: string; value: string }) {
+  return (
+    <div className="flex items-start gap-2 rounded border border-border bg-card p-2">
+      <Icon className="size-3.5 mt-0.5 text-primary" />
+      <div>
+        <div className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</div>
+        <div className="text-xs font-semibold">{value}</div>
+      </div>
+    </div>
   );
 }
