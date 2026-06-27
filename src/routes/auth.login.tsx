@@ -56,7 +56,7 @@ function LoginPage() {
             <div><Label className="mb-1.5 block text-sm">Password</Label><Input type="password" required value={password} onChange={(e) => setPassword(e.target.value)} /></div>
             <div>
               <Label className="mb-1.5 block text-sm">Sign in as (demo)</Label>
-              <select value={role} onChange={(e) => setRole(e.target.value as Role)} className="h-10 w-full border border-input bg-background px-3 text-sm">
+              <select value={role} onChange={(e) => setRole(e.target.value as Role)} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
                 <option value="customer">Customer</option>
                 <option value="agent">Field Agent</option>
                 <option value="partner">Partner / Investor</option>

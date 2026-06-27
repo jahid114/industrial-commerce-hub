@@ -91,7 +91,7 @@ function PartnersPage() {
                   <F label="Phone" err={form.formState.errors.phone?.message}><Input {...form.register("phone")} /></F>
                 </div>
                 <F label="Interest">
-                  <select {...form.register("interest")} className="h-10 w-full border border-input bg-background px-3 text-sm">
+                  <select {...form.register("interest")} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
                     <option>Partnership</option><option>Investment</option><option>Both</option>
                   </select>
                 </F>
