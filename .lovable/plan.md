@@ -1,112 +1,83 @@
-# MegaHaus Industrial Hub — Demo Build Plan
+## Goal
+Add a proper **Inventory** module to the admin panel — beyond the existing single "Stock" number — so the team can track returns, damaged/bad stock, and adjustments alongside good (sellable) stock.
 
-A static demo of MegaHaus on TanStack Start with mock JSON data. No backend, no auth server — login is a fake form that flips a local flag. Three surfaces: public site, customer dashboard, admin panel.
+Demo-only (in-memory like the rest of the admin). No backend changes.
 
-## Brand & Design System
+## New left-nav entry
+Admin sidebar → **Inventory** (between Products and Orders), icon `Boxes`.
 
-From the PDF brief:
-- **Primary:** Red `#E53935` (CTAs: Buy, Submit, Add to Cart)
-- **Secondary:** Yellow/Orange `#FFA500` (highlights, Request Quote, active states)
-- **Industrial neutrals:** Black `#0E0E0E`, White `#FFFFFF`, Gray scale
-- **Feel:** "Industrial strength + modern technology + global marketplace" — Alibaba × Amazon Industrial × engineering catalog. Dense product grids, technical specs front-and-center, no soft/wellness aesthetic.
-- Tokens added to `src/styles.css` as oklch under `@theme inline` (semantic: `--primary`, `--accent`, `--industrial-dark`, `--spec-table`, etc.). All components consume tokens — no hardcoded hex.
-- Typography: Inter for body, a heavy condensed sans (e.g. Oswald) for headlines / product names — loaded via `<link>` in `__root.tsx`.
-- Logo: "MEGAHAUS" wordmark in heavy black with red accent bar, rendered as an SVG component.
+Route: `src/routes/admin.inventory.tsx`
 
-## Tech Stack (mapped from your list)
+## Inventory model (per product)
+Replace the single `stock` view with a richer breakdown computed from movements:
 
-| You asked for | What we'll use on TanStack Start | Why |
-|---|---|---|
-| Next.js 16 | TanStack Start (React 19 + Vite, file-based routes, SSR) | Lovable constraint |
-| Tailwind v4 | Tailwind v4 (already configured) | ✓ |
-| shadcn latest | shadcn (already installed) | ✓ |
-| Zod v4 | Zod v4 for form schemas (RFQ, registration, checkout) | ✓ |
-| jspdf + autotable | jsPDF for invoices & admin reports | ✓ |
-| framer-motion | framer-motion for page transitions, card hovers, drawer | ✓ |
-| RTK Query | Skipped per your choice → React state + mock JSON in `src/data/` | Simpler, faster demo |
+- **Good stock** — sellable on-hand
+- **Reserved** — held against pending orders (read-only, derived)
+- **Returned** — customer-returned, awaiting inspection
+- **Damaged / Bad stock** — written off, not sellable
+- **Incoming** — POs / shipments in transit
+- **Available** = Good − Reserved
+- **Reorder level** — threshold for "Low stock" badge
 
-## Mock Data (`src/data/`)
+These live in a new module `src/data/inventory.ts` keyed by `productId`, seeded from existing `products[].stock` (all into "Good"). Held in a `useState` map on the page (matches current demo pattern).
 
-- `brands.ts` — Bosch, Makita, Siemens, Festo, ABB, Hilti, Caterpillar, Karcher (each with logo URL, country)
-- `categories.ts` — Tools, Machinery, Electrical, Construction, Automotive (+ subcategories)
-- `products.ts` — ~40 products with: name, brand, category, country, price (BDT), MOQ, delivery days, image, gallery, specs table, description, supplier
-- `suppliers.ts` — ~8 international suppliers
-- `agents.ts` — ~6 field agents with area + commission stats
-- `orders.ts` — ~12 mock orders across statuses (Pending, Confirmed, Shipped, Delivered)
-- `quotations.ts` — ~8 RFQs with status + supplier responses
+## Page layout — `/admin/inventory`
 
-Cart, wishlist, auth-flag, and "submitted RFQs/orders" stored in a single `useAppStore` (React Context + `useReducer`) persisted to `localStorage` so the demo survives reloads.
+```text
+Header: "Inventory"  [Search]  [+ Adjust stock]  [+ Record movement]
 
-## Routes
+KPI row: Total SKUs | Good stock value (৳) | Low-stock SKUs | Damaged units | Returns pending
 
-### Public site
-- `/` — Hero ("Global Industrial Products, Delivered to Bangladesh"), category tiles, featured products carousel, brand strip, industrial solutions, partner CTA
-- `/products` — Catalog: search, filters (Category, Brand, Country, Price range, MOQ), sort, grid/list toggle, pagination
-- `/products/$productId` — Gallery, title/brand, price, MOQ, delivery, "Add to Cart" (red) + "Request Quotation" (yellow), tabs: Description / Specifications / Supplier Info, related products
-- `/compare` — Side-by-side product comparison (up to 4)
-- `/industries` — Industry solutions (Textile, Marine, Construction, Automotive, Power)
-- `/suppliers` — Supplier directory + "Become a Supplier" CTA → form
-- `/partners` — Partnership & Investment page (Become a Partner / Invest With Us CTAs + inquiry form)
-- `/agents` — Agent program landing + registration form
-- `/contact` — Contact form, address, phones, map placeholder
-- `/about` — Vision, business model, network
-- `/cart` — Line items, qty edit, totals, proceed to checkout
-- `/checkout` — Address, payment method (COD / Bank / bKash / Nagad), order review → success page generates **jsPDF invoice download**
-- `/quotation` — Standalone RFQ form
-- `/auth/login` and `/auth/register` — Fake forms; toggle role (customer / agent / admin) for demo navigation
+Tabs:
+  Overview  |  Returns  |  Damaged  |  Movements
+```
 
-### Customer dashboard (`/account/*`)
-- `/account` — Overview tiles (orders, RFQs, wishlist counts)
-- `/account/orders` — Order history table, status badges, detail drawer, **download invoice (jsPDF + autotable)**
-- `/account/orders/$orderId` — Timeline tracker, items, totals
-- `/account/quotations` — RFQ history with supplier response status
-- `/account/wishlist` — Saved products
-- `/account/profile` — Profile edit form (Zod validated)
+### Overview tab — main inventory table
+Columns: Product · SKU · Good · Reserved · Available · Returned · Damaged · Incoming · Reorder lvl · Status badge (In stock / Low / Out) · Actions
 
-### Admin panel (`/admin/*`)
-Separate layout with black sidebar (per brief), red active indicator, dense data tables.
-- `/admin` — Dashboard: KPI cards, orders-over-time chart (Recharts, already installed), recent activity
-- `/admin/products` — Table + create/edit dialog (Zod form), category/brand filters, bulk actions
-- `/admin/suppliers` — Supplier CRUD
-- `/admin/orders` — All orders, status update, **export PDF report (jsPDF autotable)**
-- `/admin/agents` — Agent list + commission tracking
-- `/admin/quotations` — RFQ inbox, mark as quoted/closed
-- `/admin/reports` — Generate downloadable PDF sales/agent/inventory reports
+Row actions: **Adjust** (open Adjust dialog pre-filled), **History** (filters Movements tab to that SKU).
 
-All admin mutations update the in-memory store + localStorage; refresh keeps changes.
+### Returns tab
+List of return entries: Date · Order # · Product · Qty · Reason · Condition · Status (Pending inspection / Restocked / Scrapped) · Actions.
+Actions: **Restock** (moves qty Returned → Good), **Mark damaged** (Returned → Damaged), **Scrap** (removes from Returned).
+`+ Log return` button opens a dialog (product picker, qty, reason, condition, optional order #).
 
-## Reusable Components (`src/components/`)
+### Damaged tab
+List of damaged/bad-stock entries: Date · Product · Qty · Reason (Defective / Transit damage / Expired / Other) · Notes · Logged by.
+`+ Log damaged` button. Action: **Write off** (removes the units permanently from Damaged with audit entry).
 
-- `layout/PublicHeader.tsx` — Logo, mega-menu (categories dropdown), search, cart, account, language stub (EN/BN)
-- `layout/PublicFooter.tsx` — Address block from PDF, links, brand strip
-- `layout/AdminShell.tsx` — Black sidebar + topbar
-- `layout/AccountShell.tsx` — Customer sidebar
-- `product/ProductCard.tsx`, `ProductGrid.tsx`, `ProductFilters.tsx`, `SpecTable.tsx`, `BrandStrip.tsx`
-- `forms/QuotationDialog.tsx`, `PartnerInquiryForm.tsx`, `AgentRegistrationForm.tsx` — Zod + react-hook-form
-- `cart/CartDrawer.tsx` (framer-motion slide-in)
-- `pdf/invoice.ts`, `pdf/orderReport.ts` — jsPDF generators
+### Movements tab (audit log)
+Chronological list of every stock change: Date · Product · Type (Adjustment / Return / Damage / Restock / Write-off / Incoming receipt / Sale) · Δ Good · Δ Returned · Δ Damaged · Note · User.
+Filterable by product and type.
 
-## Technical Notes
+## Dialogs
 
-- Every route file gets its own `head()` (title, description, og:title, og:description) per route-architecture rules. Root sets only the site-wide defaults.
-- All navigation via `<Link to=...>` from `@tanstack/react-router`; no `<a href>` for internal routes.
-- Forms: `react-hook-form` + `zod` resolver; validation messages tied to shadcn `<FormMessage />`.
-- Animations kept tasteful: page fade/slide on route change, card lift on hover, drawer slide. No layout/layoutId tricks needed.
-- Mobile: hamburger drawer for public nav, collapsible sidebar for admin.
-- SEO: semantic HTML, single H1 per page, alt text on product images, responsive viewport (already set).
+1. **Adjust stock** — pick product, pick bucket (Good / Returned / Damaged / Incoming), delta (+/−), reason, note → writes a movement and updates counts.
+2. **Log return** — product, qty, reason (Wrong item / Defective / Customer change of mind / Warranty), condition (Resellable / Inspect / Damaged), order # (optional). Creates a Return entry + movement (+ Returned).
+3. **Log damaged** — product, qty, reason, note. Creates Damaged entry + movement (+ Damaged).
+4. **Restock from return** — confirm qty, moves Returned → Good.
 
-## Out of Scope (this phase)
+All dialogs follow the existing admin dialog styling (`rounded-lg` buttons, `Field` helper, same select styling as Products).
 
-- Agent platform UI and Partner platform UI (per your selection — only public + customer + admin now)
-- Real auth, real payments, real database, email sending, real shipment tracking
-- i18n implementation (EN/BN toggle is a visual stub)
+## Sync with Products page
 
-## Build Order
+- `Product.stock` shown in `/admin/products` becomes a **derived read** of `goodStock` from the inventory store (kept in the same module so both pages share state in the demo). The Products "Stock" input in Add/Edit still sets initial Good stock on create; editing existing stock is redirected to the Inventory → Adjust dialog (with a helper note).
+- Product detail page continues to show `In stock / Out of stock` based on Available.
 
-1. Design tokens + fonts + logo + shells (public, account, admin)
-2. Mock data + global store + cart logic
-3. Public routes: home → catalog → product detail → cart → checkout (+ invoice PDF)
-4. Auxiliary public routes: industries, suppliers, partners, agents, contact, about, auth
-5. Customer dashboard routes
-6. Admin panel routes + PDF reports
-7. Polish pass: animations, empty states, mobile, SEO meta on every route
+## Files
+
+**New**
+- `src/data/inventory.ts` — types (`StockBucket`, `Movement`, `ReturnEntry`, `DamagedEntry`), seed builder from `products`, helper functions (`applyMovement`, `summarize`).
+- `src/lib/inventory-store.tsx` — tiny React context wrapping the inventory state so `admin.inventory.tsx` and `admin.products.tsx` share it for the demo.
+- `src/routes/admin.inventory.tsx` — the page above.
+
+**Edited**
+- `src/routes/admin.tsx` — add "Inventory" nav link with `Boxes` icon.
+- `src/routes/admin.products.tsx` — read good-stock from inventory store; minor copy tweak on the Stock field.
+- `src/routes/__root.tsx` (or wherever admin shell wraps providers) — mount `<InventoryProvider>` around the admin subtree.
+
+## Out of scope
+- Real persistence / Lovable Cloud
+- Multi-warehouse locations
+- Supplier PO workflow (we only track "Incoming" qty as a number)
+- Barcode scanning
