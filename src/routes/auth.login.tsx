@@ -41,8 +41,11 @@ function LoginPage() {
       role === "admin" ? "/admin" :
       role === "agent" || role === "partner" ? "/portal" :
       "/account";
-    navigate({ to: dest });
+    // Defer navigation so the store state update flushes before the
+    // destination route's auth guard reads context.
+    setTimeout(() => navigate({ to: dest }), 0);
   };
+
 
   return (
     <PublicLayout>
