@@ -75,8 +75,10 @@ function ProductDetailPage() {
         <div className="container mx-auto px-4 py-4 text-xs text-muted-foreground">
           <Link to="/" className="hover:text-primary">Home</Link> /{" "}
           <Link to="/products" className="hover:text-primary">Products</Link> /{" "}
-          <Link to="/products" search={{ category: category?.id } as never} className="hover:text-primary">{category?.name}</Link> /{" "}
+          <Link to="/products" search={{ category: category?.id } as never} className="hover:text-primary">{category?.name}</Link>
+          {product.subcategory && <> / <span className="hover:text-primary">{product.subcategory}</span></>} /{" "}
           <span className="text-foreground">{product.name}</span>
+
         </div>
       </div>
 
