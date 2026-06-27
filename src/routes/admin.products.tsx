@@ -188,6 +188,16 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
               {(activeCategory?.subcategories ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
             </select>
           </Field>
+          <Field label="Country of origin">
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.country} onChange={(e) => setForm({ ...form, country: e.target.value as Country })}>
+              {COUNTRIES.map((c) => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </Field>
+          <Field label="Supplier">
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.supplierId} onChange={(e) => setForm({ ...form, supplierId: e.target.value })}>
+              {suppliers.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+            </select>
+          </Field>
           <Field label="Customer Price (BDT)"><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
           <Field label={`Agent Price (BDT) — suggested ${suggestedAgent}`}>
             <Input
@@ -200,6 +210,12 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
           <Field label="MOQ"><Input type="number" value={form.moq} onChange={(e) => setForm({ ...form, moq: Number(e.target.value) })} /></Field>
           <Field label="Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
           <Field label="Delivery"><Input value={form.deliveryDays} onChange={(e) => setForm({ ...form, deliveryDays: e.target.value })} /></Field>
+          <Field label="Featured">
+            <label className="flex h-10 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm cursor-pointer">
+              <input type="checkbox" checked={!!form.featured} onChange={(e) => setForm({ ...form, featured: e.target.checked })} />
+              <span className="text-muted-foreground">Show on homepage & featured rails</span>
+            </label>
+          </Field>
         </div>
 
         <Field label="Tags (comma separated)">
