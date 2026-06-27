@@ -265,6 +265,23 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
             </div>
           )}
         </Field>
+
+        <Field label="Specifications">
+          <div className="space-y-2">
+            {form.specs.map((s, i) => (
+              <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
+                <Input placeholder="Label (e.g. Voltage)" value={s.label} onChange={(e) => setForm((f) => ({ ...f, specs: f.specs.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x) }))} />
+                <Input placeholder="Value (e.g. 18V)" value={s.value} onChange={(e) => setForm((f) => ({ ...f, specs: f.specs.map((x, idx) => idx === i ? { ...x, value: e.target.value } : x) }))} />
+                <Button type="button" size="icon" variant="ghost" onClick={() => setForm((f) => ({ ...f, specs: f.specs.filter((_, idx) => idx !== i) }))}>
+                  <Trash2 className="size-4 text-destructive" />
+                </Button>
+              </div>
+            ))}
+            <Button type="button" variant="outline" size="sm" className="rounded-lg" onClick={() => setForm((f) => ({ ...f, specs: [...f.specs, { label: "", value: "" } as ProductSpec] }))}>
+              <Plus className="size-3.5 mr-1.5" /> Add specification
+            </Button>
+          </div>
+        </Field>
       </div>
       <DialogFooter>
         <Button onClick={submit} className="font-bold uppercase">{editing ? "Save Changes" : "Create Product"}</Button>
