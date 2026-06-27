@@ -15,6 +15,7 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { dispatch, wishlist, compare, user } = useStore();
+  const [quickOpen, setQuickOpen] = useState(false);
   const brand = getBrand(product.brandId);
   const inWishlist = wishlist.includes(product.id);
   const inCompare = compare.includes(product.id);
