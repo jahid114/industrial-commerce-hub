@@ -108,5 +108,6 @@ function AdminLayout() {
         </main>
       </div>
     </div>
+    </InventoryProvider>
   );
 }
