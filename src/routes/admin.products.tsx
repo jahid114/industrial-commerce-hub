@@ -10,9 +10,12 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogT
 import { products as seedProducts } from "@/data/products";
 import { brands } from "@/data/brands";
 import { categories } from "@/data/categories";
+import { suppliers } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
-import type { Product } from "@/data/types";
+import type { Product, Country, ProductSpec } from "@/data/types";
+
+const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
 
 export const Route = createFileRoute("/admin/products")({
   head: () => ({ meta: [{ title: "Manage Products — Admin" }] }),
