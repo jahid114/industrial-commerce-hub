@@ -111,7 +111,7 @@ function ProductDetailPage() {
           <p className="mt-3 text-muted-foreground">{product.shortDescription}</p>
           {product.tags && product.tags.length > 0 && (
             <div className="mt-3 flex flex-wrap gap-1.5">
-              {product.tags.map((t) => (
+              {product.tags.map((t: string) => (
                 <Badge key={t} variant="outline" className="text-[11px] font-normal">{t}</Badge>
               ))}
             </div>
