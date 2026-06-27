@@ -53,7 +53,7 @@ function AccountLayout() {
                   </Link>
                 );
               })}
-              <Button onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }} variant="ghost" className="w-full justify-start mt-2 text-destructive hover:text-destructive">
+              <Button onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }} variant="ghost" className="w-full justify-start rounded-lg mt-2 text-destructive hover:text-destructive">
                 <LogOut className="size-4 mr-3" /> Sign Out
               </Button>
             </aside>
