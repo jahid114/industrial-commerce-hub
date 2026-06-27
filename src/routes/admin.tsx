@@ -1,11 +1,12 @@
 import { Outlet, Link, createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Package, Building2, ShoppingBag, Users, FileText, BarChart3, LogOut, Menu, X, User } from "lucide-react";
+import { LayoutDashboard, Package, Boxes, Building2, ShoppingBag, Users, FileText, BarChart3, LogOut, Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/lib/store";
+import { InventoryProvider } from "@/lib/inventory-store";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin")({
@@ -15,6 +16,7 @@ export const Route = createFileRoute("/admin")({
 const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package; exact?: boolean }> = [
   { to: "/admin", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/admin/products", label: "Products", icon: Package },
+  { to: "/admin/inventory", label: "Inventory", icon: Boxes },
   { to: "/admin/suppliers", label: "Suppliers", icon: Building2 },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
   { to: "/admin/agents", label: "Agents", icon: Users },
@@ -39,6 +41,7 @@ function AdminLayout() {
   if (!isAuthenticated || !isAdmin) return null;
 
   return (
+    <InventoryProvider>
     <div className="flex min-h-screen bg-secondary">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
@@ -105,5 +108,6 @@ function AdminLayout() {
         </main>
       </div>
     </div>
+    </InventoryProvider>
   );
 }

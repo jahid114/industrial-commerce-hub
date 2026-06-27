@@ -13,6 +13,7 @@ import { categories } from "@/data/categories";
 import { suppliers } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
+import { useInventory } from "@/lib/inventory-store";
 import type { Product, Country, ProductSpec } from "@/data/types";
 
 const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
@@ -23,6 +24,7 @@ export const Route = createFileRoute("/admin/products")({
 });
 
 function AdminProductsPage() {
+  const inv = useInventory();
   const [products, setProducts] = useState<Product[]>(seedProducts);
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Product | null>(null);
@@ -33,9 +35,11 @@ function AdminProductsPage() {
   const save = (data: Product) => {
     if (editing) {
       setProducts((ps) => ps.map((p) => (p.id === editing.id ? data : p)));
-      toast.success("Product updated");
+      toast.success("Product updated — adjust stock from Inventory");
     } else {
-      setProducts((ps) => [{ ...data, id: `new-${Date.now()}` }, ...ps]);
+      const id = `new-${Date.now()}`;
+      setProducts((ps) => [{ ...data, id }, ...ps]);
+      inv.registerProduct(id, data.stock);
       toast.success("Product created");
     }
     setEditing(null);
@@ -94,7 +98,7 @@ function AdminProductsPage() {
                   <td className="px-4 py-3"><Badge variant="outline">{brands.find((b) => b.id === p.brandId)?.name}</Badge></td>
                   <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(p.price)}</td>
                   <td className="px-4 py-3 text-right text-accent-foreground"><span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{formatBDT(p.agentPrice ?? Math.round(p.price * 0.92))}</span></td>
-                  <td className="px-4 py-3 text-right">{p.stock}</td>
+                  <td className="px-4 py-3 text-right">{inv.records[p.id]?.good ?? p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
                     <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Edit className="size-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => remove(p.id)}><Trash2 className="size-4 text-destructive" /></Button>
