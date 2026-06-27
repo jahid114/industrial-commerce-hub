@@ -161,7 +161,8 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
   const submit = () => {
     const tags = tagInput.split(",").map((t) => t.trim()).filter(Boolean);
     const slug = form.slug?.trim() ? slugify(form.slug) : slugify(form.name);
-    onSave({ ...form, tags, slug });
+    const specs = form.specs.filter((s) => s.label.trim() && s.value.trim());
+    onSave({ ...form, tags, slug, specs });
   };
 
   return (
