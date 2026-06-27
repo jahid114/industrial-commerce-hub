@@ -66,7 +66,7 @@ function PortalLayout() {
                 key={it.to}
                 to={it.to as never}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-md px-4 py-3 text-sm font-medium transition-colors ${isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent"}`}
+                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent"}`}
               >
                 <it.icon className="size-4" /> {it.label}
               </Link>

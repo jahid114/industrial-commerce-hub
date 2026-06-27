@@ -170,17 +170,17 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
           <Field label="SKU"><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></Field>
           <Field label="Slug"><Input value={form.slug ?? ""} placeholder="auto-generated from name" onChange={(e) => setForm({ ...form, slug: e.target.value })} /></Field>
           <Field label="Brand">
-            <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.brandId} onChange={(e) => setForm({ ...form, brandId: e.target.value })}>
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.brandId} onChange={(e) => setForm({ ...form, brandId: e.target.value })}>
               {brands.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
             </select>
           </Field>
           <Field label="Category">
-            <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value, subcategory: "" })}>
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.categoryId} onChange={(e) => setForm({ ...form, categoryId: e.target.value, subcategory: "" })}>
               {categories.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
             </select>
           </Field>
           <Field label="Sub-category">
-            <select className="h-10 w-full border border-input bg-background px-3 text-sm" value={form.subcategory ?? ""} onChange={(e) => setForm({ ...form, subcategory: e.target.value })}>
+            <select className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring" value={form.subcategory ?? ""} onChange={(e) => setForm({ ...form, subcategory: e.target.value })}>
               <option value="">— Select —</option>
               {(activeCategory?.subcategories ?? []).map((s) => <option key={s} value={s}>{s}</option>)}
             </select>

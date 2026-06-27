@@ -112,7 +112,7 @@ function QuotationPage() {
             <Field label="Phone" error={form.formState.errors.phone?.message}><Input {...form.register("phone")} /></Field>
           </div>
           <Field label="Product" error={form.formState.errors.productId?.message}>
-            <select {...form.register("productId")} className="h-10 w-full border border-input bg-background px-3 text-sm">
+            <select {...form.register("productId")} className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring">
               <option value="">Select a product…</option>
               {products.map((p) => <option key={p.id} value={p.id}>{p.name}</option>)}
             </select>
