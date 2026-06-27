@@ -92,7 +92,16 @@ function PortalLayout() {
         <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card px-4 lg:px-6">
           <button className="lg:hidden" onClick={() => setOpen((v) => !v)}>{open ? <X className="size-5" /> : <Menu className="size-5" />}</button>
           <div className="text-sm text-muted-foreground hidden md:block">MegaHaus Industrial Hub · {surface}</div>
-          <Link to="/" className="text-sm font-medium hover:text-primary">← Public Site</Link>
+          <div className="flex items-center gap-3">
+            <Link to="/" className="text-sm font-medium hover:text-primary hidden sm:inline">← Public Site</Link>
+            <Button
+              onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
+              variant="outline"
+              size="sm"
+            >
+              <LogOut className="size-4 sm:mr-2" /> <span className="hidden sm:inline">Sign Out</span>
+            </Button>
+          </div>
         </header>
         <main className="flex-1 p-4 lg:p-6">
           <Outlet />
