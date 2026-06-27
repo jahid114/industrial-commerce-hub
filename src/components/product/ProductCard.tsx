@@ -134,9 +134,18 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
                   <Badge variant="outline" className="font-bold uppercase">{brand?.name}</Badge>
                   <Badge variant="outline">{product.country}</Badge>
                   {category && <Badge variant="secondary" className="text-[10px]">{category.name}</Badge>}
+                  {product.subcategory && <Badge variant="secondary" className="text-[10px]">{product.subcategory}</Badge>}
                 </div>
                 <DialogTitle className="font-display text-2xl leading-tight">{product.name}</DialogTitle>
                 <DialogDescription>{product.shortDescription}</DialogDescription>
+                {product.tags && product.tags.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {product.tags.map((t) => (
+                      <Badge key={t} variant="outline" className="text-[10px] font-normal"><Tag className="size-2.5 mr-1" />{t}</Badge>
+                    ))}
+                  </div>
+                )}
+
               </DialogHeader>
 
               <div className="my-4 border-y border-border py-3">
