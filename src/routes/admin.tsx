@@ -41,6 +41,8 @@ function AdminLayout() {
   if (!isAuthenticated || !isAdmin) return null;
 
   return (
+  return (
+    <InventoryProvider>
     <div className="flex min-h-screen bg-secondary">
       {/* Sidebar */}
       <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
