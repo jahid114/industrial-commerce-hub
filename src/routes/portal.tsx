@@ -81,7 +81,7 @@ function PortalLayout() {
           <Button
             onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
             variant="ghost"
-            className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
+            className="w-full justify-start rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground"
           >
             <LogOut className="size-4 mr-3" /> Sign Out
           </Button>
