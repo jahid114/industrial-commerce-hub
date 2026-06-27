@@ -48,7 +48,7 @@ function AccountLayout() {
               {navItems.map((it) => {
                 const isActive = it.exact ? pathname === it.to : pathname.startsWith(it.to);
                 return (
-                  <Link key={it.to} to={it.to as never} className={`flex items-center gap-3 px-4 py-3 text-sm font-medium transition-colors ${isActive ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}`}>
+                  <Link key={it.to} to={it.to as never} className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${isActive ? "bg-primary text-primary-foreground" : "hover:bg-secondary"}`}>
                     <it.icon className="size-4" /> {it.label}
                   </Link>
                 );
