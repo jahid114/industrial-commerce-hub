@@ -1,8 +1,10 @@
 import { Link } from "@tanstack/react-router";
+import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, GitCompare } from "lucide-react";
+import { Heart, GitCompare, Eye, Package, Truck, Check, ShieldCheck, ShoppingCart, FileText } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { Product } from "@/data/types";
 import { getBrand } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
