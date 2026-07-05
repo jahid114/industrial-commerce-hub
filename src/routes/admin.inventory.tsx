@@ -200,8 +200,6 @@ function AdminInventoryPage() {
                     <th className="px-3 py-3 text-right">Available</th>
                     <th className="px-3 py-3 text-right">Returned</th>
                     <th className="px-3 py-3 text-right">Damaged</th>
-                    <th className="px-3 py-3 text-right">Incoming</th>
-                    <th className="px-3 py-3 text-right">Reorder</th>
                     <th className="px-3 py-3 text-left">Status</th>
                     <th className="px-3 py-3 text-right">Actions</th>
                   </tr>
