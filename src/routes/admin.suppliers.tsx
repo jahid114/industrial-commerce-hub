@@ -24,14 +24,13 @@ export const Route = createFileRoute("/admin/suppliers")({
 
 const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
 
-type FormState = Omit<Supplier, "id">;
+type FormState = Omit<Supplier, "id" | "productsCount">;
 
 const emptyForm: FormState = {
   name: "",
   country: "Germany",
   contactName: "",
   email: "",
-  productsCount: 0,
   rating: 4.5,
   since: new Date().toISOString().slice(0, 10),
 };
@@ -46,8 +45,8 @@ function AdminSuppliersPage() {
   const openAdd = () => { setEditing(null); setForm(emptyForm); setDialogOpen(true); };
   const openEdit = (s: Supplier) => {
     setEditing(s);
-    const { id: _id, ...rest } = s;
-    void _id;
+    const { id: _id, productsCount: _pc, ...rest } = s;
+    void _id; void _pc;
     setForm(rest);
     setDialogOpen(true);
   };
@@ -58,10 +57,10 @@ function AdminSuppliersPage() {
       return;
     }
     if (editing) {
-      updateSupplier(editing.id, form);
+      updateSupplier(editing.id, { ...form, productsCount: editing.productsCount });
       toast.success("Supplier updated");
     } else {
-      addSupplier(form);
+      addSupplier({ ...form, productsCount: 0 });
       toast.success("Supplier added");
     }
     setDialogOpen(false);
@@ -155,15 +154,9 @@ function AdminSuppliersPage() {
               <Label>Email</Label>
               <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-1.5">
-                <Label>Products count</Label>
-                <Input type="number" min={0} value={form.productsCount} onChange={(e) => setForm({ ...form, productsCount: Number(e.target.value) || 0 })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label>Rating</Label>
-                <Input type="number" step="0.1" min={0} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) || 0 })} />
-              </div>
+            <div className="grid gap-1.5">
+              <Label>Rating</Label>
+              <Input type="number" step="0.1" min={0} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) || 0 })} />
             </div>
           </div>
           <DialogFooter>
