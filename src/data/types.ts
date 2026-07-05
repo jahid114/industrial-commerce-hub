@@ -71,7 +71,6 @@ export interface Agent {
 export type OrderStatus = "Pending" | "Confirmed" | "Processing" | "Shipped" | "Delivered" | "Cancelled" | "On Hold";
 
 export type PaymentStatus = "Unpaid" | "Partial" | "Paid" | "Refunded";
-export type FulfillmentStatus = "Unfulfilled" | "Picking" | "Packed" | "Shipped" | "Delivered";
 
 export interface OrderItem {
   productId: string;
