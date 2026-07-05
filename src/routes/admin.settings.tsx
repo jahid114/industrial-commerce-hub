@@ -151,8 +151,8 @@ function CategoriesTab({
                 <td className="px-4 py-3 text-right">{c.subcategories.length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
-                    <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
-                    <Button size="sm" variant="outline" onClick={() => removeCategory(c.id)} className="rounded-lg text-destructive hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
+                  <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
+                    <Button size="sm" variant="outline" onClick={() => removeCategory(c.id)} className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
                   </div>
                 </td>
               </tr>
@@ -331,7 +331,7 @@ function SubcategoriesTab({
                   {confirmDelete === i ? (
                     <>
                       <span className="flex-1 text-sm">Delete <b>{s}</b>?</span>
-                      <Button size="sm" variant="outline" onClick={() => removeSub(i)} className="rounded-lg h-8 text-destructive hover:text-destructive">
+                      <Button size="sm" variant="outline" onClick={() => removeSub(i)} className="rounded-lg h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
                         Yes, delete
                       </Button>
                       <Button size="sm" variant="outline" onClick={() => setConfirmDelete(null)} className="rounded-lg h-8">
@@ -341,10 +341,10 @@ function SubcategoriesTab({
                   ) : (
                     <>
                       <span className="flex-1 truncate text-sm">{s}</span>
-                      <Button size="sm" variant="ghost" onClick={() => openEdit(i)} className="rounded-lg h-8">
+                      <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8">
                         <Pencil className="size-3.5 mr-1" /> Edit
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(i)} className="rounded-lg h-8 text-destructive hover:text-destructive">
+                      <Button size="sm" variant="outline" onClick={() => setConfirmDelete(i)} className="rounded-lg h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
                         <Trash2 className="size-3.5 mr-1" /> Delete
                       </Button>
                     </>
