@@ -12,7 +12,7 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { ProductCard } from "@/components/product/ProductCard";
 import { categories } from "@/data/categories";
 import { brands } from "@/data/brands";
-import { products } from "@/data/products";
+import { getPublicProducts } from "@/lib/products";
 import type { Country } from "@/data/types";
 import { Filter, X } from "lucide-react";
 
@@ -49,8 +49,9 @@ function ProductsPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
 
+  const publicProducts = useMemo(() => getPublicProducts(), []);
   const filtered = useMemo(() => {
-    let list = products.filter((p) => {
+    let list = publicProducts.filter((p) => {
       if (query && !`${p.name} ${p.sku}`.toLowerCase().includes(query.toLowerCase())) return false;
       if (selectedCategories.length && !selectedCategories.includes(p.categoryId)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brandId)) return false;
@@ -62,7 +63,7 @@ function ProductsPage() {
     if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [query, selectedCategories, selectedBrands, selectedCountries, priceRange, sort]);
+  }, [publicProducts, query, selectedCategories, selectedBrands, selectedCountries, priceRange, sort]);
 
   const toggle = <T,>(arr: T[], v: T, set: (v: T[]) => void) =>
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
