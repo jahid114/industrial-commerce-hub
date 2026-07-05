@@ -73,6 +73,7 @@ import type {
   Order,
   OrderStatus,
   PaymentStatus,
+  OrderEvent,
 } from "@/data/types";
 import { toast } from "sonner";
 
