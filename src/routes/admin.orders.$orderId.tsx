@@ -49,12 +49,10 @@ import { generateInvoice } from "@/lib/pdf";
 import {
   ALL_ORDER_STATUSES,
   PAYMENT_STATUSES,
-  FULFILLMENT_STATUSES,
   STAGE_INFO,
   currentStageIndex,
   nextActionFor,
   derivePaymentStatus,
-  deriveFulfillmentStatus,
   computeSubtotal,
   computeTax,
   computeShipping,
@@ -66,7 +64,6 @@ import type {
   Order,
   OrderStatus,
   PaymentStatus,
-  FulfillmentStatus,
 } from "@/data/types";
 import { toast } from "sonner";
 
