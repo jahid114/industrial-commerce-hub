@@ -57,10 +57,10 @@ function AdminSuppliersPage() {
       return;
     }
     if (editing) {
-      updateSupplier(editing.id, form);
+      updateSupplier(editing.id, { ...form, productsCount: editing.productsCount });
       toast.success("Supplier updated");
     } else {
-      addSupplier(form);
+      addSupplier({ ...form, productsCount: 0 });
       toast.success("Supplier added");
     }
     setDialogOpen(false);
