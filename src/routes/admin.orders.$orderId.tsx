@@ -129,11 +129,8 @@ function AdminOrderDetail() {
   const advanceStage = () => {
     if (!nextAction) return;
     const extra: Partial<Order> = { status: nextAction.next };
-    if (nextAction.next === "Processing") extra.fulfillmentStatus = "Picking";
-    if (nextAction.next === "Shipped") extra.fulfillmentStatus = "Shipped";
-    if (nextAction.next === "Delivered") {
-      extra.fulfillmentStatus = "Delivered";
-      if (paymentStatus !== "Paid") extra.paymentStatus = "Paid";
+    if (nextAction.next === "Delivered" && paymentStatus !== "Paid") {
+      extra.paymentStatus = "Paid";
     }
     patchOrder(extra, `Status advanced to ${nextAction.next}`);
     toast.success(`Order moved to ${nextAction.next}`);
@@ -147,11 +144,6 @@ function AdminOrderDetail() {
   const setPay = (s: PaymentStatus) => {
     patchOrder({ paymentStatus: s }, `Payment status set to ${s}`, "payment");
     toast.success(`Payment: ${s}`);
-  };
-
-  const setFulfil = (s: FulfillmentStatus) => {
-    patchOrder({ fulfillmentStatus: s }, `Fulfillment set to ${s}`, "fulfillment");
-    toast.success(`Fulfillment: ${s}`);
   };
 
   const saveShipping = () => {
