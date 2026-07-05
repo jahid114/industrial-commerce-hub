@@ -7,6 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { products as seedProducts } from "@/data/products";
 import { brands } from "@/data/brands";
 import { categories } from "@/data/categories";
@@ -29,6 +39,7 @@ function AdminProductsPage() {
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<Product | null>(null);
 
   const filtered = products.filter((p) => `${p.name} ${p.sku}`.toLowerCase().includes(search.toLowerCase()));
 
@@ -101,7 +112,7 @@ function AdminProductsPage() {
                   <td className="px-4 py-3 text-right">{inv.records[p.id]?.good ?? p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
                     <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Edit className="size-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => remove(p.id)} className="text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setProductToDelete(p)} className="text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></Button>
                   </td>
                 </tr>
               ))}
@@ -109,6 +120,26 @@ function AdminProductsPage() {
           </table>
         </div>
       </div>
+
+      <AlertDialog open={!!productToDelete} onOpenChange={(v) => { if (!v) setProductToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete product?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove <b>{productToDelete?.name}</b> ({productToDelete?.sku}). This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setProductToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { if (productToDelete) { remove(productToDelete.id); setProductToDelete(null); } }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
