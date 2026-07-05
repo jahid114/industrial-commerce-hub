@@ -219,117 +219,182 @@ function SubcategoriesTab({
   cats: Category[];
   setCats: React.Dispatch<React.SetStateAction<Category[]>>;
 }) {
-  const [filterId, setFilterId] = useState<string>("__all");
-
-  const updateSubs = (id: string, subs: string[]) => {
-    setCats((cs) => cs.map((c) => (c.id === id ? { ...c, subcategories: subs } : c)));
-  };
-
-  const visible = filterId === "__all" ? cats : cats.filter((c) => c.id === filterId);
-
-  return (
-    <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Manage sub-categories under each top-level category.</p>
-        <div className="flex items-center gap-2">
-          <label className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Filter</label>
-          <select
-            className="h-9 rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-            value={filterId}
-            onChange={(e) => setFilterId(e.target.value)}
-          >
-            <option value="__all">All categories</option>
-            {cats.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
-          </select>
-        </div>
-      </div>
-
-      <div className="rounded-lg border border-border bg-card divide-y divide-border">
-        {visible.map((c) => (
-          <SubcategoryRow key={c.id} category={c} onChange={(subs) => updateSubs(c.id, subs)} />
-        ))}
-        {visible.length === 0 && (
-          <div className="p-8 text-center text-sm text-muted-foreground">No categories to show.</div>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function SubcategoryRow({
-  category, onChange,
-}: {
-  category: Category;
-  onChange: (subs: string[]) => void;
-}) {
+  const [selectedId, setSelectedId] = useState<string>(cats[0]?.id ?? "");
+  const [search, setSearch] = useState("");
   const [newSub, setNewSub] = useState("");
   const [editIdx, setEditIdx] = useState<number | null>(null);
   const [editValue, setEditValue] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (!cats.some((c) => c.id === selectedId)) setSelectedId(cats[0]?.id ?? "");
+  }, [cats, selectedId]);
+
+  const selected = cats.find((c) => c.id === selectedId) ?? null;
+
+  const updateSubs = (subs: string[]) => {
+    if (!selected) return;
+    setCats((cs) => cs.map((c) => (c.id === selected.id ? { ...c, subcategories: subs } : c)));
+  };
 
   const addSub = () => {
+    if (!selected) return;
     const v = newSub.trim();
     if (!v) return;
-    if (category.subcategories.some((s) => s.toLowerCase() === v.toLowerCase())) {
+    if (selected.subcategories.some((s) => s.toLowerCase() === v.toLowerCase())) {
       toast.error("Sub-category already exists");
       return;
     }
-    onChange([...category.subcategories, v]);
+    updateSubs([...selected.subcategories, v]);
     setNewSub("");
-  };
-
-  const removeSub = (i: number) => {
-    onChange(category.subcategories.filter((_, idx) => idx !== i));
+    toast.success("Sub-category added");
   };
 
   const commitEdit = () => {
-    if (editIdx === null) return;
+    if (!selected || editIdx === null) return;
     const v = editValue.trim();
     if (!v) return;
-    onChange(category.subcategories.map((s, i) => (i === editIdx ? v : s)));
+    if (selected.subcategories.some((s, i) => i !== editIdx && s.toLowerCase() === v.toLowerCase())) {
+      toast.error("Another sub-category with this name exists");
+      return;
+    }
+    updateSubs(selected.subcategories.map((s, i) => (i === editIdx ? v : s)));
     setEditIdx(null);
     setEditValue("");
+    toast.success("Sub-category updated");
   };
 
+  const removeSub = (i: number) => {
+    if (!selected) return;
+    updateSubs(selected.subcategories.filter((_, idx) => idx !== i));
+    setConfirmDelete(null);
+    toast.success("Sub-category deleted");
+  };
+
+  const filteredSubs = selected
+    ? selected.subcategories
+        .map((s, i) => ({ s, i }))
+        .filter(({ s }) => s.toLowerCase().includes(search.toLowerCase()))
+    : [];
+
   return (
-    <div className="p-4">
-      <div className="flex flex-wrap items-baseline justify-between gap-2">
-        <div className="font-semibold">{category.name}</div>
-        <div className="text-xs text-muted-foreground">{category.subcategories.length} sub-categories</div>
+    <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
+      <div className="rounded-lg border border-border bg-card overflow-hidden">
+        <div className="border-b border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+          Categories
+        </div>
+        <div className="max-h-[520px] overflow-auto">
+          {cats.map((c) => {
+            const active = c.id === selectedId;
+            return (
+              <button
+                key={c.id}
+                onClick={() => { setSelectedId(c.id); setEditIdx(null); setConfirmDelete(null); }}
+                className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm border-b border-border last:border-0 transition-colors ${
+                  active ? "bg-primary/10 text-foreground" : "hover:bg-muted/60"
+                }`}
+              >
+                <span className="truncate font-medium">{c.name}</span>
+                <Badge variant={active ? "default" : "secondary"} className="shrink-0 rounded-md">
+                  {c.subcategories.length}
+                </Badge>
+              </button>
+            );
+          })}
+          {cats.length === 0 && (
+            <div className="p-6 text-center text-sm text-muted-foreground">No categories.</div>
+          )}
+        </div>
       </div>
 
-      <div className="mt-3 flex flex-wrap items-center gap-2">
-        {category.subcategories.map((s, i) => (
-          <div key={`${s}-${i}`}>
-            {editIdx === i ? (
-              <div className="flex items-center gap-1 rounded-md border border-input bg-background px-1.5 py-0.5">
-                <Input
-                  value={editValue}
-                  onChange={(e) => setEditValue(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") commitEdit(); if (e.key === "Escape") { setEditIdx(null); setEditValue(""); } }}
-                  className="h-7 w-32 border-0 shadow-none focus-visible:ring-0 px-1"
-                  autoFocus
-                />
-                <button className="text-primary" onClick={commitEdit} aria-label="Save"><Check className="size-3.5" /></button>
-                <button className="text-muted-foreground" onClick={() => { setEditIdx(null); setEditValue(""); }} aria-label="Cancel"><X className="size-3.5" /></button>
+      <div className="rounded-lg border border-border bg-card">
+        {selected ? (
+          <>
+            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+              <div>
+                <div className="font-semibold">{selected.name}</div>
+                <div className="text-xs text-muted-foreground">
+                  {selected.subcategories.length} sub-categories
+                </div>
               </div>
-            ) : (
-              <Badge variant="secondary" className="gap-1 pl-2 pr-1 py-1">
-                <button className="hover:underline" onClick={() => { setEditIdx(i); setEditValue(s); }}>{s}</button>
-                <button onClick={() => removeSub(i)} aria-label={`Remove ${s}`} className="ml-1 rounded-sm hover:bg-muted p-0.5"><X className="size-3" /></button>
-              </Badge>
-            )}
-          </div>
-        ))}
-        <div className="flex items-center gap-1">
-          <Input
-            value={newSub}
-            onChange={(e) => setNewSub(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
-            placeholder="Add sub-category"
-            className="h-8 w-44"
-          />
-          <Button size="sm" variant="outline" className="rounded-lg h-8" onClick={addSub}><Plus className="size-3.5" /></Button>
-        </div>
+              <div className="flex items-center gap-2">
+                <Input
+                  value={newSub}
+                  onChange={(e) => setNewSub(e.target.value)}
+                  onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
+                  placeholder="New sub-category name"
+                  className="h-9 w-56"
+                />
+                <Button size="sm" onClick={addSub} className="rounded-lg h-9">
+                  <Plus className="size-4 mr-1" /> Add
+                </Button>
+              </div>
+            </div>
+
+            <div className="border-b border-border px-4 py-2">
+              <Input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search sub-categories…"
+                className="border-0 shadow-none focus-visible:ring-0 px-0"
+              />
+            </div>
+
+            <ul className="divide-y divide-border">
+              {filteredSubs.map(({ s, i }) => (
+                <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
+                  {editIdx === i ? (
+                    <>
+                      <Input
+                        value={editValue}
+                        onChange={(e) => setEditValue(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") commitEdit();
+                          if (e.key === "Escape") { setEditIdx(null); setEditValue(""); }
+                        }}
+                        className="h-8 flex-1"
+                        autoFocus
+                      />
+                      <Button size="sm" onClick={commitEdit} className="rounded-lg h-8">
+                        <Check className="size-3.5 mr-1" /> Save
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => { setEditIdx(null); setEditValue(""); }} className="rounded-lg h-8">
+                        Cancel
+                      </Button>
+                    </>
+                  ) : confirmDelete === i ? (
+                    <>
+                      <span className="flex-1 text-sm">Delete <b>{s}</b>?</span>
+                      <Button size="sm" variant="outline" onClick={() => removeSub(i)} className="rounded-lg h-8 text-destructive hover:text-destructive">
+                        Yes, delete
+                      </Button>
+                      <Button size="sm" variant="outline" onClick={() => setConfirmDelete(null)} className="rounded-lg h-8">
+                        Cancel
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <span className="flex-1 truncate text-sm">{s}</span>
+                      <Button size="sm" variant="ghost" onClick={() => { setEditIdx(i); setEditValue(s); setConfirmDelete(null); }} className="rounded-lg h-8">
+                        <Pencil className="size-3.5 mr-1" /> Edit
+                      </Button>
+                      <Button size="sm" variant="ghost" onClick={() => { setConfirmDelete(i); setEditIdx(null); }} className="rounded-lg h-8 text-destructive hover:text-destructive">
+                        <Trash2 className="size-3.5 mr-1" /> Delete
+                      </Button>
+                    </>
+                  )}
+                </li>
+              ))}
+              {filteredSubs.length === 0 && (
+                <li className="p-8 text-center text-sm text-muted-foreground">
+                  {selected.subcategories.length === 0 ? "No sub-categories yet. Add one above." : "No sub-categories match your search."}
+                </li>
+              )}
+            </ul>
+          </>
+        ) : (
+          <div className="p-10 text-center text-sm text-muted-foreground">Select a category to manage its sub-categories.</div>
+        )}
       </div>
     </div>
   );
