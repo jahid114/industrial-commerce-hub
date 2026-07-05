@@ -98,7 +98,7 @@ function AdminOrdersPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.map((o) => {
+            {paged.map((o) => {
               const pay = derivePaymentStatus(o);
               return (
                 <tr key={o.id} className="hover:bg-secondary">
