@@ -11,7 +11,7 @@ import { generateInvoice, generateOrdersReport } from "@/lib/pdf";
 import { ALL_ORDER_STATUSES, derivePaymentStatus, deriveFulfillmentStatus } from "@/lib/order-workflow";
 import type { OrderStatus, PaymentStatus, FulfillmentStatus } from "@/data/types";
 
-export const Route = createFileRoute("/admin/orders")({
+export const Route = createFileRoute("/admin/orders/")({
   head: () => ({ meta: [{ title: "Manage Orders — Admin" }] }),
   component: AdminOrdersPage,
 });
