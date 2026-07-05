@@ -252,7 +252,7 @@ function AdminOrderDetail() {
         <div className="flex flex-wrap items-center gap-2">
           {nextAction && !isTerminal && order.status !== "On Hold" && (
             <Button
-              onClick={requiresShipping && !shippingReady ? () => openShippingModal(true) : advanceStage}
+              onClick={requiresShipping ? () => openShippingModal(true) : advanceStage}
               className="font-bold uppercase"
             >
               <PlayCircle className="size-4 mr-2" /> {nextAction.label}

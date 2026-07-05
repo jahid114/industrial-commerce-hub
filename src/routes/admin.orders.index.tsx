@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Download, FileText, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -38,13 +38,21 @@ function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [payFilter, setPayFilter] = useState<string>("all");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
-  const filtered = orders.filter((o) => {
+  const filtered = useMemo(() => orders.filter((o) => {
     if (statusFilter !== "all" && o.status !== statusFilter) return false;
     if (payFilter !== "all" && derivePaymentStatus(o) !== payFilter) return false;
     if (search && !`${o.id} ${o.customerName}`.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  });
+  }), [orders, statusFilter, payFilter, search]);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
+  useEffect(() => { setPage(1); }, [search, statusFilter, payFilter, pageSize]);
+  const currentPage = Math.min(page, totalPages);
+  const startIdx = (currentPage - 1) * pageSize;
+  const paged = filtered.slice(startIdx, startIdx + pageSize);
 
   return (
     <div className="space-y-4">
@@ -90,7 +98,7 @@ function AdminOrdersPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.map((o) => {
+            {paged.map((o) => {
               const pay = derivePaymentStatus(o);
               return (
                 <tr key={o.id} className="hover:bg-secondary">
@@ -131,6 +139,28 @@ function AdminOrdersPage() {
             })}
           </tbody>
         </table>
+      </div>
+
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-4 py-3 text-sm">
+        <div className="flex items-center gap-2 text-muted-foreground">
+          <span>Rows per page</span>
+          <Select value={String(pageSize)} onValueChange={(v) => setPageSize(Number(v))}>
+            <SelectTrigger className="h-8 w-20"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              {[10, 25, 50, 100].map((n) => <SelectItem key={n} value={String(n)}>{n}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          <span className="ml-2">
+            {filtered.length === 0 ? "0" : `${startIdx + 1}–${Math.min(startIdx + pageSize, filtered.length)}`} of {filtered.length}
+          </span>
+        </div>
+        <div className="flex items-center gap-1">
+          <Button size="sm" variant="outline" disabled={currentPage <= 1} onClick={() => setPage(1)}>« First</Button>
+          <Button size="sm" variant="outline" disabled={currentPage <= 1} onClick={() => setPage((p) => Math.max(1, p - 1))}>Prev</Button>
+          <span className="px-3 text-xs text-muted-foreground">Page {currentPage} / {totalPages}</span>
+          <Button size="sm" variant="outline" disabled={currentPage >= totalPages} onClick={() => setPage((p) => Math.min(totalPages, p + 1))}>Next</Button>
+          <Button size="sm" variant="outline" disabled={currentPage >= totalPages} onClick={() => setPage(totalPages)}>Last »</Button>
+        </div>
       </div>
     </div>
   );
