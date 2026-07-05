@@ -202,7 +202,7 @@ function CategoryDialog({
   existingIds: string[];
 }) {
   const [form, setForm] = useState<Category>(
-    editing ?? { id: "", name: "", slug: "", icon: "Package", subcategories: [], description: "" },
+    editing ?? { id: "", name: "", slug: "", icon: "", subcategories: [], description: "" },
   );
 
   const submit = () => {
