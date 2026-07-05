@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { Heart, ShoppingCart, FileText, Check, Truck, Package, ShieldCheck, GitCompare } from "lucide-react";
 import { Button } from "@/components/ui/button";
