@@ -236,7 +236,7 @@ function AdminInventoryPage() {
                   ))}
                   {rows.length === 0 && (
                     <tr>
-                      <td colSpan={11} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                      <td colSpan={9} className="px-4 py-10 text-center text-sm text-muted-foreground">
                         No products match your search.
                       </td>
                     </tr>
