@@ -594,7 +594,7 @@ function AdminOrderDetail() {
       </div>
 
       {/* Shipping Modal */}
-      <Dialog open={shippingModalOpen} onOpenChange={setShippingModalOpen}>
+      <Dialog open={shippingModalOpen} onOpenChange={(open) => { if (!open) closeShippingModal(); setShippingModalOpen(open); }}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
             <DialogTitle>{shippingModalForAdvance ? "Mark as Shipped" : "Edit Shipping Details"}</DialogTitle>
