@@ -58,7 +58,7 @@ function PortalProductDetail() {
             </div>
             {product.gallery.length > 1 && (
               <div className="mt-3 grid grid-cols-5 gap-2">
-                {product.gallery.map((img, i) => (
+                {product.gallery.map((img: string, i: number) => (
                   <button key={i} onClick={() => setActiveImage(i)} className={`aspect-square overflow-hidden rounded border-2 ${activeImage === i ? "border-primary" : "border-border"}`}>
                     <img src={img} alt="" className="size-full object-cover" />
                   </button>
@@ -141,7 +141,7 @@ function PortalProductDetail() {
           <TabsContent value="specs" className="mt-4">
             <table className="w-full text-sm border border-border rounded-md overflow-hidden">
               <tbody>
-                {product.specs.map((s, i) => (
+                {product.specs.map((s: { label: string; value: string }, i: number) => (
                   <tr key={s.label} className={i % 2 === 0 ? "bg-spec" : ""}>
                     <td className="w-1/3 border-r border-border px-5 py-3 font-semibold text-muted-foreground">{s.label}</td>
                     <td className="px-5 py-3">{s.value}</td>
