@@ -154,15 +154,9 @@ function AdminSuppliersPage() {
               <Label>Email</Label>
               <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-1.5">
-                <Label>Products count</Label>
-                <Input type="number" min={0} value={form.productsCount} onChange={(e) => setForm({ ...form, productsCount: Number(e.target.value) || 0 })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label>Rating</Label>
-                <Input type="number" step="0.1" min={0} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) || 0 })} />
-              </div>
+            <div className="grid gap-1.5">
+              <Label>Rating</Label>
+              <Input type="number" step="0.1" min={0} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) || 0 })} />
             </div>
           </div>
           <DialogFooter>
