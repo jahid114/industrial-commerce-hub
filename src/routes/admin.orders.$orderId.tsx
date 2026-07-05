@@ -210,9 +210,6 @@ function AdminOrderDetail() {
             <Badge className={paymentColor[paymentStatus]} variant="outline">
               <CreditCard className="size-3 mr-1" /> {paymentStatus}
             </Badge>
-            <Badge className={fulfillmentColor[fulfillmentStatus]} variant="outline">
-              <Package className="size-3 mr-1" /> {fulfillmentStatus}
-            </Badge>
             {order.priority && order.priority !== "Normal" && (
               <Badge variant="outline" className="border-amber-500 text-amber-700">
                 <AlertTriangle className="size-3 mr-1" /> {order.priority}
