@@ -21,7 +21,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof User; ex
 ];
 
 function AccountLayout() {
-  const { isAuthenticated, isAdmin, user, dispatch } = useStore();
+  const { isAuthenticated, isAdmin, isAgent, isPartner, user, dispatch } = useStore();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -30,10 +30,15 @@ function AccountLayout() {
       navigate({ to: "/auth/login" });
     } else if (isAdmin) {
       navigate({ to: "/admin" });
+    } else if (isAgent || isPartner) {
+      navigate({ to: "/portal" });
+    } else {
+      // Customer: always redirect to dedicated portal
+      navigate({ to: "/portal-customer" });
     }
-  }, [isAuthenticated, isAdmin, navigate]);
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
 
-  if (!isAuthenticated) return null;
+  return null;
 
   return (
     <div className="flex min-h-screen flex-col">
