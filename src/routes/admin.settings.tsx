@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Plus, Pencil, Trash2, X, Check } from "lucide-react";
+import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -97,6 +97,7 @@ function CategoriesTab({
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<Category | null>(null);
   const [open, setOpen] = useState(false);
+  const [catToDelete, setCatToDelete] = useState<Category | null>(null);
 
   const filtered = useMemo(
     () => cats.filter((c) => `${c.name} ${c.slug}`.toLowerCase().includes(search.toLowerCase())),
@@ -161,8 +162,8 @@ function CategoriesTab({
                 <td className="px-4 py-3 text-right">{c.subcategories.length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
-                  <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
-                    <Button size="sm" variant="outline" onClick={() => removeCategory(c.id)} className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
+                    <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
+                    <Button size="sm" variant="outline" onClick={() => setCatToDelete(c)} className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
                   </div>
                 </td>
               </tr>
@@ -173,6 +174,26 @@ function CategoriesTab({
           </tbody>
         </table>
       </div>
+
+      <AlertDialog open={!!catToDelete} onOpenChange={(v) => { if (!v) setCatToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete category?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove <b>{catToDelete?.name}</b> and all of its sub-categories. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setCatToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { if (catToDelete) { removeCategory(catToDelete.id); setCatToDelete(null); } }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
@@ -234,7 +255,7 @@ function SubcategoriesTab({
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editIdx, setEditIdx] = useState<number | null>(null);
   const [formValue, setFormValue] = useState("");
-  const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
+  const [subToDelete, setSubToDelete] = useState<{ index: number; name: string } | null>(null);
 
   useEffect(() => {
     if (!cats.some((c) => c.id === selectedId)) setSelectedId(cats[0]?.id ?? "");
@@ -271,7 +292,6 @@ function SubcategoriesTab({
   const removeSub = (i: number) => {
     if (!selected) return;
     updateSubs(selected.subcategories.filter((_, idx) => idx !== i));
-    setConfirmDelete(null);
     toast.success("Sub-category deleted");
   };
 
@@ -293,7 +313,7 @@ function SubcategoriesTab({
             return (
               <button
                 key={c.id}
-                onClick={() => { setSelectedId(c.id); setConfirmDelete(null); }}
+                onClick={() => { setSelectedId(c.id); setSubToDelete(null); }}
                 className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm border-b border-border last:border-0 transition-colors ${
                   active ? "bg-primary/10 text-foreground" : "hover:bg-muted/60"
                 }`}
@@ -338,27 +358,13 @@ function SubcategoriesTab({
             <ul className="divide-y divide-border">
               {filteredSubs.map(({ s, i }) => (
                 <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
-                  {confirmDelete === i ? (
-                    <>
-                      <span className="flex-1 text-sm">Delete <b>{s}</b>?</span>
-                      <Button size="sm" variant="outline" onClick={() => removeSub(i)} className="rounded-lg h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
-                        Yes, delete
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setConfirmDelete(null)} className="rounded-lg h-8">
-                        Cancel
-                      </Button>
-                    </>
-                  ) : (
-                    <>
-                      <span className="flex-1 truncate text-sm">{s}</span>
-                      <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8">
-                        <Pencil className="size-3.5 mr-1" /> Edit
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => setConfirmDelete(i)} className="rounded-lg h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
-                        <Trash2 className="size-3.5 mr-1" /> Delete
-                      </Button>
-                    </>
-                  )}
+                  <span className="flex-1 truncate text-sm">{s}</span>
+                  <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8">
+                    <Pencil className="size-3.5 mr-1" /> Edit
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => setSubToDelete({ index: i, name: s })} className="rounded-lg h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                    <Trash2 className="size-3.5 mr-1" /> Delete
+                  </Button>
                 </li>
               ))}
               {filteredSubs.length === 0 && (
@@ -399,6 +405,26 @@ function SubcategoriesTab({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog open={!!subToDelete} onOpenChange={(v) => { if (!v) setSubToDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete sub-category?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently remove <b>{subToDelete?.name}</b> from <b>{selected?.name}</b>. This action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setSubToDelete(null)}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              onClick={() => { if (subToDelete) { removeSub(subToDelete.index); setSubToDelete(null); } }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
