@@ -474,7 +474,6 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
   const defaultSupplier = product?.supplierId ?? suppliers[0]?.id ?? "";
   const [supplierId, setSupplierId] = useState(defaultSupplier);
   const [quantity, setQuantity] = useState<number>(1);
-  const [destination, setDestination] = useState<"good" | "incoming">("good");
   const [unitCost, setUnitCost] = useState<string>("");
   const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
