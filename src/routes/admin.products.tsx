@@ -111,8 +111,8 @@ function AdminProductsPage() {
                   <td className="px-4 py-3 text-right text-accent-foreground"><span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{formatBDT(p.agentPrice ?? Math.round(p.price * 0.92))}</span></td>
                   <td className="px-4 py-3 text-right">{inv.records[p.id]?.good ?? p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
-                    <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Edit className="size-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => setProductToDelete(p)} className="text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }} className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"><Edit className="size-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setProductToDelete(p)} className="text-destructive hover:bg-destructive/20 hover:text-destructive"><Trash2 className="size-4" /></Button>
                   </td>
                 </tr>
               ))}
@@ -310,7 +310,7 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
               <div key={i} className="grid grid-cols-[1fr_1fr_auto] gap-2">
                 <Input placeholder="Label (e.g. Voltage)" value={s.label} onChange={(e) => setForm((f) => ({ ...f, specs: f.specs.map((x, idx) => idx === i ? { ...x, label: e.target.value } : x) }))} />
                 <Input placeholder="Value (e.g. 18V)" value={s.value} onChange={(e) => setForm((f) => ({ ...f, specs: f.specs.map((x, idx) => idx === i ? { ...x, value: e.target.value } : x) }))} />
-                <Button type="button" size="icon" variant="ghost" onClick={() => setForm((f) => ({ ...f, specs: f.specs.filter((_, idx) => idx !== i) }))} className="text-destructive hover:bg-destructive/10 hover:text-destructive">
+                <Button type="button" size="icon" variant="ghost" onClick={() => setForm((f) => ({ ...f, specs: f.specs.filter((_, idx) => idx !== i) }))} className="text-destructive hover:bg-destructive/20 hover:text-destructive">
                   <Trash2 className="size-4" />
                 </Button>
               </div>

@@ -166,8 +166,8 @@ function CategoriesTab({
                 <td className="px-4 py-3 text-right">{c.subcategories.length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
-                    <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
-                    <Button size="sm" variant="outline" onClick={() => setCatToDelete(c)} className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
+                    <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"><Pencil className="size-3.5 mr-1" /> Edit</Button>
+                    <Button size="sm" variant="outline" onClick={() => setCatToDelete(c)} className="rounded-lg text-destructive hover:bg-destructive/20 hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
                   </div>
                 </td>
               </tr>
@@ -363,10 +363,10 @@ function SubcategoriesTab({
               {filteredSubs.map(({ s, i }) => (
                 <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
                   <span className="flex-1 truncate text-sm">{s}</span>
-                  <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8">
+                  <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
                     <Pencil className="size-3.5 mr-1" /> Edit
                   </Button>
-                  <Button size="sm" variant="outline" onClick={() => setSubToDelete({ index: i, name: s })} className="rounded-lg h-8 text-destructive hover:bg-destructive/10 hover:text-destructive">
+                  <Button size="sm" variant="outline" onClick={() => setSubToDelete({ index: i, name: s })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
                     <Trash2 className="size-3.5 mr-1" /> Delete
                   </Button>
                 </li>
