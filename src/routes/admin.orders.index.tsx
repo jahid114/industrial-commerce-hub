@@ -113,9 +113,6 @@ function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <Badge className={statusColor[o.status]}>{o.status}</Badge>
                   </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="outline" className={fulfillmentColor[ful]}>{ful}</Badge>
-                  </td>
                   <td className="px-4 py-3 text-right font-display font-bold text-primary">{formatBDT(o.total)}</td>
                   <td className="px-4 py-3 text-right">
                     <div className="flex justify-end gap-1">
