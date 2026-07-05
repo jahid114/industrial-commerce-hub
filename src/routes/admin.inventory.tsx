@@ -75,12 +75,11 @@ function AdminInventoryPage() {
         const available = Math.max(0, good - reserved);
         const returned = rec?.returned ?? 0;
         const damaged = rec?.damaged ?? 0;
-        const incoming = rec?.incoming ?? 0;
         const reorderLevel = rec?.reorderLevel ?? 0;
         let status: "In stock" | "Low" | "Out" = "In stock";
         if (available <= 0) status = "Out";
         else if (available <= reorderLevel) status = "Low";
-        return { p, good, reserved, available, returned, damaged, incoming, reorderLevel, status };
+        return { p, good, reserved, available, returned, damaged, reorderLevel, status };
       })
       .filter((r) =>
         q ? `${r.p.name} ${r.p.sku}`.toLowerCase().includes(q) : true,
@@ -200,8 +199,6 @@ function AdminInventoryPage() {
                     <th className="px-3 py-3 text-right">Available</th>
                     <th className="px-3 py-3 text-right">Returned</th>
                     <th className="px-3 py-3 text-right">Damaged</th>
-                    <th className="px-3 py-3 text-right">Incoming</th>
-                    <th className="px-3 py-3 text-right">Reorder</th>
                     <th className="px-3 py-3 text-left">Status</th>
                     <th className="px-3 py-3 text-right">Actions</th>
                   </tr>
@@ -218,8 +215,6 @@ function AdminInventoryPage() {
                       <td className="px-3 py-3 text-right font-semibold">{r.available}</td>
                       <td className="px-3 py-3 text-right">{r.returned}</td>
                       <td className="px-3 py-3 text-right">{r.damaged}</td>
-                      <td className="px-3 py-3 text-right">{r.incoming}</td>
-                      <td className="px-3 py-3 text-right">{r.reorderLevel}</td>
                       <td className="px-3 py-3">
                         <Badge
                           variant={r.status === "In stock" ? "outline" : "destructive"}
@@ -240,7 +235,7 @@ function AdminInventoryPage() {
                   ))}
                   {rows.length === 0 && (
                     <tr>
-                      <td colSpan={11} className="px-4 py-10 text-center text-sm text-muted-foreground">
+                      <td colSpan={9} className="px-4 py-10 text-center text-sm text-muted-foreground">
                         No products match your search.
                       </td>
                     </tr>
