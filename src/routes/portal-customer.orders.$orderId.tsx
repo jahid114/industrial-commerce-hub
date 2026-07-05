@@ -5,8 +5,8 @@ import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 
-export const Route = createFileRoute("/account/orders/$orderId")({
-  head: () => ({ meta: [{ title: "Order Detail — MegaHaus" }] }),
+export const Route = createFileRoute("/portal-customer/orders/$orderId")({
+  head: () => ({ meta: [{ title: "Order Detail — Portal" }] }),
   component: OrderDetail,
 });
 
@@ -17,13 +17,11 @@ function OrderDetail() {
   const { orders } = useStore();
   const order = orders.find((o) => o.id === orderId);
   if (!order) throw notFound();
-
   const currentStep = timeline.indexOf(order.status as typeof timeline[number]);
 
   return (
     <div className="space-y-4">
-      <Link to="/account/orders" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="size-4 mr-1" /> Back to orders</Link>
-
+      <Link to="/portal-customer/orders" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary"><ArrowLeft className="size-4 mr-1" /> Back to orders</Link>
       <div className="rounded-lg border border-border bg-card">
         <div className="flex flex-wrap items-start justify-between gap-3 border-b border-border p-5">
           <div>
@@ -32,7 +30,6 @@ function OrderDetail() {
           </div>
           <Button onClick={() => generateInvoice(order)}><Download className="size-4 mr-2" /> Download Invoice</Button>
         </div>
-
         {order.status !== "Cancelled" && (
           <div className="border-b border-border p-5">
             <h3 className="font-semibold mb-4">Order Tracking</h3>
@@ -51,7 +48,6 @@ function OrderDetail() {
             </div>
           </div>
         )}
-
         <div className="grid gap-6 p-5 md:grid-cols-2">
           <div>
             <h3 className="font-semibold mb-2">Shipping Address</h3>
@@ -62,8 +58,7 @@ function OrderDetail() {
             <p className="text-sm text-muted-foreground">{order.paymentMethod}<br />Status: <span className="text-success font-medium">{order.status === "Cancelled" ? "Refunded" : "Confirmed"}</span></p>
           </div>
         </div>
-
-        <div className="border-t border-border">
+        <div className="border-t border-border overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-spec text-xs uppercase tracking-wider text-muted-foreground">
               <tr><th className="px-4 py-3 text-left">Product</th><th className="px-4 py-3 text-right">Qty</th><th className="px-4 py-3 text-right">Unit Price</th><th className="px-4 py-3 text-right">Subtotal</th></tr>

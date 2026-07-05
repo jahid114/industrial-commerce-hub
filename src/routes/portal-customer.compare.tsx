@@ -1,7 +1,5 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect } from "react";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { X, ShoppingCart } from "lucide-react";
-import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
@@ -9,61 +7,44 @@ import { getBrand } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/compare")({
-  head: () => ({
-    meta: [
-      { title: "Compare Products — MegaHaus" },
-      { name: "description", content: "Compare up to 4 industrial products side-by-side on specs, pricing and delivery." },
-    ],
-  }),
+export const Route = createFileRoute("/portal-customer/compare")({
+  head: () => ({ meta: [{ title: "Compare — Portal" }] }),
   component: ComparePage,
 });
 
 function ComparePage() {
-  const { compare, dispatch, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
-  const navigate = useNavigate();
-  useEffect(() => {
-    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
-      navigate({ to: "/portal-customer/compare" });
-    }
-  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
+  const { compare, dispatch } = useStore();
   const products = compare.map((id) => getProduct(id)).filter(Boolean) as NonNullable<ReturnType<typeof getProduct>>[];
 
   if (products.length === 0) {
     return (
-      <PublicLayout>
-        <div className="container mx-auto px-4 py-24 text-center">
-          <h1 className="font-display text-3xl font-bold">No products to compare</h1>
-          <p className="mt-2 text-muted-foreground">Add products to compare using the compare icon on product cards.</p>
-          <Button asChild className="mt-6"><Link to="/products">Browse Products</Link></Button>
-        </div>
-      </PublicLayout>
+      <div className="rounded-lg border border-border bg-card p-12 text-center">
+        <h1 className="font-display text-2xl font-bold">No products to compare</h1>
+        <p className="mt-2 text-muted-foreground">Use the compare button on product cards to build a comparison.</p>
+        <Button asChild className="mt-6"><Link to="/portal-customer/catalog">Browse Catalog</Link></Button>
+      </div>
     );
   }
 
-  // Collect all spec labels
   const allLabels = Array.from(new Set(products.flatMap((p) => p.specs.map((s) => s.label))));
 
   return (
-    <PublicLayout>
-      <div className="border-b border-border bg-secondary">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="font-display text-3xl font-bold md:text-4xl">Compare Products</h1>
-          <p className="text-sm text-muted-foreground">{products.length} of 4 products selected</p>
-        </div>
+    <div className="space-y-4">
+      <div>
+        <h1 className="font-display text-3xl font-bold">Compare Products</h1>
+        <p className="text-sm text-muted-foreground">{products.length} of 4 products selected</p>
       </div>
-
-      <div className="container mx-auto px-4 py-8 overflow-x-auto">
-        <table className="w-full border border-border text-sm min-w-[700px]">
+      <div className="overflow-x-auto rounded-lg border border-border bg-card">
+        <table className="w-full text-sm min-w-[700px]">
           <thead>
             <tr>
               <th className="bg-spec border-b border-r border-border p-4 text-left w-44">Product</th>
               {products.map((p) => (
                 <th key={p.id} className="border-b border-r border-border p-4 text-left bg-card">
                   <button onClick={() => dispatch({ type: "TOGGLE_COMPARE", productId: p.id })} className="float-right text-muted-foreground hover:text-destructive"><X className="size-4" /></button>
-                  <img src={p.image} alt={p.name} className="size-32 object-cover bg-spec" />
+                  <img src={p.image} alt={p.name} className="size-32 object-cover bg-spec rounded" />
                   <div className="mt-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">{getBrand(p.brandId)?.name}</div>
-                  <Link to="/products/$productId" params={{ productId: p.id }} className="text-sm font-semibold hover:text-primary">{p.name}</Link>
+                  <Link to="/portal-customer/catalog/$productId" params={{ productId: p.id }} className="text-sm font-semibold hover:text-primary">{p.name}</Link>
                 </th>
               ))}
             </tr>
@@ -92,7 +73,7 @@ function ComparePage() {
           </tbody>
         </table>
       </div>
-    </PublicLayout>
+    </div>
   );
 }
 

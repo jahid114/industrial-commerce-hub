@@ -11,7 +11,8 @@ import { useNavigate } from "@tanstack/react-router";
 
 export function PublicHeader() {
   const { cartCount, isAuthenticated, isAdmin, isAgent, isPartner, user } = useStore();
-  const accountHref = isAdmin ? "/admin" : (isAgent || isPartner) ? "/portal" : "/account";
+  const accountHref = isAdmin ? "/admin" : (isAgent || isPartner) ? "/portal" : isAuthenticated ? "/portal-customer" : "/auth/login";
+  const cartHref = isAuthenticated && !isAdmin && !isAgent && !isPartner ? "/portal-customer/cart" : "/cart";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [query, setQuery] = useState("");
@@ -66,7 +67,7 @@ export function PublicHeader() {
               <User className="size-4" /> Login
             </Link>
           )}
-          <Link to="/cart" className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+          <Link to={cartHref} className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
             <ShoppingCart className="size-5" />
             {cartCount > 0 && (
               <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{cartCount}</Badge>

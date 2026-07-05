@@ -3,8 +3,8 @@ import { Badge } from "@/components/ui/badge";
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 
-export const Route = createFileRoute("/account/quotations")({
-  head: () => ({ meta: [{ title: "My Quotations — MegaHaus" }] }),
+export const Route = createFileRoute("/portal-customer/quotations")({
+  head: () => ({ meta: [{ title: "My Quotations — Portal" }] }),
   component: QuotationsPage,
 });
 

@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -9,7 +9,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { PublicLayout } from "@/components/layout/PublicLayout";
 import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
 import { formatBDT, newOrderId } from "@/lib/format";
@@ -28,24 +27,14 @@ const schema = z.object({
 });
 type FormData = z.infer<typeof schema>;
 
-export const Route = createFileRoute("/checkout")({
-  head: () => ({
-    meta: [
-      { title: "Checkout — MegaHaus" },
-      { name: "description", content: "Complete your order with secure payment via bank, bKash, Nagad or cash on delivery." },
-    ],
-  }),
+export const Route = createFileRoute("/portal-customer/checkout")({
+  head: () => ({ meta: [{ title: "Checkout — Portal" }] }),
   component: CheckoutPage,
 });
 
 function CheckoutPage() {
-  const { cart, cartSubtotal, dispatch, user, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
+  const { cart, cartSubtotal, dispatch, user } = useStore();
   const navigate = useNavigate();
-  useEffect(() => {
-    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
-      navigate({ to: "/portal-customer/checkout" });
-    }
-  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
   const items = cart.map((i) => ({ ...i, product: getProduct(i.productId)! })).filter((i) => i.product);
@@ -68,7 +57,7 @@ function CheckoutPage() {
   });
 
   if (items.length === 0 && !placedOrder) {
-    navigate({ to: "/cart" });
+    navigate({ to: "/portal-customer/cart" });
     return null;
   }
 
@@ -91,43 +80,38 @@ function CheckoutPage() {
 
   if (placedOrder) {
     return (
-      <PublicLayout>
-        <div className="container mx-auto max-w-2xl px-4 py-16 text-center">
-          <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-success/10">
-            <Check className="size-12 text-success" />
+      <div className="max-w-2xl mx-auto text-center py-8">
+        <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-success/10">
+          <Check className="size-12 text-success" />
+        </div>
+        <h1 className="mt-6 font-display text-4xl font-bold">Order Placed!</h1>
+        <p className="mt-2 text-muted-foreground">Thank you for your order. Confirmation #{placedOrder.id}</p>
+        <div className="mt-8 rounded-lg border border-border bg-card p-6 text-left">
+          <div className="flex justify-between border-b border-border pb-3 text-sm">
+            <span className="text-muted-foreground">Order ID</span><span className="font-bold">{placedOrder.id}</span>
           </div>
-          <h1 className="mt-6 font-display text-4xl font-bold">Order Placed!</h1>
-          <p className="mt-2 text-muted-foreground">Thank you for your order. Confirmation #{placedOrder.id}</p>
-          <div className="mt-8 rounded-lg border border-border bg-card p-6 text-left">
-            <div className="flex justify-between border-b border-border pb-3 text-sm">
-              <span className="text-muted-foreground">Order ID</span><span className="font-bold">{placedOrder.id}</span>
-            </div>
-            <div className="flex justify-between py-3 text-sm">
-              <span className="text-muted-foreground">Total Amount</span><span className="font-display text-lg font-bold text-primary">{formatBDT(placedOrder.total)}</span>
-            </div>
-            <div className="flex justify-between border-t border-border pt-3 text-sm">
-              <span className="text-muted-foreground">Payment</span><span>{placedOrder.paymentMethod}</span>
-            </div>
+          <div className="flex justify-between py-3 text-sm">
+            <span className="text-muted-foreground">Total Amount</span><span className="font-display text-lg font-bold text-primary">{formatBDT(placedOrder.total)}</span>
           </div>
-          <div className="mt-6 flex flex-wrap justify-center gap-3">
-            <Button onClick={() => generateInvoice(placedOrder)} className="font-bold"><Download className="size-4 mr-2" /> Download Invoice (PDF)</Button>
-            <Button variant="outline" asChild><Link to="/products">Continue Shopping</Link></Button>
-            <Button variant="outline" asChild><Link to="/account/orders">View My Orders</Link></Button>
+          <div className="flex justify-between border-t border-border pt-3 text-sm">
+            <span className="text-muted-foreground">Payment</span><span>{placedOrder.paymentMethod}</span>
           </div>
         </div>
-      </PublicLayout>
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
+          <Button onClick={() => generateInvoice(placedOrder)} className="font-bold"><Download className="size-4 mr-2" /> Download Invoice</Button>
+          <Button variant="outline" asChild><Link to="/portal-customer/catalog">Continue Shopping</Link></Button>
+          <Button variant="outline" asChild><Link to="/portal-customer/orders">View My Orders</Link></Button>
+        </div>
+      </div>
     );
   }
 
   return (
-    <PublicLayout>
-      <div className="border-b border-border bg-secondary">
-        <div className="container mx-auto px-4 py-8">
-          <h1 className="font-display text-3xl font-bold md:text-4xl">Checkout</h1>
-        </div>
+    <div className="space-y-4">
+      <div>
+        <h1 className="font-display text-3xl font-bold">Checkout</h1>
       </div>
-
-      <form onSubmit={form.handleSubmit(onSubmit)} className="container mx-auto grid gap-8 px-4 py-10 lg:grid-cols-[1fr_400px]">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6 lg:grid-cols-[1fr_400px]">
         <div className="space-y-6">
           <Section title="Contact & Shipping">
             <div className="grid grid-cols-2 gap-4">
@@ -139,7 +123,6 @@ function CheckoutPage() {
               <Field label="City" error={form.formState.errors.city?.message}><Input {...form.register("city")} /></Field>
             </div>
           </Section>
-
           <Section title="Payment Method">
             <RadioGroup value={form.watch("paymentMethod")} onValueChange={(v) => form.setValue("paymentMethod", v as FormData["paymentMethod"])} className="grid grid-cols-2 gap-3">
               {(["Bank Transfer", "bKash", "Nagad", "COD"] as const).map((m) => (
@@ -150,19 +133,17 @@ function CheckoutPage() {
               ))}
             </RadioGroup>
           </Section>
-
           <Section title="Order Notes">
             <Textarea {...form.register("notes")} rows={3} placeholder="Delivery instructions, PO number, etc." />
           </Section>
         </div>
-
         <aside>
-          <div className="sticky top-32 rounded-lg border border-border bg-card p-5">
+          <div className="sticky top-20 rounded-lg border border-border bg-card p-5">
             <h2 className="font-display text-lg font-bold border-b border-border pb-3">Order Summary</h2>
             <div className="my-4 max-h-64 space-y-2 overflow-y-auto">
               {items.map(({ product, quantity }) => (
                 <div key={product.id} className="flex gap-3 text-sm">
-                  <img src={product.image} className="size-12 object-cover" alt="" />
+                  <img src={product.image} className="size-12 object-cover rounded" alt="" />
                   <div className="flex-1">
                     <div className="line-clamp-1 font-medium">{product.name}</div>
                     <div className="text-xs text-muted-foreground">Qty {quantity} · {formatBDT(product.price)}</div>
@@ -182,7 +163,7 @@ function CheckoutPage() {
           </div>
         </aside>
       </form>
-    </PublicLayout>
+    </div>
   );
 }
 

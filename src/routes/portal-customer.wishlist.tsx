@@ -6,8 +6,8 @@ import { getProduct } from "@/data/products";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/account/wishlist")({
-  head: () => ({ meta: [{ title: "Wishlist — MegaHaus" }] }),
+export const Route = createFileRoute("/portal-customer/wishlist")({
+  head: () => ({ meta: [{ title: "Wishlist — Portal" }] }),
   component: WishlistPage,
 });
 
@@ -22,14 +22,14 @@ function WishlistPage() {
         <p className="text-sm text-muted-foreground">{products.length} saved products</p>
       </div>
       {products.length === 0 ? (
-        <div className="p-12 text-center text-muted-foreground">No saved items. <Link to="/products" className="text-primary hover:underline">Find products</Link></div>
+        <div className="p-12 text-center text-muted-foreground">No saved items. <Link to="/portal-customer/catalog" className="text-primary hover:underline">Find products</Link></div>
       ) : (
         <div className="divide-y divide-border">
           {products.map((p) => (
-            <div key={p.id} className="flex items-center gap-4 p-4">
-              <img src={p.image} alt={p.name} className="size-16 object-cover bg-spec" />
-              <div className="flex-1">
-                <Link to="/products/$productId" params={{ productId: p.id }} className="font-semibold hover:text-primary">{p.name}</Link>
+            <div key={p.id} className="flex flex-wrap items-center gap-4 p-4">
+              <img src={p.image} alt={p.name} className="size-16 object-cover bg-spec rounded" />
+              <div className="flex-1 min-w-[180px]">
+                <Link to="/portal-customer/catalog/$productId" params={{ productId: p.id }} className="font-semibold hover:text-primary">{p.name}</Link>
                 <div className="text-xs text-muted-foreground">{p.country} · SKU {p.sku}</div>
               </div>
               <div className="font-display font-bold text-primary">{formatBDT(p.price)}</div>

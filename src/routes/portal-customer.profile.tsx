@@ -7,8 +7,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 
-export const Route = createFileRoute("/account/profile")({
-  head: () => ({ meta: [{ title: "Profile — MegaHaus" }] }),
+export const Route = createFileRoute("/portal-customer/profile")({
+  head: () => ({ meta: [{ title: "Profile — Portal" }] }),
   component: ProfilePage,
 });
 
@@ -31,8 +31,8 @@ function ProfilePage() {
   return (
     <div className="rounded-lg border border-border bg-card">
       <div className="border-b border-border p-5">
-        <h2 className="font-display text-xl font-bold">My Profile</h2>
-        <p className="text-sm text-muted-foreground">Manage your account information.</p>
+        <h2 className="font-display text-xl font-bold">My Profile & Address</h2>
+        <p className="text-sm text-muted-foreground">Manage your account information and default shipping.</p>
       </div>
       <form onSubmit={save} className="space-y-4 p-5 max-w-xl">
         <div><Label className="mb-1.5 block text-sm">Full Name</Label><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>

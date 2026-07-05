@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useStore } from "@/lib/store";
+import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { Slider } from "@/components/ui/slider";
@@ -12,7 +14,7 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { ProductCard } from "@/components/product/ProductCard";
 import { categories } from "@/data/categories";
 import { brands } from "@/data/brands";
-import { products } from "@/data/products";
+import { getPublicProducts } from "@/lib/products";
 import type { Country } from "@/data/types";
 import { Filter, X } from "lucide-react";
 
@@ -40,6 +42,14 @@ const MAX_PRICE = 6_000_000;
 
 function ProductsPage() {
   const search = Route.useSearch();
+  const { isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
+      navigate({ to: "/portal-customer/catalog" });
+    }
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
+
   const [query, setQuery] = useState(search.q ?? "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(search.category ? [search.category] : []);
   const [selectedBrands, setSelectedBrands] = useState<string[]>(search.brand ? [search.brand] : []);
@@ -49,8 +59,9 @@ function ProductsPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [showFilters, setShowFilters] = useState(false);
 
+  const publicProducts = useMemo(() => getPublicProducts(), []);
   const filtered = useMemo(() => {
-    let list = products.filter((p) => {
+    let list = publicProducts.filter((p) => {
       if (query && !`${p.name} ${p.sku}`.toLowerCase().includes(query.toLowerCase())) return false;
       if (selectedCategories.length && !selectedCategories.includes(p.categoryId)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brandId)) return false;
@@ -62,7 +73,7 @@ function ProductsPage() {
     if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
     if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;
-  }, [query, selectedCategories, selectedBrands, selectedCountries, priceRange, sort]);
+  }, [publicProducts, query, selectedCategories, selectedBrands, selectedCountries, priceRange, sort]);
 
   const toggle = <T,>(arr: T[], v: T, set: (v: T[]) => void) =>
     set(arr.includes(v) ? arr.filter((x) => x !== v) : [...arr, v]);
@@ -80,7 +91,12 @@ function ProductsPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-xs text-muted-foreground"><Link to="/" className="hover:text-primary">Home</Link> / Products</div>
           <h1 className="mt-2 font-display text-3xl font-bold md:text-4xl">Product Catalog</h1>
-          <p className="mt-1 text-sm text-muted-foreground">{filtered.length} products available</p>
+          <p className="mt-1 text-sm text-muted-foreground">{filtered.length} featured products available publicly</p>
+          <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm">
+            <Lock className="size-4 text-accent" />
+            <span className="text-foreground/90"><strong>Only featured products are shown publicly.</strong> Sign in to unlock the full catalog and portal-only listings.</span>
+            <Button asChild size="sm" variant="outline" className="ml-auto"><Link to="/auth/login">Sign in for full catalog</Link></Button>
+          </div>
         </div>
       </div>
 

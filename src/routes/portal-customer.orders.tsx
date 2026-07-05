@@ -7,8 +7,8 @@ import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 import type { OrderStatus } from "@/data/types";
 
-export const Route = createFileRoute("/account/orders")({
-  head: () => ({ meta: [{ title: "My Orders — MegaHaus" }] }),
+export const Route = createFileRoute("/portal-customer/orders")({
+  head: () => ({ meta: [{ title: "My Orders — Portal" }] }),
   component: OrdersPage,
 });
 
@@ -33,7 +33,7 @@ function OrdersPage() {
         <p className="text-sm text-muted-foreground">{myOrders.length} orders</p>
       </div>
       {myOrders.length === 0 ? (
-        <div className="p-12 text-center text-muted-foreground">No orders yet. <Link to="/products" className="text-primary hover:underline">Start shopping</Link></div>
+        <div className="p-12 text-center text-muted-foreground">No orders yet. <Link to="/portal-customer/catalog" className="text-primary hover:underline">Start shopping</Link></div>
       ) : (
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
@@ -50,7 +50,7 @@ function OrdersPage() {
             <tbody className="divide-y divide-border">
               {myOrders.map((o) => (
                 <tr key={o.id} className="hover:bg-secondary">
-                  <td className="px-4 py-3"><Link to="/account/orders/$orderId" params={{ orderId: o.id }} className="font-semibold hover:text-primary">{o.id}</Link></td>
+                  <td className="px-4 py-3"><Link to="/portal-customer/orders/$orderId" params={{ orderId: o.id }} className="font-semibold hover:text-primary">{o.id}</Link></td>
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(o.date)}</td>
                   <td className="px-4 py-3">{o.items.length} items</td>
                   <td className="px-4 py-3"><Badge className={statusVariant[o.status]}>{o.status}</Badge></td>
