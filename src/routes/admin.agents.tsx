@@ -25,7 +25,7 @@ export const Route = createFileRoute("/admin/agents")({
 
 const STATUSES: Agent["status"][] = ["Active", "Pending", "Suspended"];
 
-type FormState = Omit<Agent, "id">;
+type FormState = Omit<Agent, "id" | "ordersSubmitted" | "commissionEarned">;
 
 const emptyForm: FormState = {
   name: "",
@@ -33,8 +33,6 @@ const emptyForm: FormState = {
   phone: "",
   email: "",
   joined: new Date().toISOString().slice(0, 10),
-  ordersSubmitted: 0,
-  commissionEarned: 0,
   status: "Pending",
 };
 
@@ -56,8 +54,8 @@ function AdminAgentsPage() {
   const openAdd = () => { setEditing(null); setForm(emptyForm); setDialogOpen(true); };
   const openEdit = (a: Agent) => {
     setEditing(a);
-    const { id: _id, ...rest } = a;
-    void _id;
+    const { id: _id, ordersSubmitted: _os, commissionEarned: _ce, ...rest } = a;
+    void _id; void _os; void _ce;
     setForm(rest);
     setDialogOpen(true);
   };
@@ -68,10 +66,10 @@ function AdminAgentsPage() {
       return;
     }
     if (editing) {
-      updateAgent(editing.id, form);
+      updateAgent(editing.id, { ...form, ordersSubmitted: editing.ordersSubmitted, commissionEarned: editing.commissionEarned });
       toast.success("Agent updated");
     } else {
-      addAgent(form);
+      addAgent({ ...form, ordersSubmitted: 0, commissionEarned: 0 });
       toast.success("Agent added");
     }
     setDialogOpen(false);
@@ -172,16 +170,6 @@ function AdminAgentsPage() {
                     {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                   </SelectContent>
                 </Select>
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div className="grid gap-1.5">
-                <Label>Orders submitted</Label>
-                <Input type="number" min={0} value={form.ordersSubmitted} onChange={(e) => setForm({ ...form, ordersSubmitted: Number(e.target.value) || 0 })} />
-              </div>
-              <div className="grid gap-1.5">
-                <Label>Commission earned (BDT)</Label>
-                <Input type="number" min={0} value={form.commissionEarned} onChange={(e) => setForm({ ...form, commissionEarned: Number(e.target.value) || 0 })} />
               </div>
             </div>
           </div>
