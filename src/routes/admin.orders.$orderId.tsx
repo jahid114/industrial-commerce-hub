@@ -89,13 +89,6 @@ const paymentColor: Record<PaymentStatus, string> = {
   Refunded: "bg-muted text-muted-foreground",
 };
 
-const fulfillmentColor: Record<FulfillmentStatus, string> = {
-  Unfulfilled: "bg-muted text-muted-foreground",
-  Picking: "bg-blue-100 text-blue-800",
-  Packed: "bg-accent/20 text-accent-foreground",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
-};
 
 function AdminOrderDetail() {
   const { orderId } = Route.useParams();
