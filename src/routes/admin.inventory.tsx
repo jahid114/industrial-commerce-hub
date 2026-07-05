@@ -148,10 +148,10 @@ function AdminInventoryPage() {
           <Dialog open={adjustOpen} onOpenChange={setAdjustOpen}>
             <DialogTrigger asChild>
               <Button className="rounded-lg font-bold uppercase">
-                <Plus className="size-4 mr-2" /> Adjust stock
+                <Plus className="size-4 mr-2" /> Add stock
               </Button>
             </DialogTrigger>
-            <AdjustStockDialog
+            <AddStockDialog
               productId={adjustProductId}
               onProductChange={setAdjustProductId}
               onClose={() => setAdjustOpen(false)}
