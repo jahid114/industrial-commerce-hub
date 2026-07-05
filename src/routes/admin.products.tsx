@@ -172,7 +172,7 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
   return (
     <DialogContent className="max-w-2xl">
       <DialogHeader><DialogTitle>{editing ? "Edit Product" : "Add Product"}</DialogTitle></DialogHeader>
-      <div className="grid gap-4 max-h-[60vh] overflow-y-auto pr-1">
+      <div className="grid gap-4 max-h-[60vh] overflow-y-auto px-1 py-1">
         <div className="grid grid-cols-2 gap-3">
           <Field label="Name"><Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value, slug: form.slug || slugify(e.target.value) })} /></Field>
           <Field label="SKU"><Input value={form.sku} onChange={(e) => setForm({ ...form, sku: e.target.value })} /></Field>
@@ -213,7 +213,9 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
             />
           </Field>
           <Field label="MOQ"><Input type="number" value={form.moq} onChange={(e) => setForm({ ...form, moq: Number(e.target.value) })} /></Field>
-          <Field label="Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
+          {!editing && (
+            <Field label="Initial Stock"><Input type="number" value={form.stock} onChange={(e) => setForm({ ...form, stock: Number(e.target.value) })} /></Field>
+          )}
           <Field label="Delivery"><Input value={form.deliveryDays} onChange={(e) => setForm({ ...form, deliveryDays: e.target.value })} /></Field>
           <Field label="Featured">
             <label className="flex h-10 items-center gap-2 rounded-md border border-input bg-background px-3 text-sm cursor-pointer">
