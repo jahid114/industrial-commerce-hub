@@ -216,8 +216,6 @@ function AdminInventoryPage() {
                       <td className="px-3 py-3 text-right font-semibold">{r.available}</td>
                       <td className="px-3 py-3 text-right">{r.returned}</td>
                       <td className="px-3 py-3 text-right">{r.damaged}</td>
-                      <td className="px-3 py-3 text-right">{r.incoming}</td>
-                      <td className="px-3 py-3 text-right">{r.reorderLevel}</td>
                       <td className="px-3 py-3">
                         <Badge
                           variant={r.status === "In stock" ? "outline" : "destructive"}
