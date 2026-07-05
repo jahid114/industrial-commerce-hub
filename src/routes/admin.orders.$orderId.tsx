@@ -166,12 +166,24 @@ function AdminOrderDetail() {
   };
 
   const saveShipping = () => {
+    if (!carrier.trim() || !tracking.trim()) {
+      toast.error("Carrier and Tracking # are required");
+      return;
+    }
     patchOrder(
-      { trackingNumber: tracking || undefined, carrier: carrier || undefined, estimatedDelivery: eta || undefined },
-      `Tracking updated (${carrier || "carrier"}: ${tracking || "—"})`,
+      { trackingNumber: tracking.trim(), carrier: carrier.trim(), estimatedDelivery: eta || undefined },
+      `Tracking updated (${carrier.trim()}: ${tracking.trim()})`,
       "fulfillment",
     );
+    setEditingShipping(false);
     toast.success("Shipping details saved");
+  };
+
+  const cancelShippingEdit = () => {
+    setCarrier(order.carrier ?? "");
+    setTracking(order.trackingNumber ?? "");
+    setEta(order.estimatedDelivery ?? "");
+    setEditingShipping(false);
   };
 
   const addNote = () => {
