@@ -534,10 +534,10 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
           <Field label="Unit cost (৳, optional)">
             <Input type="number" min={0} value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="0" />
           </Field>
-          <Field label="Reference / PO # (optional)">
-            <Input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="PO-2026-…" />
-          </Field>
         </div>
+        <Field label="Reference / PO # (optional)">
+          <Input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="PO-2026-…" />
+        </Field>
         <Field label="Notes">
           <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. shipment received at warehouse A" />
         </Field>
