@@ -118,12 +118,17 @@ function AdminOrderDetail() {
   const nextAction = nextActionFor(order.status);
   const isTerminal = order.status === "Cancelled" || order.status === "Delivered";
 
+  const [editingShipping, setEditingShipping] = useState(false);
   const [tracking, setTracking] = useState(order.trackingNumber ?? "");
   const [carrier, setCarrier] = useState(order.carrier ?? "");
   const [eta, setEta] = useState(order.estimatedDelivery ?? "");
   const [note, setNote] = useState("");
   const [internalNotes, setInternalNotes] = useState(order.internalNotes ?? "");
   const [priority, setPriority] = useState(order.priority ?? "Normal");
+
+  const shippingReady = !!(order.carrier && order.trackingNumber);
+  const requiresShipping = nextAction?.next === "Shipped";
+  const advanceDisabled = requiresShipping && !shippingReady;
 
   const actor = user?.name ?? user?.email ?? "Admin";
 
@@ -161,12 +166,24 @@ function AdminOrderDetail() {
   };
 
   const saveShipping = () => {
+    if (!carrier.trim() || !tracking.trim()) {
+      toast.error("Carrier and Tracking # are required");
+      return;
+    }
     patchOrder(
-      { trackingNumber: tracking || undefined, carrier: carrier || undefined, estimatedDelivery: eta || undefined },
-      `Tracking updated (${carrier || "carrier"}: ${tracking || "—"})`,
+      { trackingNumber: tracking.trim(), carrier: carrier.trim(), estimatedDelivery: eta || undefined },
+      `Tracking updated (${carrier.trim()}: ${tracking.trim()})`,
       "fulfillment",
     );
+    setEditingShipping(false);
     toast.success("Shipping details saved");
+  };
+
+  const cancelShippingEdit = () => {
+    setCarrier(order.carrier ?? "");
+    setTracking(order.trackingNumber ?? "");
+    setEta(order.estimatedDelivery ?? "");
+    setEditingShipping(false);
   };
 
   const addNote = () => {
@@ -227,7 +244,12 @@ function AdminOrderDetail() {
         </div>
         <div className="flex flex-wrap items-center gap-2">
           {nextAction && !isTerminal && order.status !== "On Hold" && (
-            <Button onClick={advanceStage} className="font-bold uppercase">
+            <Button
+              onClick={advanceDisabled ? () => toast.error("Add carrier & tracking # before shipping") : advanceStage}
+              disabled={advanceDisabled}
+              className="font-bold uppercase"
+              title={advanceDisabled ? "Carrier and Tracking # required" : undefined}
+            >
               <PlayCircle className="size-4 mr-2" /> {nextAction.label}
             </Button>
           )}
@@ -385,39 +407,83 @@ function AdminOrderDetail() {
 
           {/* Shipping / tracking */}
           <div className="rounded-lg border border-border bg-card p-5">
-            <div className="mb-3 flex items-center gap-2">
-              <Truck className="size-4 text-primary" />
-              <h3 className="font-semibold">Shipping & Tracking</h3>
-            </div>
-            <div className="grid gap-3 sm:grid-cols-3">
-              <div>
-                <Label htmlFor="carrier" className="text-xs">Carrier</Label>
-                <Input
-                  id="carrier"
-                  value={carrier}
-                  onChange={(e) => setCarrier(e.target.value)}
-                  placeholder="e.g. Sundarban Courier"
-                />
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-2">
+                <Truck className="size-4 text-primary" />
+                <h3 className="font-semibold">Shipping & Tracking</h3>
+                {requiresShipping && !shippingReady && !editingShipping && (
+                  <Badge variant="outline" className="border-amber-500 text-amber-700">
+                    Required to ship
+                  </Badge>
+                )}
               </div>
-              <div>
-                <Label htmlFor="tracking" className="text-xs">Tracking #</Label>
-                <Input
-                  id="tracking"
-                  value={tracking}
-                  onChange={(e) => setTracking(e.target.value)}
-                  placeholder="AWB / consignment"
-                />
-              </div>
-              <div>
-                <Label htmlFor="eta" className="text-xs">Est. Delivery</Label>
-                <Input id="eta" type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
-              </div>
+              {!editingShipping && (
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
+                  onClick={() => setEditingShipping(true)}
+                >
+                  <Save className="size-3.5 mr-1" /> Edit
+                </Button>
+              )}
             </div>
-            <div className="mt-3 flex justify-end">
-              <Button size="sm" onClick={saveShipping}>
-                <Save className="size-3.5 mr-1" /> Save tracking
-              </Button>
-            </div>
+
+            {editingShipping ? (
+              <>
+                <div className="grid gap-3 sm:grid-cols-3">
+                  <div>
+                    <Label htmlFor="carrier" className="text-xs">Carrier <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="carrier"
+                      value={carrier}
+                      onChange={(e) => setCarrier(e.target.value)}
+                      placeholder="e.g. Sundarban Courier"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="tracking" className="text-xs">Tracking # <span className="text-destructive">*</span></Label>
+                    <Input
+                      id="tracking"
+                      value={tracking}
+                      onChange={(e) => setTracking(e.target.value)}
+                      placeholder="AWB / consignment"
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="eta" className="text-xs">Est. Delivery</Label>
+                    <Input id="eta" type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
+                  </div>
+                </div>
+                <div className="mt-3 flex justify-end gap-2">
+                  <Button size="sm" variant="outline" onClick={cancelShippingEdit}>Cancel</Button>
+                  <Button size="sm" onClick={saveShipping}>
+                    <Save className="size-3.5 mr-1" /> Save
+                  </Button>
+                </div>
+              </>
+            ) : (
+              <dl className="grid gap-3 text-sm sm:grid-cols-3">
+                <div>
+                  <dt className="text-xs uppercase text-muted-foreground">Carrier</dt>
+                  <dd className={order.carrier ? "font-medium" : "text-muted-foreground italic"}>
+                    {order.carrier || "Not set"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase text-muted-foreground">Tracking #</dt>
+                  <dd className={order.trackingNumber ? "font-mono font-medium" : "text-muted-foreground italic"}>
+                    {order.trackingNumber || "Not set"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase text-muted-foreground">Est. Delivery</dt>
+                  <dd className={order.estimatedDelivery ? "font-medium" : "text-muted-foreground italic"}>
+                    {order.estimatedDelivery ? formatDate(order.estimatedDelivery) : "Not set"}
+                  </dd>
+                </div>
+              </dl>
+            )}
           </div>
 
           {/* Timeline */}
