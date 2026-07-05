@@ -68,27 +68,53 @@ export interface Agent {
   status: "Active" | "Pending" | "Suspended";
 }
 
-export type OrderStatus = "Pending" | "Confirmed" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
+export type OrderStatus = "Pending" | "Confirmed" | "Processing" | "Shipped" | "Delivered" | "Cancelled" | "On Hold";
+
+export type PaymentStatus = "Unpaid" | "Partial" | "Paid" | "Refunded";
+export type FulfillmentStatus = "Unfulfilled" | "Picking" | "Packed" | "Shipped" | "Delivered";
 
 export interface OrderItem {
   productId: string;
   name: string;
   quantity: number;
   unitPrice: number;
+  sku?: string;
+}
+
+export interface OrderEvent {
+  at: string; // ISO timestamp
+  by: string; // user/role
+  type: "status" | "payment" | "fulfillment" | "note" | "created";
+  message: string;
 }
 
 export interface Order {
   id: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
   date: string;
   items: OrderItem[];
+  subtotal?: number;
+  tax?: number;
+  shippingFee?: number;
+  discount?: number;
   total: number;
   status: OrderStatus;
+  paymentStatus?: PaymentStatus;
+  fulfillmentStatus?: FulfillmentStatus;
   paymentMethod: "COD" | "Bank Transfer" | "bKash" | "Nagad";
   shippingAddress: string;
+  billingAddress?: string;
   agentId?: string;
+  priority?: "Low" | "Normal" | "High" | "Urgent";
+  carrier?: string;
+  trackingNumber?: string;
+  estimatedDelivery?: string;
+  internalNotes?: string;
+  timeline?: OrderEvent[];
 }
+
 
 export type QuotationStatus = "Open" | "Quoted" | "Accepted" | "Closed";
 
