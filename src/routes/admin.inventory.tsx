@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Search, History, Boxes, AlertTriangle, RotateCcw, PackageX, ArrowDownUp } from "lucide-react";
+import { Plus, Search, History, Boxes, AlertTriangle, RotateCcw, PackageX, PackagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,13 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { products } from "@/data/products";
+import { suppliers, getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
 import {
   useInventory,
   RETURN_REASONS,
   DAMAGE_REASONS,
-  type StockBucket,
   type ReturnReason,
   type ReturnCondition,
   type DamageReason,
