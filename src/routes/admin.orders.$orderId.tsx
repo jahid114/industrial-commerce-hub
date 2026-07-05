@@ -49,12 +49,10 @@ import { generateInvoice } from "@/lib/pdf";
 import {
   ALL_ORDER_STATUSES,
   PAYMENT_STATUSES,
-  FULFILLMENT_STATUSES,
   STAGE_INFO,
   currentStageIndex,
   nextActionFor,
   derivePaymentStatus,
-  deriveFulfillmentStatus,
   computeSubtotal,
   computeTax,
   computeShipping,
@@ -66,7 +64,6 @@ import type {
   Order,
   OrderStatus,
   PaymentStatus,
-  FulfillmentStatus,
 } from "@/data/types";
 import { toast } from "sonner";
 
@@ -92,13 +89,6 @@ const paymentColor: Record<PaymentStatus, string> = {
   Refunded: "bg-muted text-muted-foreground",
 };
 
-const fulfillmentColor: Record<FulfillmentStatus, string> = {
-  Unfulfilled: "bg-muted text-muted-foreground",
-  Picking: "bg-blue-100 text-blue-800",
-  Packed: "bg-accent/20 text-accent-foreground",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
-};
 
 function AdminOrderDetail() {
   const { orderId } = Route.useParams();
@@ -107,7 +97,6 @@ function AdminOrderDetail() {
   if (!order) throw notFound();
 
   const paymentStatus = derivePaymentStatus(order);
-  const fulfillmentStatus = deriveFulfillmentStatus(order);
   const subtotal = computeSubtotal(order);
   const tax = computeTax(order);
   const shipping = computeShipping(order);
@@ -140,11 +129,8 @@ function AdminOrderDetail() {
   const advanceStage = () => {
     if (!nextAction) return;
     const extra: Partial<Order> = { status: nextAction.next };
-    if (nextAction.next === "Processing") extra.fulfillmentStatus = "Picking";
-    if (nextAction.next === "Shipped") extra.fulfillmentStatus = "Shipped";
-    if (nextAction.next === "Delivered") {
-      extra.fulfillmentStatus = "Delivered";
-      if (paymentStatus !== "Paid") extra.paymentStatus = "Paid";
+    if (nextAction.next === "Delivered" && paymentStatus !== "Paid") {
+      extra.paymentStatus = "Paid";
     }
     patchOrder(extra, `Status advanced to ${nextAction.next}`);
     toast.success(`Order moved to ${nextAction.next}`);
@@ -158,11 +144,6 @@ function AdminOrderDetail() {
   const setPay = (s: PaymentStatus) => {
     patchOrder({ paymentStatus: s }, `Payment status set to ${s}`, "payment");
     toast.success(`Payment: ${s}`);
-  };
-
-  const setFulfil = (s: FulfillmentStatus) => {
-    patchOrder({ fulfillmentStatus: s }, `Fulfillment set to ${s}`, "fulfillment");
-    toast.success(`Fulfillment: ${s}`);
   };
 
   const saveShipping = () => {
@@ -228,9 +209,6 @@ function AdminOrderDetail() {
             <Badge className={statusColor[order.status]}>{order.status}</Badge>
             <Badge className={paymentColor[paymentStatus]} variant="outline">
               <CreditCard className="size-3 mr-1" /> {paymentStatus}
-            </Badge>
-            <Badge className={fulfillmentColor[fulfillmentStatus]} variant="outline">
-              <Package className="size-3 mr-1" /> {fulfillmentStatus}
             </Badge>
             {order.priority && order.priority !== "Normal" && (
               <Badge variant="outline" className="border-amber-500 text-amber-700">
@@ -585,17 +563,6 @@ function AdminOrderDetail() {
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
                   {PAYMENT_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="text-xs">Fulfillment</Label>
-              <Select value={fulfillmentStatus} onValueChange={(v) => setFulfil(v as FulfillmentStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {FULFILLMENT_STATUSES.map((s) => (
                     <SelectItem key={s} value={s}>{s}</SelectItem>
                   ))}
                 </SelectContent>

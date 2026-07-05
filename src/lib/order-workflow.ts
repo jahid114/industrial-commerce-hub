@@ -1,4 +1,4 @@
-import type { Order, OrderStatus, PaymentStatus, FulfillmentStatus, OrderEvent } from "@/data/types";
+import type { Order, OrderStatus, PaymentStatus, OrderEvent } from "@/data/types";
 
 export const ORDER_STAGES: OrderStatus[] = [
   "Pending",
@@ -19,13 +19,6 @@ export const ALL_ORDER_STATUSES: OrderStatus[] = [
 ];
 
 export const PAYMENT_STATUSES: PaymentStatus[] = ["Unpaid", "Partial", "Paid", "Refunded"];
-export const FULFILLMENT_STATUSES: FulfillmentStatus[] = [
-  "Unfulfilled",
-  "Picking",
-  "Packed",
-  "Shipped",
-  "Delivered",
-];
 
 // Derive sensible defaults from legacy orders that only store `status`.
 export function derivePaymentStatus(order: Order): PaymentStatus {
@@ -36,20 +29,6 @@ export function derivePaymentStatus(order: Order): PaymentStatus {
   if (order.status === "Processing" || order.status === "Confirmed")
     return order.paymentMethod === "COD" ? "Unpaid" : "Paid";
   return "Unpaid";
-}
-
-export function deriveFulfillmentStatus(order: Order): FulfillmentStatus {
-  if (order.fulfillmentStatus) return order.fulfillmentStatus;
-  switch (order.status) {
-    case "Delivered":
-      return "Delivered";
-    case "Shipped":
-      return "Shipped";
-    case "Processing":
-      return "Picking";
-    default:
-      return "Unfulfilled";
-  }
 }
 
 export interface StageInfo {

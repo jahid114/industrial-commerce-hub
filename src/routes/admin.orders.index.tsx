@@ -8,8 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice, generateOrdersReport } from "@/lib/pdf";
-import { ALL_ORDER_STATUSES, derivePaymentStatus, deriveFulfillmentStatus } from "@/lib/order-workflow";
-import type { OrderStatus, PaymentStatus, FulfillmentStatus } from "@/data/types";
+import { ALL_ORDER_STATUSES, derivePaymentStatus } from "@/lib/order-workflow";
+import type { OrderStatus, PaymentStatus } from "@/data/types";
 
 export const Route = createFileRoute("/admin/orders/")({
   head: () => ({ meta: [{ title: "Manage Orders — Admin" }] }),
@@ -31,14 +31,6 @@ const paymentColor: Record<PaymentStatus, string> = {
   Partial: "bg-amber-100 text-amber-800",
   Paid: "bg-success/20 text-success",
   Refunded: "bg-muted text-muted-foreground",
-};
-
-const fulfillmentColor: Record<FulfillmentStatus, string> = {
-  Unfulfilled: "bg-muted text-muted-foreground",
-  Picking: "bg-blue-100 text-blue-800",
-  Packed: "bg-accent/20 text-accent-foreground",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
 };
 
 function AdminOrdersPage() {
@@ -93,7 +85,6 @@ function AdminOrdersPage() {
               <th className="px-4 py-3 text-left">Date</th>
               <th className="px-4 py-3 text-left">Payment</th>
               <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Fulfillment</th>
               <th className="px-4 py-3 text-right">Total</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -101,7 +92,6 @@ function AdminOrdersPage() {
           <tbody className="divide-y divide-border">
             {filtered.map((o) => {
               const pay = derivePaymentStatus(o);
-              const ful = deriveFulfillmentStatus(o);
               return (
                 <tr key={o.id} className="hover:bg-secondary">
                   <td className="px-4 py-3">
@@ -122,9 +112,6 @@ function AdminOrdersPage() {
                   </td>
                   <td className="px-4 py-3">
                     <Badge className={statusColor[o.status]}>{o.status}</Badge>
-                  </td>
-                  <td className="px-4 py-3">
-                    <Badge variant="outline" className={fulfillmentColor[ful]}>{ful}</Badge>
                   </td>
                   <td className="px-4 py-3 text-right font-display font-bold text-primary">{formatBDT(o.total)}</td>
                   <td className="px-4 py-3 text-right">
