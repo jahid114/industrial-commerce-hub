@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { Trash2, ShoppingCart, ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { PublicLayout } from "@/components/layout/PublicLayout";
@@ -17,7 +18,13 @@ export const Route = createFileRoute("/cart")({
 });
 
 function CartPage() {
-  const { cart, dispatch, cartSubtotal } = useStore();
+  const { cart, dispatch, cartSubtotal, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
+      navigate({ to: "/portal-customer/cart" });
+    }
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
   const items = cart.map((i) => ({ ...i, product: getProduct(i.productId)! })).filter((i) => i.product);
   const subtotal = cartSubtotal((id) => getProduct(id)?.price ?? 0);
   const vat = Math.round(subtotal * 0.05);

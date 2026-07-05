@@ -1,4 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect } from "react";
 import { X, ShoppingCart } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Button } from "@/components/ui/button";
@@ -19,7 +20,13 @@ export const Route = createFileRoute("/compare")({
 });
 
 function ComparePage() {
-  const { compare, dispatch } = useStore();
+  const { compare, dispatch, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
+      navigate({ to: "/portal-customer/compare" });
+    }
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
   const products = compare.map((id) => getProduct(id)).filter(Boolean) as NonNullable<ReturnType<typeof getProduct>>[];
 
   if (products.length === 0) {

@@ -40,7 +40,7 @@ function LoginPage() {
     const dest =
       role === "admin" ? "/admin" :
       role === "agent" || role === "partner" ? "/portal" :
-      "/account";
+      "/portal-customer";
     // Defer navigation so the store state update flushes before the
     // destination route's auth guard reads context.
     setTimeout(() => navigate({ to: dest }), 0);

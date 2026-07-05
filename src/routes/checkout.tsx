@@ -1,5 +1,5 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -39,8 +39,13 @@ export const Route = createFileRoute("/checkout")({
 });
 
 function CheckoutPage() {
-  const { cart, cartSubtotal, dispatch, user } = useStore();
+  const { cart, cartSubtotal, dispatch, user, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
   const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
+      navigate({ to: "/portal-customer/checkout" });
+    }
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
   const items = cart.map((i) => ({ ...i, product: getProduct(i.productId)! })).filter((i) => i.product);
