@@ -13,6 +13,7 @@ import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as ProductsRouteImport } from './routes/products'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
+import { Route as PortalCustomerRouteImport } from './routes/portal-customer'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as IndustriesRouteImport } from './routes/industries'
@@ -74,6 +75,11 @@ const ProductsRoute = ProductsRouteImport.update({
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalCustomerRoute = PortalCustomerRouteImport.update({
+  id: '/portal-customer',
+  path: '/portal-customer',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalRoute = PortalRouteImport.update({
@@ -303,6 +309,7 @@ export interface FileRoutesByFullPath {
   '/industries': typeof IndustriesRoute
   '/partners': typeof PartnersRoute
   '/portal': typeof PortalRouteWithChildren
+  '/portal-customer': typeof PortalCustomerRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
@@ -348,6 +355,7 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/industries': typeof IndustriesRoute
   '/partners': typeof PartnersRoute
+  '/portal-customer': typeof PortalCustomerRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
@@ -397,6 +405,7 @@ export interface FileRoutesById {
   '/industries': typeof IndustriesRoute
   '/partners': typeof PartnersRoute
   '/portal': typeof PortalRouteWithChildren
+  '/portal-customer': typeof PortalCustomerRoute
   '/portfolio': typeof PortfolioRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
@@ -447,6 +456,7 @@ export interface FileRouteTypes {
     | '/industries'
     | '/partners'
     | '/portal'
+    | '/portal-customer'
     | '/portfolio'
     | '/products'
     | '/quotation'
@@ -492,6 +502,7 @@ export interface FileRouteTypes {
     | '/contact'
     | '/industries'
     | '/partners'
+    | '/portal-customer'
     | '/portfolio'
     | '/products'
     | '/quotation'
@@ -540,6 +551,7 @@ export interface FileRouteTypes {
     | '/industries'
     | '/partners'
     | '/portal'
+    | '/portal-customer'
     | '/portfolio'
     | '/products'
     | '/quotation'
@@ -589,6 +601,7 @@ export interface RootRouteChildren {
   IndustriesRoute: typeof IndustriesRoute
   PartnersRoute: typeof PartnersRoute
   PortalRoute: typeof PortalRouteWithChildren
+  PortalCustomerRoute: typeof PortalCustomerRoute
   PortfolioRoute: typeof PortfolioRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   QuotationRoute: typeof QuotationRoute
@@ -625,6 +638,13 @@ declare module '@tanstack/react-router' {
       path: '/portfolio'
       fullPath: '/portfolio'
       preLoaderRoute: typeof PortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal-customer': {
+      id: '/portal-customer'
+      path: '/portal-customer'
+      fullPath: '/portal-customer'
+      preLoaderRoute: typeof PortalCustomerRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal': {
@@ -1049,6 +1069,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndustriesRoute: IndustriesRoute,
   PartnersRoute: PartnersRoute,
   PortalRoute: PortalRouteWithChildren,
+  PortalCustomerRoute: PortalCustomerRoute,
   PortfolioRoute: PortfolioRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   QuotationRoute: QuotationRoute,
