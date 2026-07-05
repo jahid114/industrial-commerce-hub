@@ -75,12 +75,11 @@ function AdminInventoryPage() {
         const available = Math.max(0, good - reserved);
         const returned = rec?.returned ?? 0;
         const damaged = rec?.damaged ?? 0;
-        const incoming = rec?.incoming ?? 0;
         const reorderLevel = rec?.reorderLevel ?? 0;
         let status: "In stock" | "Low" | "Out" = "In stock";
         if (available <= 0) status = "Out";
         else if (available <= reorderLevel) status = "Low";
-        return { p, good, reserved, available, returned, damaged, incoming, reorderLevel, status };
+        return { p, good, reserved, available, returned, damaged, reorderLevel, status };
       })
       .filter((r) =>
         q ? `${r.p.name} ${r.p.sku}`.toLowerCase().includes(q) : true,
