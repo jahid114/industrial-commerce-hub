@@ -230,7 +230,7 @@ function AdminInventoryPage() {
                       </td>
                       <td className="px-3 py-3 text-right space-x-1 whitespace-nowrap">
                         <Button size="sm" variant="outline" className="rounded-lg" onClick={() => openAdjustFor(r.p.id)}>
-                          <ArrowDownUp className="size-3.5 mr-1" /> Adjust
+                          <PackagePlus className="size-3.5 mr-1" /> Add stock
                         </Button>
                         <Button size="sm" variant="ghost" className="rounded-lg" onClick={() => showHistoryFor(r.p.id)}>
                           <History className="size-3.5 mr-1" /> History
