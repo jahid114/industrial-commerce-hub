@@ -1,5 +1,7 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useState } from "react";
+import { useStore } from "@/lib/store";
+import { Lock } from "lucide-react";
 import { motion } from "framer-motion";
 import { z } from "zod";
 import { Slider } from "@/components/ui/slider";
