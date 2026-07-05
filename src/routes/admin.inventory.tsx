@@ -493,15 +493,11 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
     if (note.trim()) parts.push(note.trim());
     inv.adjust({
       productId,
-      bucket: destination,
+      bucket: "good",
       delta: qty,
       note: parts.join(" • "),
     });
-    toast.success(
-      destination === "good"
-        ? `Added ${qty} unit(s) to Good stock`
-        : `Added ${qty} unit(s) as Incoming`,
-    );
+    toast.success(`Added ${qty} unit(s) to Good stock`);
     setQuantity(1); setUnitCost(""); setReference(""); setNote("");
     onClose();
   };
