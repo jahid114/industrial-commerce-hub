@@ -392,12 +392,6 @@ function SubcategoriesTab({
     </div>
   );
 }
-          <div className="p-10 text-center text-sm text-muted-foreground">Select a category to manage its sub-categories.</div>
-        )}
-      </div>
-    </div>
-  );
-}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
