@@ -202,7 +202,7 @@ function CategoryDialog({
   existingIds: string[];
 }) {
   const [form, setForm] = useState<Category>(
-    editing ?? { id: "", name: "", slug: "", icon: "Package", subcategories: [], description: "" },
+    editing ?? { id: "", name: "", slug: "", icon: "", subcategories: [], description: "" },
   );
 
   const submit = () => {
@@ -223,9 +223,6 @@ function CategoryDialog({
         </Field>
         <Field label="Slug">
           <Input value={form.slug} placeholder="auto-generated from name" onChange={(e) => setForm({ ...form, slug: e.target.value })} />
-        </Field>
-        <Field label="Icon (lucide name)">
-          <Input value={form.icon} onChange={(e) => setForm({ ...form, icon: e.target.value })} />
         </Field>
         <Field label="Description">
           <Input value={form.description ?? ""} onChange={(e) => setForm({ ...form, description: e.target.value })} />
