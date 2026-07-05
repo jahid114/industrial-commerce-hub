@@ -474,7 +474,6 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
   const defaultSupplier = product?.supplierId ?? suppliers[0]?.id ?? "";
   const [supplierId, setSupplierId] = useState(defaultSupplier);
   const [quantity, setQuantity] = useState<number>(1);
-  const [destination, setDestination] = useState<"good" | "incoming">("good");
   const [unitCost, setUnitCost] = useState<string>("");
   const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
@@ -494,15 +493,11 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
     if (note.trim()) parts.push(note.trim());
     inv.adjust({
       productId,
-      bucket: destination,
+      bucket: "good",
       delta: qty,
       note: parts.join(" • "),
     });
-    toast.success(
-      destination === "good"
-        ? `Added ${qty} unit(s) to Good stock`
-        : `Added ${qty} unit(s) as Incoming`,
-    );
+    toast.success(`Added ${qty} unit(s) to Good stock`);
     setQuantity(1); setUnitCost(""); setReference(""); setNote("");
     onClose();
   };
@@ -524,14 +519,6 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
             {products.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>)}
           </select>
         </Field>
-        {rec && (
-          <div className="grid grid-cols-4 gap-2 text-xs">
-            <Bucket label="Good" value={rec.good} />
-            <Bucket label="Returned" value={rec.returned} />
-            <Bucket label="Damaged" value={rec.damaged} />
-            <Bucket label="Incoming" value={rec.incoming} />
-          </div>
-        )}
         <Field label="Supplier">
           <select className={selectCls()} value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
             <option value="">Select supplier…</option>
@@ -543,12 +530,6 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
         <div className="grid grid-cols-2 gap-3">
           <Field label="Quantity">
             <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
-          </Field>
-          <Field label="Destination">
-            <select className={selectCls()} value={destination} onChange={(e) => setDestination(e.target.value as "good" | "incoming")}>
-              <option value="good">Available now (Good stock)</option>
-              <option value="incoming">Incoming (in transit)</option>
-            </select>
           </Field>
           <Field label="Unit cost (৳, optional)">
             <Input type="number" min={0} value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="0" />
