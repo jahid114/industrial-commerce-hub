@@ -221,9 +221,9 @@ function SubcategoriesTab({
 }) {
   const [selectedId, setSelectedId] = useState<string>(cats[0]?.id ?? "");
   const [search, setSearch] = useState("");
-  const [newSub, setNewSub] = useState("");
+  const [dialogOpen, setDialogOpen] = useState(false);
   const [editIdx, setEditIdx] = useState<number | null>(null);
-  const [editValue, setEditValue] = useState("");
+  const [formValue, setFormValue] = useState("");
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
   useEffect(() => {
@@ -237,31 +237,25 @@ function SubcategoriesTab({
     setCats((cs) => cs.map((c) => (c.id === selected.id ? { ...c, subcategories: subs } : c)));
   };
 
-  const addSub = () => {
-    if (!selected) return;
-    const v = newSub.trim();
-    if (!v) return;
-    if (selected.subcategories.some((s) => s.toLowerCase() === v.toLowerCase())) {
-      toast.error("Sub-category already exists");
-      return;
-    }
-    updateSubs([...selected.subcategories, v]);
-    setNewSub("");
-    toast.success("Sub-category added");
-  };
+  const openAdd = () => { setEditIdx(null); setFormValue(""); setDialogOpen(true); };
+  const openEdit = (i: number) => { setEditIdx(i); setFormValue(selected?.subcategories[i] ?? ""); setDialogOpen(true); };
 
-  const commitEdit = () => {
-    if (!selected || editIdx === null) return;
-    const v = editValue.trim();
-    if (!v) return;
-    if (selected.subcategories.some((s, i) => i !== editIdx && s.toLowerCase() === v.toLowerCase())) {
-      toast.error("Another sub-category with this name exists");
-      return;
+  const submitForm = () => {
+    if (!selected) return;
+    const v = formValue.trim();
+    if (!v) { toast.error("Name is required"); return; }
+    const dup = selected.subcategories.some((s, i) => i !== editIdx && s.toLowerCase() === v.toLowerCase());
+    if (dup) { toast.error("Sub-category already exists"); return; }
+    if (editIdx === null) {
+      updateSubs([...selected.subcategories, v]);
+      toast.success("Sub-category added");
+    } else {
+      updateSubs(selected.subcategories.map((s, i) => (i === editIdx ? v : s)));
+      toast.success("Sub-category updated");
     }
-    updateSubs(selected.subcategories.map((s, i) => (i === editIdx ? v : s)));
+    setDialogOpen(false);
     setEditIdx(null);
-    setEditValue("");
-    toast.success("Sub-category updated");
+    setFormValue("");
   };
 
   const removeSub = (i: number) => {
@@ -289,7 +283,7 @@ function SubcategoriesTab({
             return (
               <button
                 key={c.id}
-                onClick={() => { setSelectedId(c.id); setEditIdx(null); setConfirmDelete(null); }}
+                onClick={() => { setSelectedId(c.id); setConfirmDelete(null); }}
                 className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm border-b border-border last:border-0 transition-colors ${
                   active ? "bg-primary/10 text-foreground" : "hover:bg-muted/60"
                 }`}
@@ -317,18 +311,9 @@ function SubcategoriesTab({
                   {selected.subcategories.length} sub-categories
                 </div>
               </div>
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newSub}
-                  onChange={(e) => setNewSub(e.target.value)}
-                  onKeyDown={(e) => { if (e.key === "Enter") addSub(); }}
-                  placeholder="New sub-category name"
-                  className="h-9 w-56"
-                />
-                <Button size="sm" onClick={addSub} className="rounded-lg h-9">
-                  <Plus className="size-4 mr-1" /> Add
-                </Button>
-              </div>
+              <Button size="sm" onClick={openAdd} className="rounded-lg h-9 font-bold uppercase">
+                <Plus className="size-4 mr-1" /> Add Sub-category
+              </Button>
             </div>
 
             <div className="border-b border-border px-4 py-2">
@@ -343,26 +328,7 @@ function SubcategoriesTab({
             <ul className="divide-y divide-border">
               {filteredSubs.map(({ s, i }) => (
                 <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
-                  {editIdx === i ? (
-                    <>
-                      <Input
-                        value={editValue}
-                        onChange={(e) => setEditValue(e.target.value)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") commitEdit();
-                          if (e.key === "Escape") { setEditIdx(null); setEditValue(""); }
-                        }}
-                        className="h-8 flex-1"
-                        autoFocus
-                      />
-                      <Button size="sm" onClick={commitEdit} className="rounded-lg h-8">
-                        <Check className="size-3.5 mr-1" /> Save
-                      </Button>
-                      <Button size="sm" variant="outline" onClick={() => { setEditIdx(null); setEditValue(""); }} className="rounded-lg h-8">
-                        Cancel
-                      </Button>
-                    </>
-                  ) : confirmDelete === i ? (
+                  {confirmDelete === i ? (
                     <>
                       <span className="flex-1 text-sm">Delete <b>{s}</b>?</span>
                       <Button size="sm" variant="outline" onClick={() => removeSub(i)} className="rounded-lg h-8 text-destructive hover:text-destructive">
@@ -375,10 +341,10 @@ function SubcategoriesTab({
                   ) : (
                     <>
                       <span className="flex-1 truncate text-sm">{s}</span>
-                      <Button size="sm" variant="ghost" onClick={() => { setEditIdx(i); setEditValue(s); setConfirmDelete(null); }} className="rounded-lg h-8">
+                      <Button size="sm" variant="ghost" onClick={() => openEdit(i)} className="rounded-lg h-8">
                         <Pencil className="size-3.5 mr-1" /> Edit
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => { setConfirmDelete(i); setEditIdx(null); }} className="rounded-lg h-8 text-destructive hover:text-destructive">
+                      <Button size="sm" variant="ghost" onClick={() => setConfirmDelete(i)} className="rounded-lg h-8 text-destructive hover:text-destructive">
                         <Trash2 className="size-3.5 mr-1" /> Delete
                       </Button>
                     </>
@@ -387,7 +353,7 @@ function SubcategoriesTab({
               ))}
               {filteredSubs.length === 0 && (
                 <li className="p-8 text-center text-sm text-muted-foreground">
-                  {selected.subcategories.length === 0 ? "No sub-categories yet. Add one above." : "No sub-categories match your search."}
+                  {selected.subcategories.length === 0 ? "No sub-categories yet. Click Add Sub-category to create one." : "No sub-categories match your search."}
                 </li>
               )}
             </ul>
@@ -396,6 +362,33 @@ function SubcategoriesTab({
           <div className="p-10 text-center text-sm text-muted-foreground">Select a category to manage its sub-categories.</div>
         )}
       </div>
+
+      <Dialog open={dialogOpen} onOpenChange={(v) => { setDialogOpen(v); if (!v) { setEditIdx(null); setFormValue(""); } }}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>{editIdx === null ? "Add Sub-category" : "Edit Sub-category"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3 px-1 py-1">
+            <div className="text-xs text-muted-foreground">
+              Under <span className="font-medium text-foreground">{selected?.name}</span>
+            </div>
+            <Field label="Name">
+              <Input
+                value={formValue}
+                onChange={(e) => setFormValue(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") submitForm(); }}
+                placeholder="e.g. Drills"
+                autoFocus
+              />
+            </Field>
+          </div>
+          <DialogFooter>
+            <Button onClick={submitForm} className="rounded-lg font-bold uppercase">
+              {editIdx === null ? "Create Sub-category" : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
