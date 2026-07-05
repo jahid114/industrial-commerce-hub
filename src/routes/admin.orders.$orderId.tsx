@@ -19,6 +19,7 @@ import {
   PlayCircle,
   Save,
   Clock,
+  Pencil,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,6 +44,14 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
@@ -64,6 +73,7 @@ import type {
   Order,
   OrderStatus,
   PaymentStatus,
+  OrderEvent,
 } from "@/data/types";
 import { toast } from "sonner";
 
@@ -107,7 +117,8 @@ function AdminOrderDetail() {
   const nextAction = nextActionFor(order.status);
   const isTerminal = order.status === "Cancelled" || order.status === "Delivered";
 
-  const [editingShipping, setEditingShipping] = useState(false);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
+  const [shippingModalForAdvance, setShippingModalForAdvance] = useState(false);
   const [tracking, setTracking] = useState(order.trackingNumber ?? "");
   const [carrier, setCarrier] = useState(order.carrier ?? "");
   const [eta, setEta] = useState(order.estimatedDelivery ?? "");
@@ -117,7 +128,6 @@ function AdminOrderDetail() {
 
   const shippingReady = !!(order.carrier && order.trackingNumber);
   const requiresShipping = nextAction?.next === "Shipped";
-  const advanceDisabled = requiresShipping && !shippingReady;
 
   const actor = user?.name ?? user?.email ?? "Admin";
 
@@ -146,25 +156,44 @@ function AdminOrderDetail() {
     toast.success(`Payment: ${s}`);
   };
 
+  const openShippingModal = (forAdvance = false) => {
+    setCarrier(order.carrier ?? "");
+    setTracking(order.trackingNumber ?? "");
+    setEta(order.estimatedDelivery ?? "");
+    setShippingModalForAdvance(forAdvance);
+    setShippingModalOpen(true);
+  };
+
+  const closeShippingModal = () => {
+    setShippingModalOpen(false);
+    setShippingModalForAdvance(false);
+  };
+
   const saveShipping = () => {
     if (!carrier.trim() || !tracking.trim()) {
       toast.error("Carrier and Tracking # are required");
       return;
     }
-    patchOrder(
-      { trackingNumber: tracking.trim(), carrier: carrier.trim(), estimatedDelivery: eta || undefined },
-      `Tracking updated (${carrier.trim()}: ${tracking.trim()})`,
-      "fulfillment",
-    );
-    setEditingShipping(false);
-    toast.success("Shipping details saved");
-  };
+    const shippingEvent: OrderEvent = { at: nowIso(), by: actor, type: "fulfillment", message: `Tracking updated (${carrier.trim()}: ${tracking.trim()})` };
+    const patch: Partial<Order> = {
+      trackingNumber: tracking.trim(),
+      carrier: carrier.trim(),
+      estimatedDelivery: eta || undefined,
+    };
+    let message = `Tracking updated (${carrier.trim()}: ${tracking.trim()})`;
 
-  const cancelShippingEdit = () => {
-    setCarrier(order.carrier ?? "");
-    setTracking(order.trackingNumber ?? "");
-    setEta(order.estimatedDelivery ?? "");
-    setEditingShipping(false);
+    if (shippingModalForAdvance && nextAction) {
+      patch.status = nextAction.next;
+      if (nextAction.next === "Delivered" && paymentStatus !== "Paid") {
+        patch.paymentStatus = "Paid";
+      }
+      message = `Tracking updated & status advanced to ${nextAction.next}`;
+    }
+
+    const timeline = appendEvent(order, { at: nowIso(), by: actor, type: "fulfillment", message });
+    dispatch({ type: "UPDATE_ORDER", id: order.id, patch: { ...patch, timeline } });
+    closeShippingModal();
+    toast.success(shippingModalForAdvance && nextAction ? `Order moved to ${nextAction.next}` : "Shipping details saved");
   };
 
   const addNote = () => {
@@ -223,10 +252,8 @@ function AdminOrderDetail() {
         <div className="flex flex-wrap items-center gap-2">
           {nextAction && !isTerminal && order.status !== "On Hold" && (
             <Button
-              onClick={advanceDisabled ? () => toast.error("Add carrier & tracking # before shipping") : advanceStage}
-              disabled={advanceDisabled}
+              onClick={requiresShipping && !shippingReady ? () => openShippingModal(true) : advanceStage}
               className="font-bold uppercase"
-              title={advanceDisabled ? "Carrier and Tracking # required" : undefined}
             >
               <PlayCircle className="size-4 mr-2" /> {nextAction.label}
             </Button>
@@ -389,79 +416,42 @@ function AdminOrderDetail() {
               <div className="flex items-center gap-2">
                 <Truck className="size-4 text-primary" />
                 <h3 className="font-semibold">Shipping & Tracking</h3>
-                {requiresShipping && !shippingReady && !editingShipping && (
+                {requiresShipping && !shippingReady && (
                   <Badge variant="outline" className="border-amber-500 text-amber-700">
                     Required to ship
                   </Badge>
                 )}
               </div>
-              {!editingShipping && (
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
-                  onClick={() => setEditingShipping(true)}
-                >
-                  <Save className="size-3.5 mr-1" /> Edit
-                </Button>
-              )}
+              <Button
+                size="sm"
+                variant="outline"
+                className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"
+                onClick={() => openShippingModal(false)}
+              >
+                <Pencil className="size-3.5 mr-1" /> Edit
+              </Button>
             </div>
 
-            {editingShipping ? (
-              <>
-                <div className="grid gap-3 sm:grid-cols-3">
-                  <div>
-                    <Label htmlFor="carrier" className="text-xs">Carrier <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="carrier"
-                      value={carrier}
-                      onChange={(e) => setCarrier(e.target.value)}
-                      placeholder="e.g. Sundarban Courier"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="tracking" className="text-xs">Tracking # <span className="text-destructive">*</span></Label>
-                    <Input
-                      id="tracking"
-                      value={tracking}
-                      onChange={(e) => setTracking(e.target.value)}
-                      placeholder="AWB / consignment"
-                    />
-                  </div>
-                  <div>
-                    <Label htmlFor="eta" className="text-xs">Est. Delivery</Label>
-                    <Input id="eta" type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
-                  </div>
-                </div>
-                <div className="mt-3 flex justify-end gap-2">
-                  <Button size="sm" variant="outline" onClick={cancelShippingEdit}>Cancel</Button>
-                  <Button size="sm" onClick={saveShipping}>
-                    <Save className="size-3.5 mr-1" /> Save
-                  </Button>
-                </div>
-              </>
-            ) : (
-              <dl className="grid gap-3 text-sm sm:grid-cols-3">
-                <div>
-                  <dt className="text-xs uppercase text-muted-foreground">Carrier</dt>
-                  <dd className={order.carrier ? "font-medium" : "text-muted-foreground italic"}>
-                    {order.carrier || "Not set"}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs uppercase text-muted-foreground">Tracking #</dt>
-                  <dd className={order.trackingNumber ? "font-mono font-medium" : "text-muted-foreground italic"}>
-                    {order.trackingNumber || "Not set"}
-                  </dd>
-                </div>
-                <div>
-                  <dt className="text-xs uppercase text-muted-foreground">Est. Delivery</dt>
-                  <dd className={order.estimatedDelivery ? "font-medium" : "text-muted-foreground italic"}>
-                    {order.estimatedDelivery ? formatDate(order.estimatedDelivery) : "Not set"}
-                  </dd>
-                </div>
-              </dl>
-            )}
+            <dl className="grid gap-3 text-sm sm:grid-cols-3">
+              <div>
+                <dt className="text-xs uppercase text-muted-foreground">Carrier</dt>
+                <dd className={order.carrier ? "font-medium" : "text-muted-foreground italic"}>
+                  {order.carrier || "Not set"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase text-muted-foreground">Tracking #</dt>
+                <dd className={order.trackingNumber ? "font-mono font-medium" : "text-muted-foreground italic"}>
+                  {order.trackingNumber || "Not set"}
+                </dd>
+              </div>
+              <div>
+                <dt className="text-xs uppercase text-muted-foreground">Est. Delivery</dt>
+                <dd className={order.estimatedDelivery ? "font-medium" : "text-muted-foreground italic"}>
+                  {order.estimatedDelivery ? formatDate(order.estimatedDelivery) : "Not set"}
+                </dd>
+              </div>
+            </dl>
           </div>
 
           {/* Timeline */}
@@ -602,6 +592,50 @@ function AdminOrderDetail() {
           </div>
         </div>
       </div>
+
+      {/* Shipping Modal */}
+      <Dialog open={shippingModalOpen} onOpenChange={(open) => { if (!open) closeShippingModal(); setShippingModalOpen(open); }}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{shippingModalForAdvance ? "Mark as Shipped" : "Edit Shipping Details"}</DialogTitle>
+            <DialogDescription>
+              {shippingModalForAdvance
+                ? "Enter carrier and tracking information before marking this order as shipped."
+                : "Update the carrier, tracking number, and estimated delivery date."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor="modal-carrier">Carrier <span className="text-destructive">*</span></Label>
+              <Input
+                id="modal-carrier"
+                value={carrier}
+                onChange={(e) => setCarrier(e.target.value)}
+                placeholder="e.g. Sundarban Courier"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="modal-tracking">Tracking # <span className="text-destructive">*</span></Label>
+              <Input
+                id="modal-tracking"
+                value={tracking}
+                onChange={(e) => setTracking(e.target.value)}
+                placeholder="AWB / consignment"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="modal-eta">Est. Delivery</Label>
+              <Input id="modal-eta" type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeShippingModal}>Cancel</Button>
+            <Button onClick={saveShipping}>
+              <Save className="size-3.5 mr-1" /> Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
