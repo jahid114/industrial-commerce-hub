@@ -27,12 +27,6 @@ export const Route = createFileRoute("/admin/inventory")({
   component: AdminInventoryPage,
 });
 
-const BUCKETS: { value: StockBucket; label: string }[] = [
-  { value: "good", label: "Good stock" },
-  { value: "returned", label: "Returned" },
-  { value: "damaged", label: "Damaged" },
-  { value: "incoming", label: "Incoming" },
-];
 
 const MOVEMENT_TYPES: MovementType[] = [
   "Adjustment", "Return", "Damage", "Restock", "Write-off", "Incoming", "Sale",
