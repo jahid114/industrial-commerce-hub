@@ -155,6 +155,19 @@ function AdminOrderDetail() {
     toast.success(`Payment: ${s}`);
   };
 
+  const openShippingModal = (forAdvance = false) => {
+    setCarrier(order.carrier ?? "");
+    setTracking(order.trackingNumber ?? "");
+    setEta(order.estimatedDelivery ?? "");
+    setShippingModalForAdvance(forAdvance);
+    setShippingModalOpen(true);
+  };
+
+  const closeShippingModal = () => {
+    setShippingModalOpen(false);
+    setShippingModalForAdvance(false);
+  };
+
   const saveShipping = () => {
     if (!carrier.trim() || !tracking.trim()) {
       toast.error("Carrier and Tracking # are required");
@@ -165,15 +178,16 @@ function AdminOrderDetail() {
       `Tracking updated (${carrier.trim()}: ${tracking.trim()})`,
       "fulfillment",
     );
-    setEditingShipping(false);
+    closeShippingModal();
     toast.success("Shipping details saved");
-  };
-
-  const cancelShippingEdit = () => {
-    setCarrier(order.carrier ?? "");
-    setTracking(order.trackingNumber ?? "");
-    setEta(order.estimatedDelivery ?? "");
-    setEditingShipping(false);
+    if (shippingModalForAdvance && nextAction) {
+      const extra: Partial<Order> = { status: nextAction.next };
+      if (nextAction.next === "Delivered" && paymentStatus !== "Paid") {
+        extra.paymentStatus = "Paid";
+      }
+      patchOrder(extra, `Status advanced to ${nextAction.next}`);
+      toast.success(`Order moved to ${nextAction.next}`);
+    }
   };
 
   const addNote = () => {
