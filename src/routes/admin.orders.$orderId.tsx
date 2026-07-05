@@ -173,21 +173,26 @@ function AdminOrderDetail() {
       toast.error("Carrier and Tracking # are required");
       return;
     }
-    patchOrder(
-      { trackingNumber: tracking.trim(), carrier: carrier.trim(), estimatedDelivery: eta || undefined },
-      `Tracking updated (${carrier.trim()}: ${tracking.trim()})`,
-      "fulfillment",
-    );
-    closeShippingModal();
-    toast.success("Shipping details saved");
+    const shippingEvent: OrderEvent = { at: nowIso(), by: actor, type: "fulfillment", message: `Tracking updated (${carrier.trim()}: ${tracking.trim()})` };
+    const patch: Partial<Order> = {
+      trackingNumber: tracking.trim(),
+      carrier: carrier.trim(),
+      estimatedDelivery: eta || undefined,
+    };
+    let message = `Tracking updated (${carrier.trim()}: ${tracking.trim()})`;
+
     if (shippingModalForAdvance && nextAction) {
-      const extra: Partial<Order> = { status: nextAction.next };
+      patch.status = nextAction.next;
       if (nextAction.next === "Delivered" && paymentStatus !== "Paid") {
-        extra.paymentStatus = "Paid";
+        patch.paymentStatus = "Paid";
       }
-      patchOrder(extra, `Status advanced to ${nextAction.next}`);
-      toast.success(`Order moved to ${nextAction.next}`);
+      message = `Tracking updated & status advanced to ${nextAction.next}`;
     }
+
+    const timeline = appendEvent(order, { at: nowIso(), by: actor, type: "fulfillment", message });
+    dispatch({ type: "UPDATE_ORDER", id: order.id, patch: { ...patch, timeline } });
+    closeShippingModal();
+    toast.success(shippingModalForAdvance && nextAction ? `Order moved to ${nextAction.next}` : "Shipping details saved");
   };
 
   const addNote = () => {
