@@ -151,8 +151,8 @@ function CategoriesTab({
                 <td className="px-4 py-3 text-right">{c.subcategories.length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
-                    <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
-                    <Button size="sm" variant="outline" onClick={() => removeCategory(c.id)} className="rounded-lg text-destructive hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
+                  <Button size="sm" variant="outline" onClick={() => { setEditing(c); setOpen(true); }} className="rounded-lg"><Pencil className="size-3.5 mr-1" /> Edit</Button>
+                    <Button size="sm" variant="outline" onClick={() => removeCategory(c.id)} className="rounded-lg text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-3.5 mr-1" /> Delete</Button>
                   </div>
                 </td>
               </tr>
