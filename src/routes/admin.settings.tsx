@@ -69,9 +69,13 @@ function SettingsPage() {
       </div>
 
       <Tabs defaultValue="categories" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="categories">Categories</TabsTrigger>
-          <TabsTrigger value="subcategories">Sub-categories</TabsTrigger>
+        <TabsList className="rounded-full h-auto p-1.5">
+          <TabsTrigger value="categories" className="rounded-full px-5 py-2 gap-2">
+            <Tag className="size-4" /> Categories
+          </TabsTrigger>
+          <TabsTrigger value="subcategories" className="rounded-full px-5 py-2 gap-2">
+            <GitBranch className="size-4" /> Sub-categories
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="categories" className="mt-0">
