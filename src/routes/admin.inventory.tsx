@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Plus, Search, History, Boxes, AlertTriangle, RotateCcw, PackageX, ArrowDownUp } from "lucide-react";
+import { Plus, Search, History, Boxes, AlertTriangle, RotateCcw, PackageX, PackagePlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,13 +9,13 @@ import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { products } from "@/data/products";
+import { suppliers, getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { toast } from "sonner";
 import {
   useInventory,
   RETURN_REASONS,
   DAMAGE_REASONS,
-  type StockBucket,
   type ReturnReason,
   type ReturnCondition,
   type DamageReason,
@@ -27,12 +27,6 @@ export const Route = createFileRoute("/admin/inventory")({
   component: AdminInventoryPage,
 });
 
-const BUCKETS: { value: StockBucket; label: string }[] = [
-  { value: "good", label: "Good stock" },
-  { value: "returned", label: "Returned" },
-  { value: "damaged", label: "Damaged" },
-  { value: "incoming", label: "Incoming" },
-];
 
 const MOVEMENT_TYPES: MovementType[] = [
   "Adjustment", "Return", "Damage", "Restock", "Write-off", "Incoming", "Sale",
@@ -154,10 +148,10 @@ function AdminInventoryPage() {
           <Dialog open={adjustOpen} onOpenChange={setAdjustOpen}>
             <DialogTrigger asChild>
               <Button className="rounded-lg font-bold uppercase">
-                <Plus className="size-4 mr-2" /> Adjust stock
+                <Plus className="size-4 mr-2" /> Add stock
               </Button>
             </DialogTrigger>
-            <AdjustStockDialog
+            <AddStockDialog
               productId={adjustProductId}
               onProductChange={setAdjustProductId}
               onClose={() => setAdjustOpen(false)}
@@ -236,7 +230,7 @@ function AdminInventoryPage() {
                       </td>
                       <td className="px-3 py-3 text-right space-x-1 whitespace-nowrap">
                         <Button size="sm" variant="outline" className="rounded-lg" onClick={() => openAdjustFor(r.p.id)}>
-                          <ArrowDownUp className="size-3.5 mr-1" /> Adjust
+                          <PackagePlus className="size-3.5 mr-1" /> Add stock
                         </Button>
                         <Button size="sm" variant="ghost" className="rounded-lg" onClick={() => showHistoryFor(r.p.id)}>
                           <History className="size-3.5 mr-1" /> History
@@ -470,34 +464,63 @@ function Kpi({ label, value, icon, tone }: { label: string; value: string; icon:
 
 /* ---------- Dialogs ---------- */
 
-function AdjustStockDialog({ productId, onProductChange, onClose }: {
+function AddStockDialog({ productId, onProductChange, onClose }: {
   productId: string;
   onProductChange: (id: string) => void;
   onClose: () => void;
 }) {
   const inv = useInventory();
-  const [bucket, setBucket] = useState<StockBucket>("good");
-  const [delta, setDelta] = useState<number>(1);
-  const [sign, setSign] = useState<"+" | "-">("+");
+  const product = products.find((p) => p.id === productId);
+  const defaultSupplier = product?.supplierId ?? suppliers[0]?.id ?? "";
+  const [supplierId, setSupplierId] = useState(defaultSupplier);
+  const [quantity, setQuantity] = useState<number>(1);
+  const [destination, setDestination] = useState<"good" | "incoming">("good");
+  const [unitCost, setUnitCost] = useState<string>("");
+  const [reference, setReference] = useState("");
   const [note, setNote] = useState("");
 
   const rec = inv.records[productId];
+  const supplier = getSupplier(supplierId);
+  const cost = Number(unitCost) || 0;
+  const total = cost * (quantity || 0);
 
   const submit = () => {
-    const value = (sign === "+" ? 1 : -1) * Math.abs(delta || 0);
-    if (!value) return toast.error("Enter a non-zero quantity");
-    inv.adjust({ productId, bucket, delta: value, note: note || undefined });
-    toast.success("Stock adjusted");
-    setDelta(1); setNote(""); setSign("+");
+    const qty = Math.abs(Math.floor(quantity || 0));
+    if (!qty) return toast.error("Enter a quantity of at least 1");
+    if (!supplierId) return toast.error("Select a supplier");
+    const parts = [`Supplier: ${supplier?.name ?? supplierId}`];
+    if (reference.trim()) parts.push(`Ref: ${reference.trim()}`);
+    if (cost > 0) parts.push(`Unit cost: ${formatBDT(cost)}`);
+    if (note.trim()) parts.push(note.trim());
+    inv.adjust({
+      productId,
+      bucket: destination,
+      delta: qty,
+      note: parts.join(" • "),
+    });
+    toast.success(
+      destination === "good"
+        ? `Added ${qty} unit(s) to Good stock`
+        : `Added ${qty} unit(s) as Incoming`,
+    );
+    setQuantity(1); setUnitCost(""); setReference(""); setNote("");
     onClose();
   };
 
   return (
     <DialogContent className="max-w-lg">
-      <DialogHeader><DialogTitle>Adjust stock</DialogTitle></DialogHeader>
+      <DialogHeader><DialogTitle>Add stock</DialogTitle></DialogHeader>
       <div className="grid gap-4">
         <Field label="Product">
-          <select className={selectCls()} value={productId} onChange={(e) => onProductChange(e.target.value)}>
+          <select
+            className={selectCls()}
+            value={productId}
+            onChange={(e) => {
+              onProductChange(e.target.value);
+              const next = products.find((p) => p.id === e.target.value);
+              if (next?.supplierId) setSupplierId(next.supplierId);
+            }}
+          >
             {products.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>)}
           </select>
         </Field>
@@ -509,29 +532,43 @@ function AdjustStockDialog({ productId, onProductChange, onClose }: {
             <Bucket label="Incoming" value={rec.incoming} />
           </div>
         )}
+        <Field label="Supplier">
+          <select className={selectCls()} value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
+            <option value="">Select supplier…</option>
+            {suppliers.map((s) => (
+              <option key={s.id} value={s.id}>{s.name} — {s.country}</option>
+            ))}
+          </select>
+        </Field>
         <div className="grid grid-cols-2 gap-3">
-          <Field label="Bucket">
-            <select className={selectCls()} value={bucket} onChange={(e) => setBucket(e.target.value as StockBucket)}>
-              {BUCKETS.map((b) => <option key={b.value} value={b.value}>{b.label}</option>)}
+          <Field label="Quantity">
+            <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
+          </Field>
+          <Field label="Destination">
+            <select className={selectCls()} value={destination} onChange={(e) => setDestination(e.target.value as "good" | "incoming")}>
+              <option value="good">Available now (Good stock)</option>
+              <option value="incoming">Incoming (in transit)</option>
             </select>
           </Field>
-          <Field label="Direction">
-            <select className={selectCls()} value={sign} onChange={(e) => setSign(e.target.value as "+" | "-")}>
-              <option value="+">Add (+)</option>
-              <option value="-">Subtract (−)</option>
-            </select>
+          <Field label="Unit cost (৳, optional)">
+            <Input type="number" min={0} value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="0" />
+          </Field>
+          <Field label="Reference / PO # (optional)">
+            <Input value={reference} onChange={(e) => setReference(e.target.value)} placeholder="PO-2026-…" />
           </Field>
         </div>
-        <Field label="Quantity">
-          <Input type="number" min={1} value={delta} onChange={(e) => setDelta(Number(e.target.value))} />
+        <Field label="Notes">
+          <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. shipment received at warehouse A" />
         </Field>
-        <Field label="Reason / note">
-          <Textarea rows={2} value={note} onChange={(e) => setNote(e.target.value)} placeholder="e.g. cycle count correction, supplier delivery received" />
-        </Field>
+        {total > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Total received value: <b>{formatBDT(total)}</b>
+          </p>
+        )}
       </div>
       <DialogFooter>
         <Button variant="outline" className="rounded-lg" onClick={onClose}>Cancel</Button>
-        <Button onClick={submit} className="rounded-lg font-bold uppercase">Save adjustment</Button>
+        <Button onClick={submit} className="rounded-lg font-bold uppercase">Add stock</Button>
       </DialogFooter>
     </DialogContent>
   );
