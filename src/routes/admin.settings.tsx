@@ -53,19 +53,11 @@ function SettingsPage() {
     try { window.localStorage.setItem(STORAGE_KEY, JSON.stringify(cats)); } catch {}
   }, [cats]);
 
-  const resetDefaults = () => {
-    setCats(seedCategories);
-    toast.success("Settings reset to defaults");
-  };
-
   return (
     <div className="space-y-6">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-3xl font-bold">Settings</h1>
-          <p className="text-sm text-muted-foreground">Configure catalog taxonomy and other administrative preferences.</p>
-        </div>
-        <Button variant="outline" onClick={resetDefaults} className="rounded-lg">Reset defaults</Button>
+      <div>
+        <h1 className="font-display text-3xl font-bold">Settings</h1>
+        <p className="text-sm text-muted-foreground">Configure catalog taxonomy and other administrative preferences.</p>
       </div>
 
       <Tabs defaultValue="categories" className="space-y-4">
