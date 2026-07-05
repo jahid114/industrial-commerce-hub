@@ -2,11 +2,12 @@ import { createFileRoute, Outlet, Link, useNavigate, useRouterState } from "@tan
 import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Package, ShoppingBag, Wallet, Users,
-  FileText, BarChart3, Briefcase, LogOut, Menu, X,
+  FileText, BarChart3, Briefcase, LogOut, Menu, X, User,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 
