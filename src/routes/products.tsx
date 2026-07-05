@@ -91,11 +91,6 @@ function ProductsPage() {
         <div className="container mx-auto px-4 py-8">
           <div className="text-xs text-muted-foreground"><Link to="/" className="hover:text-primary">Home</Link> / Products</div>
           <h1 className="mt-2 font-display text-3xl font-bold md:text-4xl">Product Catalog</h1>
-      {/* Breadcrumb / page head */}
-      <div className="border-b border-border bg-secondary">
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-xs text-muted-foreground"><Link to="/" className="hover:text-primary">Home</Link> / Products</div>
-          <h1 className="mt-2 font-display text-3xl font-bold md:text-4xl">Product Catalog</h1>
           <p className="mt-1 text-sm text-muted-foreground">{filtered.length} featured products available publicly</p>
           <div className="mt-4 flex flex-wrap items-center gap-3 rounded-lg border border-accent/40 bg-accent/10 px-4 py-3 text-sm">
             <Lock className="size-4 text-accent" />
