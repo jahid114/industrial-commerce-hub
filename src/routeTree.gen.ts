@@ -29,7 +29,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalCustomerIndexRouteImport } from './routes/portal-customer.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AccountIndexRouteImport } from './routes/account.index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
 import { Route as PortfolioStrategicVision2033RouteImport } from './routes/portfolio.strategic-vision-2033'
 import { Route as PortfolioMarketPotentialRouteImport } from './routes/portfolio.market-potential'
@@ -58,15 +57,10 @@ import { Route as AdminQuotationsRouteImport } from './routes/admin.quotations'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
-import { Route as AccountWishlistRouteImport } from './routes/account.wishlist'
-import { Route as AccountQuotationsRouteImport } from './routes/account.quotations'
-import { Route as AccountProfileRouteImport } from './routes/account.profile'
-import { Route as AccountOrdersRouteImport } from './routes/account.orders'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
-import { Route as AccountOrdersOrderIdRouteImport } from './routes/account.orders.$orderId'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -167,11 +161,6 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => AdminRoute,
-} as any)
-const AccountIndexRoute = AccountIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AccountRoute,
 } as any)
 const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
   id: '/$productId',
@@ -317,26 +306,6 @@ const AdminAgentsRoute = AdminAgentsRouteImport.update({
   path: '/agents',
   getParentRoute: () => AdminRoute,
 } as any)
-const AccountWishlistRoute = AccountWishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
-  getParentRoute: () => AccountRoute,
-} as any)
-const AccountQuotationsRoute = AccountQuotationsRouteImport.update({
-  id: '/quotations',
-  path: '/quotations',
-  getParentRoute: () => AccountRoute,
-} as any)
-const AccountProfileRoute = AccountProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => AccountRoute,
-} as any)
-const AccountOrdersRoute = AccountOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => AccountRoute,
-} as any)
 const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
@@ -359,16 +328,11 @@ const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => AdminRoute,
 } as any)
-const AccountOrdersOrderIdRoute = AccountOrdersOrderIdRouteImport.update({
-  id: '/$orderId',
-  path: '/$orderId',
-  getParentRoute: () => AccountOrdersRoute,
-} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/account': typeof AccountRouteWithChildren
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/agents': typeof AgentsRoute
   '/cart': typeof CartRoute
@@ -383,10 +347,6 @@ export interface FileRoutesByFullPath {
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
-  '/account/orders': typeof AccountOrdersRouteWithChildren
-  '/account/profile': typeof AccountProfileRoute
-  '/account/quotations': typeof AccountQuotationsRoute
-  '/account/wishlist': typeof AccountWishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
@@ -415,11 +375,9 @@ export interface FileRoutesByFullPath {
   '/portfolio/market-potential': typeof PortfolioMarketPotentialRoute
   '/portfolio/strategic-vision-2033': typeof PortfolioStrategicVision2033Route
   '/products/$productId': typeof ProductsProductIdRoute
-  '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
-  '/account/orders/$orderId': typeof AccountOrdersOrderIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -428,6 +386,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
+  '/account': typeof AccountRoute
   '/agents': typeof AgentsRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
@@ -439,10 +398,6 @@ export interface FileRoutesByTo {
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
-  '/account/orders': typeof AccountOrdersRouteWithChildren
-  '/account/profile': typeof AccountProfileRoute
-  '/account/quotations': typeof AccountQuotationsRoute
-  '/account/wishlist': typeof AccountWishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
@@ -471,11 +426,9 @@ export interface FileRoutesByTo {
   '/portfolio/market-potential': typeof PortfolioMarketPotentialRoute
   '/portfolio/strategic-vision-2033': typeof PortfolioStrategicVision2033Route
   '/products/$productId': typeof ProductsProductIdRoute
-  '/account': typeof AccountIndexRoute
   '/admin': typeof AdminIndexRoute
   '/portal-customer': typeof PortalCustomerIndexRoute
   '/portal': typeof PortalIndexRoute
-  '/account/orders/$orderId': typeof AccountOrdersOrderIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -485,7 +438,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/account': typeof AccountRouteWithChildren
+  '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/agents': typeof AgentsRoute
   '/cart': typeof CartRoute
@@ -500,10 +453,6 @@ export interface FileRoutesById {
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
-  '/account/orders': typeof AccountOrdersRouteWithChildren
-  '/account/profile': typeof AccountProfileRoute
-  '/account/quotations': typeof AccountQuotationsRoute
-  '/account/wishlist': typeof AccountWishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
@@ -532,11 +481,9 @@ export interface FileRoutesById {
   '/portfolio/market-potential': typeof PortfolioMarketPotentialRoute
   '/portfolio/strategic-vision-2033': typeof PortfolioStrategicVision2033Route
   '/products/$productId': typeof ProductsProductIdRoute
-  '/account/': typeof AccountIndexRoute
   '/admin/': typeof AdminIndexRoute
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
-  '/account/orders/$orderId': typeof AccountOrdersOrderIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -562,10 +509,6 @@ export interface FileRouteTypes {
     | '/products'
     | '/quotation'
     | '/suppliers'
-    | '/account/orders'
-    | '/account/profile'
-    | '/account/quotations'
-    | '/account/wishlist'
     | '/admin/agents'
     | '/admin/inventory'
     | '/admin/products'
@@ -594,11 +537,9 @@ export interface FileRouteTypes {
     | '/portfolio/market-potential'
     | '/portfolio/strategic-vision-2033'
     | '/products/$productId'
-    | '/account/'
     | '/admin/'
     | '/portal-customer/'
     | '/portal/'
-    | '/account/orders/$orderId'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -607,6 +548,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
+    | '/account'
     | '/agents'
     | '/cart'
     | '/checkout'
@@ -618,10 +560,6 @@ export interface FileRouteTypes {
     | '/products'
     | '/quotation'
     | '/suppliers'
-    | '/account/orders'
-    | '/account/profile'
-    | '/account/quotations'
-    | '/account/wishlist'
     | '/admin/agents'
     | '/admin/inventory'
     | '/admin/products'
@@ -650,11 +588,9 @@ export interface FileRouteTypes {
     | '/portfolio/market-potential'
     | '/portfolio/strategic-vision-2033'
     | '/products/$productId'
-    | '/account'
     | '/admin'
     | '/portal-customer'
     | '/portal'
-    | '/account/orders/$orderId'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -678,10 +614,6 @@ export interface FileRouteTypes {
     | '/products'
     | '/quotation'
     | '/suppliers'
-    | '/account/orders'
-    | '/account/profile'
-    | '/account/quotations'
-    | '/account/wishlist'
     | '/admin/agents'
     | '/admin/inventory'
     | '/admin/products'
@@ -710,11 +642,9 @@ export interface FileRouteTypes {
     | '/portfolio/market-potential'
     | '/portfolio/strategic-vision-2033'
     | '/products/$productId'
-    | '/account/'
     | '/admin/'
     | '/portal-customer/'
     | '/portal/'
-    | '/account/orders/$orderId'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -724,7 +654,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AboutRoute: typeof AboutRoute
-  AccountRoute: typeof AccountRouteWithChildren
+  AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   AgentsRoute: typeof AgentsRoute
   CartRoute: typeof CartRoute
@@ -884,13 +814,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/admin/'
       preLoaderRoute: typeof AdminIndexRouteImport
       parentRoute: typeof AdminRoute
-    }
-    '/account/': {
-      id: '/account/'
-      path: '/'
-      fullPath: '/account/'
-      preLoaderRoute: typeof AccountIndexRouteImport
-      parentRoute: typeof AccountRoute
     }
     '/products/$productId': {
       id: '/products/$productId'
@@ -1088,34 +1011,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAgentsRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/account/wishlist': {
-      id: '/account/wishlist'
-      path: '/wishlist'
-      fullPath: '/account/wishlist'
-      preLoaderRoute: typeof AccountWishlistRouteImport
-      parentRoute: typeof AccountRoute
-    }
-    '/account/quotations': {
-      id: '/account/quotations'
-      path: '/quotations'
-      fullPath: '/account/quotations'
-      preLoaderRoute: typeof AccountQuotationsRouteImport
-      parentRoute: typeof AccountRoute
-    }
-    '/account/profile': {
-      id: '/account/profile'
-      path: '/profile'
-      fullPath: '/account/profile'
-      preLoaderRoute: typeof AccountProfileRouteImport
-      parentRoute: typeof AccountRoute
-    }
-    '/account/orders': {
-      id: '/account/orders'
-      path: '/orders'
-      fullPath: '/account/orders'
-      preLoaderRoute: typeof AccountOrdersRouteImport
-      parentRoute: typeof AccountRoute
-    }
     '/admin/orders/': {
       id: '/admin/orders/'
       path: '/orders'
@@ -1144,46 +1039,8 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/account/orders/$orderId': {
-      id: '/account/orders/$orderId'
-      path: '/$orderId'
-      fullPath: '/account/orders/$orderId'
-      preLoaderRoute: typeof AccountOrdersOrderIdRouteImport
-      parentRoute: typeof AccountOrdersRoute
-    }
   }
 }
-
-interface AccountOrdersRouteChildren {
-  AccountOrdersOrderIdRoute: typeof AccountOrdersOrderIdRoute
-}
-
-const AccountOrdersRouteChildren: AccountOrdersRouteChildren = {
-  AccountOrdersOrderIdRoute: AccountOrdersOrderIdRoute,
-}
-
-const AccountOrdersRouteWithChildren = AccountOrdersRoute._addFileChildren(
-  AccountOrdersRouteChildren,
-)
-
-interface AccountRouteChildren {
-  AccountOrdersRoute: typeof AccountOrdersRouteWithChildren
-  AccountProfileRoute: typeof AccountProfileRoute
-  AccountQuotationsRoute: typeof AccountQuotationsRoute
-  AccountWishlistRoute: typeof AccountWishlistRoute
-  AccountIndexRoute: typeof AccountIndexRoute
-}
-
-const AccountRouteChildren: AccountRouteChildren = {
-  AccountOrdersRoute: AccountOrdersRouteWithChildren,
-  AccountProfileRoute: AccountProfileRoute,
-  AccountQuotationsRoute: AccountQuotationsRoute,
-  AccountWishlistRoute: AccountWishlistRoute,
-  AccountIndexRoute: AccountIndexRoute,
-}
-
-const AccountRouteWithChildren =
-  AccountRoute._addFileChildren(AccountRouteChildren)
 
 interface AdminRouteChildren {
   AdminAgentsRoute: typeof AdminAgentsRoute
@@ -1321,7 +1178,7 @@ const ProductsRouteWithChildren = ProductsRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AboutRoute: AboutRoute,
-  AccountRoute: AccountRouteWithChildren,
+  AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   AgentsRoute: AgentsRoute,
   CartRoute: CartRoute,
