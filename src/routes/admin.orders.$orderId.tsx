@@ -97,7 +97,6 @@ function AdminOrderDetail() {
   if (!order) throw notFound();
 
   const paymentStatus = derivePaymentStatus(order);
-  const fulfillmentStatus = deriveFulfillmentStatus(order);
   const subtotal = computeSubtotal(order);
   const tax = computeTax(order);
   const shipping = computeShipping(order);
