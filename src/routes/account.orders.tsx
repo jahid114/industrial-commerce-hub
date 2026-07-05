@@ -19,6 +19,7 @@ const statusVariant: Record<OrderStatus, string> = {
   Shipped: "bg-primary text-primary-foreground",
   Delivered: "bg-success/20 text-success",
   Cancelled: "bg-destructive/10 text-destructive",
+  "On Hold": "bg-amber-100 text-amber-800",
 };
 
 function OrdersPage() {
