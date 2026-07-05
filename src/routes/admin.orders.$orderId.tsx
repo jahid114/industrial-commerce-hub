@@ -116,7 +116,8 @@ function AdminOrderDetail() {
   const nextAction = nextActionFor(order.status);
   const isTerminal = order.status === "Cancelled" || order.status === "Delivered";
 
-  const [editingShipping, setEditingShipping] = useState(false);
+  const [shippingModalOpen, setShippingModalOpen] = useState(false);
+  const [shippingModalForAdvance, setShippingModalForAdvance] = useState(false);
   const [tracking, setTracking] = useState(order.trackingNumber ?? "");
   const [carrier, setCarrier] = useState(order.carrier ?? "");
   const [eta, setEta] = useState(order.estimatedDelivery ?? "");
@@ -126,7 +127,6 @@ function AdminOrderDetail() {
 
   const shippingReady = !!(order.carrier && order.trackingNumber);
   const requiresShipping = nextAction?.next === "Shipped";
-  const advanceDisabled = requiresShipping && !shippingReady;
 
   const actor = user?.name ?? user?.email ?? "Admin";
 
