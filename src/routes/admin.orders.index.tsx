@@ -85,7 +85,7 @@ function AdminOrdersPage() {
               <th className="px-4 py-3 text-left">Date</th>
               <th className="px-4 py-3 text-left">Payment</th>
               <th className="px-4 py-3 text-left">Status</th>
-              <th className="px-4 py-3 text-left">Fulfillment</th>
+              <th className="px-4 py-3 text-right">Total</th>
               <th className="px-4 py-3 text-right">Total</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
