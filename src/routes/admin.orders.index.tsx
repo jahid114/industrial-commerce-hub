@@ -86,14 +86,12 @@ function AdminOrdersPage() {
               <th className="px-4 py-3 text-left">Payment</th>
               <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-right">Total</th>
-              <th className="px-4 py-3 text-right">Total</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
             {filtered.map((o) => {
               const pay = derivePaymentStatus(o);
-              const ful = deriveFulfillmentStatus(o);
               return (
                 <tr key={o.id} className="hover:bg-secondary">
                   <td className="px-4 py-3">
