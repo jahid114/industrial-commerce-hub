@@ -45,8 +45,8 @@ function AdminSuppliersPage() {
   const openAdd = () => { setEditing(null); setForm(emptyForm); setDialogOpen(true); };
   const openEdit = (s: Supplier) => {
     setEditing(s);
-    const { id: _id, ...rest } = s;
-    void _id;
+    const { id: _id, productsCount: _pc, ...rest } = s;
+    void _id; void _pc;
     setForm(rest);
     setDialogOpen(true);
   };
