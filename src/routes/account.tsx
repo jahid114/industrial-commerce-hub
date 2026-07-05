@@ -5,6 +5,7 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 import { useStore } from "@/lib/store";
 import { User, Package, FileText, Heart, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/account")({
@@ -39,9 +40,36 @@ function AccountLayout() {
       <PublicHeader />
       <main className="flex-1 bg-secondary">
         <div className="container mx-auto px-4 py-8">
-          <div className="mb-6">
-            <h1 className="font-display text-3xl font-bold">My Account</h1>
-            <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
+          <div className="mb-6 flex items-start justify-between gap-4">
+            <div>
+              <h1 className="font-display text-3xl font-bold">My Account</h1>
+              <p className="text-sm text-muted-foreground">Welcome back, {user?.name}</p>
+            </div>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="icon" className="rounded-full" aria-label="Account menu">
+                  <User className="size-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuLabel>
+                  <div className="font-semibold">{user?.name}</div>
+                  <div className="text-xs font-normal text-muted-foreground">{user?.email}</div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/account/profile" className="cursor-pointer">
+                    <User className="size-4 mr-2" /> My Profile
+                  </Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
+                  className="cursor-pointer text-destructive focus:text-destructive"
+                >
+                  <LogOut className="size-4 mr-2" /> Sign Out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
           <div className="grid gap-6 lg:grid-cols-[260px_1fr]">
             <aside className="space-y-1 rounded-lg border border-border bg-card p-3 h-fit">
@@ -53,9 +81,6 @@ function AccountLayout() {
                   </Link>
                 );
               })}
-              <Button onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }} variant="ghost" className="w-full justify-start rounded-lg mt-2 text-destructive hover:text-destructive">
-                <LogOut className="size-4 mr-3" /> Sign Out
-              </Button>
             </aside>
             <div>
               <Outlet />
