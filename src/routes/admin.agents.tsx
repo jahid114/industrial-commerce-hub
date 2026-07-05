@@ -25,7 +25,7 @@ export const Route = createFileRoute("/admin/agents")({
 
 const STATUSES: Agent["status"][] = ["Active", "Pending", "Suspended"];
 
-type FormState = Omit<Agent, "id">;
+type FormState = Omit<Agent, "id" | "ordersSubmitted" | "commissionEarned">;
 
 const emptyForm: FormState = {
   name: "",
@@ -33,8 +33,6 @@ const emptyForm: FormState = {
   phone: "",
   email: "",
   joined: new Date().toISOString().slice(0, 10),
-  ordersSubmitted: 0,
-  commissionEarned: 0,
   status: "Pending",
 };
 
