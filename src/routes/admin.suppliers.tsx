@@ -108,11 +108,9 @@ function AdminSuppliersPage() {
                 <td className="px-4 py-3 text-right">{s.productsCount}</td>
                 <td className="px-4 py-3 text-right"><span className="inline-flex items-center gap-1"><Star className="size-3 fill-accent text-accent" />{s.rating}</span></td>
                 <td className="px-4 py-3 text-right text-muted-foreground">{new Date(s.since).getFullYear()}</td>
-                <td className="px-4 py-3 text-right">
-                  <div className="inline-flex gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => openEdit(s)}><Pencil className="size-4" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => setDeleteId(s.id)} className="text-destructive hover:text-destructive"><Trash2 className="size-4" /></Button>
-                  </div>
+                <td className="px-4 py-3 text-right space-x-1">
+                  <Button size="icon" variant="ghost" onClick={() => openEdit(s)} className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"><Pencil className="size-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => setDeleteId(s.id)} className="text-destructive hover:bg-destructive/20 hover:text-destructive"><Trash2 className="size-4" /></Button>
                 </td>
               </tr>
             ))}

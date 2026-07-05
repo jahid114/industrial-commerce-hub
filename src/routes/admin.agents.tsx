@@ -121,11 +121,9 @@ function AdminAgentsPage() {
                 <td className="px-4 py-3 text-right">{a.ordersSubmitted}</td>
                 <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(a.commissionEarned)}</td>
                 <td className="px-4 py-3 text-right"><Badge className={statusClass(a.status)}>{a.status}</Badge></td>
-                <td className="px-4 py-3 text-right">
-                  <div className="inline-flex gap-1">
-                    <Button size="sm" variant="ghost" onClick={() => openEdit(a)}><Pencil className="size-4" /></Button>
-                    <Button size="sm" variant="ghost" onClick={() => setDeleteId(a.id)} className="text-destructive hover:text-destructive"><Trash2 className="size-4" /></Button>
-                  </div>
+                <td className="px-4 py-3 text-right space-x-1">
+                  <Button size="icon" variant="ghost" onClick={() => openEdit(a)} className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"><Pencil className="size-4" /></Button>
+                  <Button size="icon" variant="ghost" onClick={() => setDeleteId(a.id)} className="text-destructive hover:bg-destructive/20 hover:text-destructive"><Trash2 className="size-4" /></Button>
                 </td>
               </tr>
             ))}
