@@ -24,14 +24,13 @@ export const Route = createFileRoute("/admin/suppliers")({
 
 const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
 
-type FormState = Omit<Supplier, "id">;
+type FormState = Omit<Supplier, "id" | "productsCount">;
 
 const emptyForm: FormState = {
   name: "",
   country: "Germany",
   contactName: "",
   email: "",
-  productsCount: 0,
   rating: 4.5,
   since: new Date().toISOString().slice(0, 10),
 };
