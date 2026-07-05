@@ -519,14 +519,6 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
             {products.map((p) => <option key={p.id} value={p.id}>{p.name} ({p.sku})</option>)}
           </select>
         </Field>
-        {rec && (
-          <div className="grid grid-cols-4 gap-2 text-xs">
-            <Bucket label="Good" value={rec.good} />
-            <Bucket label="Returned" value={rec.returned} />
-            <Bucket label="Damaged" value={rec.damaged} />
-            <Bucket label="Incoming" value={rec.incoming} />
-          </div>
-        )}
         <Field label="Supplier">
           <select className={selectCls()} value={supplierId} onChange={(e) => setSupplierId(e.target.value)}>
             <option value="">Select supplier…</option>
