@@ -42,6 +42,14 @@ const MAX_PRICE = 6_000_000;
 
 function ProductsPage() {
   const search = Route.useSearch();
+  const { isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
+      navigate({ to: "/portal-customer/catalog" });
+    }
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
+
   const [query, setQuery] = useState(search.q ?? "");
   const [selectedCategories, setSelectedCategories] = useState<string[]>(search.category ? [search.category] : []);
   const [selectedBrands, setSelectedBrands] = useState<string[]>(search.brand ? [search.brand] : []);
