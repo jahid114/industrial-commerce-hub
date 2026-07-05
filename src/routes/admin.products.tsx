@@ -112,7 +112,7 @@ function AdminProductsPage() {
                   <td className="px-4 py-3 text-right">{inv.records[p.id]?.good ?? p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
                     <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }}><Edit className="size-4" /></Button>
-                    <Button size="icon" variant="ghost" onClick={() => remove(p.id)} className="text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></Button>
+                    <Button size="icon" variant="ghost" onClick={() => setProductToDelete(p)} className="text-destructive hover:bg-destructive/10 hover:text-destructive"><Trash2 className="size-4" /></Button>
                   </td>
                 </tr>
               ))}
