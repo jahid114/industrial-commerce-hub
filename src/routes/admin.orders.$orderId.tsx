@@ -568,17 +568,6 @@ function AdminOrderDetail() {
                 </SelectContent>
               </Select>
             </div>
-            <div>
-              <Label className="text-xs">Fulfillment</Label>
-              <Select value={fulfillmentStatus} onValueChange={(v) => setFulfil(v as FulfillmentStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {FULFILLMENT_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           {/* Internal */}
