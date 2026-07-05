@@ -586,6 +586,50 @@ function AdminOrderDetail() {
           </div>
         </div>
       </div>
+
+      {/* Shipping Modal */}
+      <Dialog open={shippingModalOpen} onOpenChange={setShippingModalOpen}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{shippingModalForAdvance ? "Mark as Shipped" : "Edit Shipping Details"}</DialogTitle>
+            <DialogDescription>
+              {shippingModalForAdvance
+                ? "Enter carrier and tracking information before marking this order as shipped."
+                : "Update the carrier, tracking number, and estimated delivery date."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="grid gap-4 py-2">
+            <div className="grid gap-2">
+              <Label htmlFor="modal-carrier">Carrier <span className="text-destructive">*</span></Label>
+              <Input
+                id="modal-carrier"
+                value={carrier}
+                onChange={(e) => setCarrier(e.target.value)}
+                placeholder="e.g. Sundarban Courier"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="modal-tracking">Tracking # <span className="text-destructive">*</span></Label>
+              <Input
+                id="modal-tracking"
+                value={tracking}
+                onChange={(e) => setTracking(e.target.value)}
+                placeholder="AWB / consignment"
+              />
+            </div>
+            <div className="grid gap-2">
+              <Label htmlFor="modal-eta">Est. Delivery</Label>
+              <Input id="modal-eta" type="date" value={eta} onChange={(e) => setEta(e.target.value)} />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={closeShippingModal}>Cancel</Button>
+            <Button onClick={saveShipping}>
+              <Save className="size-3.5 mr-1" /> Save
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
