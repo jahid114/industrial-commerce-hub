@@ -101,7 +101,6 @@ export interface Order {
   total: number;
   status: OrderStatus;
   paymentStatus?: PaymentStatus;
-  fulfillmentStatus?: FulfillmentStatus;
   paymentMethod: "COD" | "Bank Transfer" | "bKash" | "Nagad";
   shippingAddress: string;
   billingAddress?: string;
