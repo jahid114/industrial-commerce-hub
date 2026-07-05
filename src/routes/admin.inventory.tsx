@@ -531,12 +531,6 @@ function AddStockDialog({ productId, onProductChange, onClose }: {
           <Field label="Quantity">
             <Input type="number" min={1} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
           </Field>
-          <Field label="Destination">
-            <select className={selectCls()} value={destination} onChange={(e) => setDestination(e.target.value as "good" | "incoming")}>
-              <option value="good">Available now (Good stock)</option>
-              <option value="incoming">Incoming (in transit)</option>
-            </select>
-          </Field>
           <Field label="Unit cost (৳, optional)">
             <Input type="number" min={0} value={unitCost} onChange={(e) => setUnitCost(e.target.value)} placeholder="0" />
           </Field>
