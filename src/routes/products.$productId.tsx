@@ -61,13 +61,28 @@ function ProductDetailPage() {
   const category = getCategory(product.categoryId);
   const supplier = getSupplier(product.supplierId);
   const related = getRelatedProducts(product.id);
-  const { dispatch, wishlist, compare, user } = useStore();
+  const { dispatch, wishlist, compare, user, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
   const showAgent = canSeeAgentPrice(user?.role);
   const navigate = useNavigate();
   const [qty, setQty] = useState(product.moq);
   const [activeImage, setActiveImage] = useState(0);
   const inWishlist = wishlist.includes(product.id);
   const inCompare = compare.includes(product.id);
+
+  // Send logged-in customers to portal version of this product
+  useEffect(() => {
+    if (isAuthenticated && !isAdmin && !isAgent && !isPartner) {
+      navigate({ to: "/portal-customer/catalog/$productId", params: { productId: product.id } });
+    }
+  }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate, product.id]);
+
+  // Guests can only view featured products; redirect to login for portal-only items
+  useEffect(() => {
+    if (!isAuthenticated && !product.featured) {
+      navigate({ to: "/auth/login" });
+    }
+  }, [isAuthenticated, product.featured, navigate]);
+
 
   return (
     <PublicLayout>
