@@ -246,10 +246,8 @@ function AdminOrderDetail() {
         <div className="flex flex-wrap items-center gap-2">
           {nextAction && !isTerminal && order.status !== "On Hold" && (
             <Button
-              onClick={advanceDisabled ? () => toast.error("Add carrier & tracking # before shipping") : advanceStage}
-              disabled={advanceDisabled}
+              onClick={requiresShipping && !shippingReady ? () => openShippingModal(true) : advanceStage}
               className="font-bold uppercase"
-              title={advanceDisabled ? "Carrier and Tracking # required" : undefined}
             >
               <PlayCircle className="size-4 mr-2" /> {nextAction.label}
             </Button>
