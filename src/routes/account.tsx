@@ -5,6 +5,7 @@ import { PublicFooter } from "@/components/layout/PublicFooter";
 import { useStore } from "@/lib/store";
 import { User, Package, FileText, Heart, LogOut, LayoutDashboard } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/account")({
