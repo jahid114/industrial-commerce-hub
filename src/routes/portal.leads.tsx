@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,15 +16,11 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
-import { products } from "@/data/products";
-import { getAgentPrice } from "@/lib/pricing";
-import { formatBDT, formatDate, newOrderId } from "@/lib/format";
-import type { Order } from "@/data/types";
+import { formatBDT, formatDate } from "@/lib/format";
+import { NewOrderDialog } from "@/components/agent/NewOrderDialog";
+import { useAgentCustomers, newCustomerId, type AgentCustomer } from "@/lib/agent-customers";
 
 export const Route = createFileRoute("/portal/leads")({
   component: CustomersPage,
