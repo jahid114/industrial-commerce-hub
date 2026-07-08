@@ -63,9 +63,9 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
             <span className="truncate">{brand?.name}</span>
             {product.subcategory && <span className="truncate text-[10px] font-medium text-primary/80">{product.subcategory}</span>}
           </div>
-          <Link to="/products/$productId" params={{ productId: product.id }}>
+          <button onClick={(e) => { e.preventDefault(); setQuickOpen(true); }} className="text-left">
             <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug hover:text-primary">{product.name}</h3>
-          </Link>
+          </button>
           {product.tags && product.tags.length > 0 && (
             <div className="mt-2 flex flex-wrap gap-1">
               {product.tags.slice(0, 3).map((t) => (
