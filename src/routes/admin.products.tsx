@@ -114,6 +114,7 @@ function AdminProductsPage() {
                   <td className="px-4 py-3 text-right text-accent-foreground"><span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{formatBDT(p.agentPrice ?? Math.round(p.price * 0.92))}</span></td>
                   <td className="px-4 py-3 text-right">{inv.records[p.id]?.good ?? p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
+                    <Button size="icon" variant="ghost" onClick={() => setViewing(p)} className="text-primary hover:bg-primary/10 hover:text-primary"><Eye className="size-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => { setEditing(p); setOpen(true); }} className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"><Edit className="size-4" /></Button>
                     <Button size="icon" variant="ghost" onClick={() => setProductToDelete(p)} className="text-destructive hover:bg-destructive/20 hover:text-destructive"><Trash2 className="size-4" /></Button>
                   </td>
