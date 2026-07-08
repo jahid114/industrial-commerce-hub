@@ -110,7 +110,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
     if (mode === "existing") {
       return customers.find((c) => c.id === selectedCustomerId) ?? null;
     }
-    if (!newName.trim() || !newContact.trim() || !newPhone.trim() || !newAddress.trim()) return null;
+    if (!newContact.trim() || !newPhone.trim() || !newAddress.trim()) return null;
     return {
       id: newCustomerId(),
       name: newName.trim(),
@@ -150,16 +150,17 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
     if (!address.trim()) { toast.error("Delivery address required"); return; }
 
     let customer = resolvedCustomer;
+    const displayName = customer.name.trim() || customer.contact;
     if (mode === "new") {
       const updated = [customer, ...customers];
       setCustomers(updated);
       saveAgentCustomers(updated);
-      toast.success(`Customer ${customer.name} added`);
+      toast.success(`Customer ${displayName} added`);
     }
 
     const order: Order = {
       id: newOrderId(),
-      customerName: customer.name,
+      customerName: displayName,
       customerEmail: customer.email ?? "",
       customerPhone: customer.phone,
       date: new Date().toISOString().slice(0, 10),
@@ -179,12 +180,12 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
         at: new Date().toISOString(),
         by: user?.name ?? "Agent",
         type: "created",
-        message: `Order created for ${customer.name}`,
+        message: `Order created for ${displayName}`,
       }],
     };
     dispatch({ type: "ADD_ORDER", order });
     if (preloadCart) dispatch({ type: "CLEAR_CART" });
-    toast.success(`Order ${order.id} placed for ${customer.name}`);
+    toast.success(`Order ${order.id} placed for ${displayName}`);
     onPlaced?.(order);
     onOpenChange(false);
   };
@@ -233,7 +234,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                 </Select>
               ) : (
                 <div className="grid gap-3 md:grid-cols-2">
-                  <div><Label className="mb-1.5 inline-block text-xs">Company *</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></div>
+                  <div><Label className="mb-1.5 inline-block text-xs">Company</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></div>
                   <div><Label className="mb-1.5 inline-block text-xs">Contact person *</Label><Input value={newContact} onChange={(e) => setNewContact(e.target.value)} /></div>
                   <div><Label className="mb-1.5 inline-block text-xs">Phone *</Label><Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} /></div>
                   <div><Label className="mb-1.5 inline-block text-xs">Email</Label><Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} /></div>
