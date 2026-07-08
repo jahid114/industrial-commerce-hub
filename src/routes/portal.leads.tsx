@@ -66,7 +66,7 @@ const schema = z.object({
   email: z.string().email().optional().or(z.literal("")),
   interest: z.string().min(2, "Interest required"),
   stage: z.enum(["New", "Warm", "Hot", "Quoted", "Closed Won"]),
-  est: z.coerce.number().min(0),
+  est: z.number().min(0),
   notes: z.string().optional(),
 });
 type FormValues = z.infer<typeof schema>;
