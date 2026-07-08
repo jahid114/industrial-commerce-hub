@@ -20,6 +20,7 @@ export const Route = createFileRoute("/portal/catalog")({
 function AgentCatalogPage() {
   const { dispatch, isAgent } = useStore();
   const [q, setQ] = useState("");
+  const [viewing, setViewing] = useState<Product | null>(null);
   if (!isAgent) return <div className="text-sm text-muted-foreground">Agent-only catalog.</div>;
   const list = products.filter((p) => `${p.name} ${p.sku}`.toLowerCase().includes(q.toLowerCase()));
 
