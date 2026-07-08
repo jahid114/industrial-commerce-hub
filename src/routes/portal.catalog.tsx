@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { formatBDT } from "@/lib/format";
 import { getAgentPrice } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
+import { ProductQuickView } from "@/components/product/ProductQuickView";
+import type { Product } from "@/data/types";
 
 export const Route = createFileRoute("/portal/catalog")({
   component: AgentCatalogPage,
