@@ -89,6 +89,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, orders: [action.order, ...state.orders] };
     case "UPDATE_ORDER":
       return { ...state, orders: state.orders.map((o) => (o.id === action.id ? { ...o, ...action.patch } : o)) };
+    case "REMOVE_ORDER":
+      return { ...state, orders: state.orders.filter((o) => o.id !== action.id) };
     case "ADD_QUOTATION":
       return { ...state, quotations: [action.quotation, ...state.quotations] };
     case "UPDATE_QUOTATION":
