@@ -138,5 +138,6 @@ function PortalLayout() {
         </main>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
