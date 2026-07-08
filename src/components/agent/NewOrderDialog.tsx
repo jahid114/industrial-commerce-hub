@@ -13,6 +13,7 @@ import {
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { products } from "@/data/products";
+import { agents } from "@/data/agents";
 import { getAgentPrice } from "@/lib/pricing";
 import { formatBDT, newOrderId } from "@/lib/format";
 import type { Order } from "@/data/types";
