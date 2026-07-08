@@ -38,6 +38,7 @@ type Action =
   | { type: "UPDATE_PROFILE"; user: Partial<User> }
   | { type: "ADD_ORDER"; order: Order }
   | { type: "UPDATE_ORDER"; id: string; patch: Partial<Order> }
+  | { type: "REMOVE_ORDER"; id: string }
   | { type: "ADD_QUOTATION"; quotation: Quotation }
   | { type: "UPDATE_QUOTATION"; id: string; patch: Partial<Quotation> }
   | { type: "HYDRATE"; state: State };
