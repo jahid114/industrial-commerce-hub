@@ -1,6 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus, Edit, Trash2, Search } from "lucide-react";
+import { Plus, Edit, Trash2, Search, Eye } from "lucide-react";
+import { ProductQuickView } from "@/components/product/ProductQuickView";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
