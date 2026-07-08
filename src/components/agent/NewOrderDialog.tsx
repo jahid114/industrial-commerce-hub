@@ -159,6 +159,9 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
       toast.success(`Customer ${displayName} added`);
     }
 
+    const matchedAgent = user?.email ? agents.find((a) => a.email.toLowerCase() === user.email.toLowerCase()) : undefined;
+    const agentId = matchedAgent?.id ?? (user?.email ? `ag-user:${user.email}` : "ag-user:agent");
+
     const order: Order = {
       id: newOrderId(),
       customerName: displayName,
@@ -176,6 +179,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
       paymentStatus: "Unpaid",
       paymentMethod: payment,
       shippingAddress: address,
+      agentId,
       internalNotes: notes || undefined,
       timeline: [{
         at: new Date().toISOString(),
