@@ -233,7 +233,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                 </Select>
               ) : (
                 <div className="grid gap-3 md:grid-cols-2">
-                  <div><Label className="mb-1.5 inline-block text-xs">Company *</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></div>
+                  <div><Label className="mb-1.5 inline-block text-xs">Company</Label><Input value={newName} onChange={(e) => setNewName(e.target.value)} /></div>
                   <div><Label className="mb-1.5 inline-block text-xs">Contact person *</Label><Input value={newContact} onChange={(e) => setNewContact(e.target.value)} /></div>
                   <div><Label className="mb-1.5 inline-block text-xs">Phone *</Label><Input value={newPhone} onChange={(e) => setNewPhone(e.target.value)} /></div>
                   <div><Label className="mb-1.5 inline-block text-xs">Email</Label><Input type="email" value={newEmail} onChange={(e) => setNewEmail(e.target.value)} /></div>
