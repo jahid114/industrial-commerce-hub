@@ -139,86 +139,12 @@ function PortalCatalog() {
             </div>
           ) : (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4">
-              {filtered.map((p, i) => <PortalProductCard key={p.id} product={p} index={i} />)}
+              {filtered.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
             </div>
           )}
         </div>
       </div>
     </div>
-  );
-}
-
-function PortalProductCard({ product, index }: { product: Product; index: number }) {
-  const { dispatch, wishlist, compare, user } = useStore();
-  const inWishlist = wishlist.includes(product.id);
-  const inCompare = compare.includes(product.id);
-  const showAgent = canSeeAgentPrice(user?.role);
-  const brand = getBrand(product.brandId);
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.25, delay: Math.min(index * 0.02, 0.3) }}
-      className="group relative flex flex-col overflow-hidden rounded-lg border border-border bg-card transition-all hover:border-primary hover:shadow-lg"
-    >
-      <div className="absolute right-2 top-2 z-10 flex flex-col gap-1.5 opacity-0 transition-opacity group-hover:opacity-100">
-        <button
-          onClick={() => { dispatch({ type: "TOGGLE_WISHLIST", productId: product.id }); toast.success(inWishlist ? "Removed from wishlist" : "Added to wishlist"); }}
-          className={cn("flex size-8 items-center justify-center rounded-full border bg-card hover:bg-primary hover:text-primary-foreground hover:border-primary", inWishlist && "bg-primary text-primary-foreground border-primary")}
-          aria-label="Wishlist"
-        >
-          <Heart className="size-4" fill={inWishlist ? "currentColor" : "none"} />
-        </button>
-        <button
-          onClick={() => { dispatch({ type: "TOGGLE_COMPARE", productId: product.id }); toast.success(inCompare ? "Removed from compare" : "Added to compare"); }}
-          className={cn("flex size-8 items-center justify-center rounded-full border bg-card hover:bg-accent hover:text-accent-foreground hover:border-accent", inCompare && "bg-accent text-accent-foreground border-accent")}
-          aria-label="Compare"
-        >
-          <GitCompare className="size-4" />
-        </button>
-      </div>
-
-      <Link to="/portal-customer/catalog/$productId" params={{ productId: product.id }} className="block">
-        <div className="relative aspect-square overflow-hidden bg-spec">
-          <img src={product.image} alt={product.name} loading="lazy" className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
-          <div className="absolute left-2 top-2 flex flex-col gap-1">
-            {!product.featured ? (
-              <Badge className="bg-industrial text-industrial-foreground hover:bg-industrial gap-1"><Lock className="size-2.5" /> Portal</Badge>
-            ) : (
-              <Badge className="bg-accent text-accent-foreground hover:bg-accent">Public</Badge>
-            )}
-            <Badge variant="outline" className="bg-card/90 text-[10px]">{product.country}</Badge>
-          </div>
-        </div>
-      </Link>
-
-      <div className="flex flex-1 flex-col p-4">
-        <div className="mb-1 text-xs font-bold uppercase tracking-wider text-muted-foreground truncate">{brand?.name}</div>
-        <Link to="/portal-customer/catalog/$productId" params={{ productId: product.id }}>
-          <h3 className="line-clamp-2 min-h-[2.5rem] text-sm font-semibold leading-snug hover:text-primary">{product.name}</h3>
-        </Link>
-        <div className="my-3 flex flex-wrap gap-x-3 gap-y-1 text-[11px] text-muted-foreground">
-          <span>MOQ: <strong className="text-foreground">{product.moq}</strong></span>
-          <span>Delivery: <strong className="text-foreground">{product.deliveryDays}</strong></span>
-        </div>
-
-        <div className="mt-auto">
-          <div className="text-[10px] uppercase text-muted-foreground">From</div>
-          <div className="font-display text-lg font-bold text-primary">{formatBDT(product.price)}</div>
-          {showAgent && (
-            <div className="mt-1 text-[11px] text-accent">Agent: {formatBDT(getAgentPrice(product))}</div>
-          )}
-        </div>
-        <div className="mt-3 grid grid-cols-2 gap-2">
-          <Button size="sm" onClick={() => { dispatch({ type: "ADD_TO_CART", productId: product.id, quantity: product.moq }); toast.success("Added to cart"); }} className="h-9 text-xs font-semibold">
-            <ShoppingCart className="size-3.5 mr-1" /> Add
-          </Button>
-          <Button asChild size="sm" variant="outline" className="h-9 text-xs font-semibold">
-            <Link to="/portal-customer/catalog/$productId" params={{ productId: product.id }}>Details</Link>
-          </Button>
-        </div>
-      </div>
-    </motion.div>
   );
 }
 
