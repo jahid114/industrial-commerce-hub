@@ -99,27 +99,91 @@ export function PublicHeader() {
       {/* Category nav */}
       <nav className="hidden md:block border-t border-border bg-card">
         <div className="container mx-auto flex items-center gap-1 px-4">
-          <div className="relative">
+          <div className="relative" ref={megaRef}>
             <button
-              onClick={() => setCategoriesOpen((v) => !v)}
-              onBlur={() => setTimeout(() => setCategoriesOpen(false), 200)}
+              onClick={() => { setCategoriesOpen((v) => !v); setActiveCategory(null); }}
               className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 text-sm font-bold uppercase tracking-wide"
             >
-              <Menu className="size-4" /> All Categories <ChevronDown className="size-3" />
+              <Menu className="size-4" /> All Categories <ChevronDown className={`size-3 transition-transform ${categoriesOpen ? "rotate-180" : ""}`} />
             </button>
             {categoriesOpen && (
-              <div className="absolute left-0 top-full z-50 w-72 rounded-lg border border-border bg-card shadow-xl">
-                {categories.map((c) => (
-                  <Link
-                    key={c.id}
-                    to="/products"
-                    search={{ category: c.id } as never}
-                    className="flex items-center justify-between border-b border-border px-4 py-3 text-sm hover:bg-secondary hover:text-primary last:border-0"
-                  >
-                    <span className="font-medium">{c.name}</span>
-                    <span className="text-xs text-muted-foreground">{c.subcategories.length} types</span>
-                  </Link>
-                ))}
+              <div className="absolute left-0 top-full z-50 mt-1 flex w-[720px] max-w-[92vw] overflow-hidden rounded-lg border border-border bg-card shadow-2xl">
+                {/* Left: categories */}
+                <div className="w-[280px] shrink-0 border-r border-border bg-secondary/40">
+                  <div className="border-b border-border px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                    Categories
+                  </div>
+                  <ul className="max-h-[420px] overflow-y-auto py-1">
+                    {categories.map((c) => {
+                      const isActive = activeCategory === c.id;
+                      return (
+                        <li key={c.id}>
+                          <div
+                            className={`flex items-center justify-between gap-2 px-4 py-2.5 text-sm transition-colors ${isActive ? "bg-card text-primary" : "hover:bg-card"}`}
+                          >
+                            <Link
+                              to="/products"
+                              search={{ category: c.id } as never}
+                              onClick={() => { setCategoriesOpen(false); setActiveCategory(null); }}
+                              className="flex-1 truncate font-medium hover:text-primary"
+                            >
+                              {c.name}
+                            </Link>
+                            <button
+                              type="button"
+                              onClick={(e) => { e.stopPropagation(); setActiveCategory(isActive ? null : c.id); }}
+                              className={`flex size-6 items-center justify-center rounded hover:bg-secondary ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                              aria-label={`Show ${c.name} subcategories`}
+                              aria-expanded={isActive}
+                            >
+                              <ChevronRight className={`size-4 transition-transform ${isActive ? "rotate-90" : ""}`} />
+                            </button>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </ul>
+                </div>
+
+                {/* Right: subcategories */}
+                <div className="flex-1 p-5 min-h-[320px]">
+                  {activeCat ? (
+                    <div>
+                      <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                        <h4 className="font-display text-base font-bold">{activeCat.name}</h4>
+                        <Link
+                          to="/products"
+                          search={{ category: activeCat.id } as never}
+                          onClick={() => { setCategoriesOpen(false); setActiveCategory(null); }}
+                          className="text-xs font-medium text-primary hover:underline"
+                        >
+                          View all →
+                        </Link>
+                      </div>
+                      <ul className="grid grid-cols-2 gap-1.5">
+                        {activeCat.subcategories.map((s) => (
+                          <li key={s}>
+                            <Link
+                              to="/products"
+                              search={{ category: activeCat.id, sub: s } as never}
+                              onClick={() => { setCategoriesOpen(false); setActiveCategory(null); }}
+                              className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-secondary hover:text-primary"
+                            >
+                              <Tag className="size-3 text-muted-foreground" />
+                              {s}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : (
+                    <div className="flex h-full min-h-[280px] flex-col items-center justify-center text-center text-muted-foreground">
+                      <Menu className="size-8 opacity-40" />
+                      <p className="mt-3 text-sm font-medium">Select a category</p>
+                      <p className="mt-1 text-xs">Click the arrow on any category to see its subcategories</p>
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </div>
