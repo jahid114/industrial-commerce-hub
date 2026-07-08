@@ -231,7 +231,7 @@ function CustomerFormDialog({
                 </SelectContent>
               </Select>
             </Field>
-            <Field label="Est. value (৳)" err={form.formState.errors.est?.message}><Input type="number" min={0} {...form.register("est")} /></Field>
+            <Field label="Est. value (৳)" err={form.formState.errors.est?.message}><Input type="number" min={0} {...form.register("est", { valueAsNumber: true })} /></Field>
           </div>
           <Field label="Notes (optional)"><Textarea rows={2} {...form.register("notes")} /></Field>
           <DialogFooter>
