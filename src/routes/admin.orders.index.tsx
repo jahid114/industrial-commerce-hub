@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Download, FileText, Eye } from "lucide-react";
+import { Download, FileText, Eye, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice, generateOrdersReport } from "@/lib/pdf";
 import { ALL_ORDER_STATUSES, derivePaymentStatus } from "@/lib/order-workflow";
+import { resolveAgentInfo } from "@/data/agents";
 import type { OrderStatus, PaymentStatus } from "@/data/types";
 
 export const Route = createFileRoute("/admin/orders/")({
