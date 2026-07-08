@@ -144,6 +144,8 @@ function AdminProductsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ProductQuickView product={viewing} open={!!viewing} onOpenChange={(v) => { if (!v) setViewing(null); }} />
     </div>
   );
 }
