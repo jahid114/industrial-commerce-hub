@@ -149,16 +149,8 @@ export function PublicHeader() {
                 <div className="flex-1 p-5 min-h-[320px]">
                   {activeCat ? (
                     <div>
-                      <div className="mb-3 flex items-center justify-between border-b border-border pb-2">
+                  <div className="mb-3 border-b border-border pb-2">
                         <h4 className="font-display text-base font-bold">{activeCat.name}</h4>
-                        <Link
-                          to="/products"
-                          search={{ category: activeCat.id } as never}
-                          onClick={() => { setCategoriesOpen(false); setActiveCategory(null); }}
-                          className="text-xs font-medium text-primary hover:underline"
-                        >
-                          View all →
-                        </Link>
                       </div>
                       <ul className="grid grid-cols-2 gap-1.5">
                         {activeCat.subcategories.map((s) => (
