@@ -42,6 +42,7 @@ function AdminProductsPage() {
   const [editing, setEditing] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
+  const [viewing, setViewing] = useState<Product | null>(null);
 
   const filtered = products.filter((p) => `${p.name} ${p.sku}`.toLowerCase().includes(search.toLowerCase()));
 
