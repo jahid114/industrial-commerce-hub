@@ -1,18 +1,18 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Heart, GitCompare, Eye, Package, Truck, Check, ShieldCheck, ShoppingCart, Factory, Tag } from "lucide-react";
+import { Heart, GitCompare, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import type { Product } from "@/data/types";
 import { getBrand } from "@/data/brands";
 import { getCategory } from "@/data/categories";
-import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
+import { ProductQuickView } from "./ProductQuickView";
+
 
 export function ProductCard({ product, index = 0 }: { product: Product; index?: number }) {
   const { dispatch, wishlist, compare } = useStore();
