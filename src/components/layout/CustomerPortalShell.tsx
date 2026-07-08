@@ -131,5 +131,6 @@ export function CustomerPortalShell({ children }: { children: ReactNode }) {
         <main className="flex-1 p-4 lg:p-6">{children}</main>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
