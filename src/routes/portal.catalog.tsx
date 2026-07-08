@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Search } from "lucide-react";
+import { Search, Eye } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -10,6 +10,8 @@ import { formatBDT } from "@/lib/format";
 import { getAgentPrice } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
+import { ProductQuickView } from "@/components/product/ProductQuickView";
+import type { Product } from "@/data/types";
 
 export const Route = createFileRoute("/portal/catalog")({
   component: AgentCatalogPage,
@@ -18,6 +20,7 @@ export const Route = createFileRoute("/portal/catalog")({
 function AgentCatalogPage() {
   const { dispatch, isAgent } = useStore();
   const [q, setQ] = useState("");
+  const [viewing, setViewing] = useState<Product | null>(null);
   if (!isAgent) return <div className="text-sm text-muted-foreground">Agent-only catalog.</div>;
   const list = products.filter((p) => `${p.name} ${p.sku}`.toLowerCase().includes(q.toLowerCase()));
 
@@ -63,7 +66,8 @@ function AgentCatalogPage() {
                     <td className="px-4 py-3 text-right text-muted-foreground line-through">{formatBDT(p.price)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(ap)}</td>
                     <td className="px-4 py-3 text-right text-success font-semibold">+{formatBDT(margin)}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right space-x-1">
+                      <Button size="icon" variant="ghost" onClick={() => setViewing(p)} className="text-primary hover:bg-primary/10 hover:text-primary"><Eye className="size-4" /></Button>
                       <Button size="sm" onClick={() => { dispatch({ type: "ADD_TO_CART", productId: p.id, quantity: p.moq }); toast.success("Added at agent price"); }}>Order</Button>
                     </td>
                   </tr>
@@ -73,6 +77,8 @@ function AgentCatalogPage() {
           </table>
         </div>
       </div>
+
+      <ProductQuickView product={viewing} open={!!viewing} onOpenChange={(v) => { if (!v) setViewing(null); }} />
     </div>
   );
 }
