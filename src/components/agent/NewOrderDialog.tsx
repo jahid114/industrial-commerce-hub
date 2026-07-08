@@ -110,7 +110,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
     if (mode === "existing") {
       return customers.find((c) => c.id === selectedCustomerId) ?? null;
     }
-    if (!newName.trim() || !newContact.trim() || !newPhone.trim() || !newAddress.trim()) return null;
+    if (!newContact.trim() || !newPhone.trim() || !newAddress.trim()) return null;
     return {
       id: newCustomerId(),
       name: newName.trim(),
