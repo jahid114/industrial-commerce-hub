@@ -45,16 +45,10 @@ export function CustomerPortalShell({ children }: { children: ReactNode }) {
           {collapsed ? (
             <div className="mx-auto h-7 w-1.5 bg-primary" aria-hidden />
           ) : (
-            <div>
-              <Logo variant="light" />
-              <div className="mt-1 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
-                Customer Portal
-                <Badge variant="outline" className="border-white/20 text-[10px] text-white/80">Demo</Badge>
-              </div>
-            </div>
+            <Logo variant="light" />
           )}
-          <button onClick={toggle} className="hidden lg:flex size-7 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
-            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+          <button onClick={toggle} className="hidden lg:flex size-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+            {collapsed ? <PanelLeftOpen className="size-5" /> : <PanelLeftClose className="size-5" />}
           </button>
         </div>
         <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
