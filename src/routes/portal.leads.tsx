@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -16,41 +16,15 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
-import { products } from "@/data/products";
-import { getAgentPrice } from "@/lib/pricing";
-import { formatBDT, formatDate, newOrderId } from "@/lib/format";
-import type { Order } from "@/data/types";
+import { formatBDT, formatDate } from "@/lib/format";
+import { NewOrderDialog } from "@/components/agent/NewOrderDialog";
+import { useAgentCustomers, newCustomerId, type AgentCustomer } from "@/lib/agent-customers";
 
 export const Route = createFileRoute("/portal/leads")({
   component: CustomersPage,
 });
-
-interface Customer {
-  id: string;
-  name: string;
-  contact: string;
-  phone: string;
-  email?: string;
-  interest: string;
-  address: string;
-  est: number;
-  notes?: string;
-}
-
-const seed: Customer[] = [
-  { id: "C-1042", name: "Rahim Textile Mills", contact: "Md. Tarek", phone: "+8801711-902341", email: "tarek@rahimtex.bd", interest: "Bosch GBH 2-26 × 30", address: "Plot 14, BSCIC I/A, Tongi, Gazipur", est: 855000 },
-  { id: "C-1041", name: "Padma Spinning Ltd.", contact: "Sumon Hasan", phone: "+8801812-554021", email: "sumon@padma.bd", interest: "Siemens S7-1200 × 8", address: "Padma Mill Road, Ishwardi EPZ, Pabna", est: 624000 },
-  { id: "C-1040", name: "Bengal Auto Parts", contact: "Arif Mahmud", phone: "+8801913-330218", interest: "Makita GA9020 × 20", address: "Dholaikhal, Old Dhaka", est: 316000 },
-  { id: "C-1039", name: "Apex Garments", contact: "Nasrin Akter", phone: "+8801714-887701", email: "nasrin@apex.bd", interest: "ABB ACS580 × 4", address: "Sector 4, Uttara EPZ, Dhaka", est: 1240000 },
-  { id: "C-1038", name: "Meghna Steel", contact: "Iqbal Hossain", phone: "+8801715-621199", interest: "Festo pneumatic kit", address: "Meghna Ghat, Sonargaon, Narayanganj", est: 482000 },
-];
-
-const KEY = "megahaus-agent-customers-v2";
 
 const schema = z.object({
   name: z.string().min(2, "Company name required"),
@@ -65,26 +39,13 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 function CustomersPage() {
-  const [items, setItems] = useState<Customer[]>(seed);
+  const [items, setItems] = useAgentCustomers();
   const [query, setQuery] = useState("");
-  const [editing, setEditing] = useState<Customer | null>(null);
+  const [editing, setEditing] = useState<AgentCustomer | null>(null);
   const [creating, setCreating] = useState(false);
-  const [deleting, setDeleting] = useState<Customer | null>(null);
-  const [viewing, setViewing] = useState<Customer | null>(null);
-  const [ordering, setOrdering] = useState<Customer | null>(null);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      const raw = localStorage.getItem(KEY);
-      if (raw) setItems(JSON.parse(raw));
-    } catch { /* ignore */ }
-  }, []);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try { localStorage.setItem(KEY, JSON.stringify(items)); } catch { /* ignore */ }
-  }, [items]);
+  const [deleting, setDeleting] = useState<AgentCustomer | null>(null);
+  const [viewing, setViewing] = useState<AgentCustomer | null>(null);
+  const [ordering, setOrdering] = useState<AgentCustomer | null>(null);
 
   const filtered = items.filter((c) => {
     if (!query) return true;
@@ -92,18 +53,17 @@ function CustomersPage() {
     return c.name.toLowerCase().includes(q) || c.contact.toLowerCase().includes(q) || c.interest.toLowerCase().includes(q);
   });
 
-  const upsert = (values: FormValues, existing?: Customer) => {
+  const upsert = (values: FormValues, existing?: AgentCustomer) => {
     if (existing) {
       setItems((p) => p.map((x) => x.id === existing.id ? { ...existing, ...values } : x));
       toast.success("Customer updated");
     } else {
-      const id = `C-${Math.floor(1000 + Math.random() * 9000)}`;
-      setItems((p) => [{ id, ...values }, ...p]);
+      setItems((p) => [{ id: newCustomerId(), ...values }, ...p]);
       toast.success("Customer added");
     }
   };
 
-  const remove = (c: Customer) => {
+  const remove = (c: AgentCustomer) => {
     setItems((p) => p.filter((x) => x.id !== c.id));
     toast.success("Customer deleted");
   };
@@ -170,8 +130,9 @@ function CustomersPage() {
       />
 
       <NewOrderDialog
-        customer={ordering}
+        open={!!ordering}
         onOpenChange={(v) => { if (!v) setOrdering(null); }}
+        presetCustomer={ordering}
       />
 
       <AlertDialog open={!!deleting} onOpenChange={(v) => { if (!v) setDeleting(null); }}>
@@ -202,7 +163,7 @@ function CustomerFormDialog({
 }: {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  initial?: Customer;
+  initial?: AgentCustomer;
   onSubmit: (v: FormValues) => void;
 }) {
   const form = useForm<FormValues>({
@@ -243,9 +204,9 @@ function CustomerFormDialog({
 function CustomerDetailDialog({
   customer, onOpenChange, onNewOrder,
 }: {
-  customer: Customer | null;
+  customer: AgentCustomer | null;
   onOpenChange: (v: boolean) => void;
-  onNewOrder: (c: Customer) => void;
+  onNewOrder: (c: AgentCustomer) => void;
 }) {
   const { orders } = useStore();
   const custOrders = useMemo(() => {
@@ -325,202 +286,6 @@ function Info({ label, value }: { label: string; value: string }) {
       <div className="text-xs uppercase tracking-wide text-muted-foreground">{label}</div>
       <div className="font-medium">{value}</div>
     </div>
-  );
-}
-
-interface LineItem {
-  productId: string;
-  quantity: number;
-  unitPrice: number;
-}
-
-function NewOrderDialog({
-  customer, onOpenChange,
-}: {
-  customer: Customer | null;
-  onOpenChange: (v: boolean) => void;
-}) {
-  const { dispatch } = useStore();
-  const [lines, setLines] = useState<LineItem[]>([]);
-  const [pickerId, setPickerId] = useState<string>("");
-  const [payment, setPayment] = useState<Order["paymentMethod"]>("Bank Transfer");
-  const [address, setAddress] = useState("");
-  const [notes, setNotes] = useState("");
-
-  useEffect(() => {
-    if (customer) {
-      setLines([]);
-      setPickerId("");
-      setPayment("Bank Transfer");
-      setAddress(customer.address);
-      setNotes("");
-    }
-  }, [customer]);
-
-  const addLine = () => {
-    if (!pickerId) return;
-    if (lines.some((l) => l.productId === pickerId)) {
-      toast.error("Product already added");
-      return;
-    }
-    const p = products.find((x) => x.id === pickerId);
-    if (!p) return;
-    setLines((prev) => [...prev, { productId: p.id, quantity: p.moq, unitPrice: getAgentPrice(p) }]);
-    setPickerId("");
-  };
-
-  const updateLine = (id: string, patch: Partial<LineItem>) => {
-    setLines((prev) => prev.map((l) => l.productId === id ? { ...l, ...patch } : l));
-  };
-
-  const removeLine = (id: string) => {
-    setLines((prev) => prev.filter((l) => l.productId !== id));
-  };
-
-  const subtotal = lines.reduce((s, l) => s + l.unitPrice * l.quantity, 0);
-  const vat = Math.round(subtotal * 0.05);
-  const total = subtotal + vat;
-
-  const placeOrder = () => {
-    if (!customer) return;
-    if (lines.length === 0) { toast.error("Add at least one product"); return; }
-    if (!address.trim()) { toast.error("Delivery address required"); return; }
-
-    const order: Order = {
-      id: newOrderId(),
-      customerName: customer.name,
-      customerEmail: customer.email ?? "",
-      customerPhone: customer.phone,
-      date: new Date().toISOString().slice(0, 10),
-      items: lines.map((l) => {
-        const p = products.find((x) => x.id === l.productId)!;
-        return { productId: p.id, name: p.name, quantity: l.quantity, unitPrice: l.unitPrice, sku: p.sku };
-      }),
-      subtotal,
-      tax: vat,
-      total,
-      status: "Pending",
-      paymentStatus: "Unpaid",
-      paymentMethod: payment,
-      shippingAddress: address,
-      internalNotes: notes || undefined,
-    };
-    dispatch({ type: "ADD_ORDER", order });
-    toast.success(`Order ${order.id} placed for ${customer.name}`);
-    onOpenChange(false);
-  };
-
-  return (
-    <Dialog open={!!customer} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>New order for {customer?.name}</DialogTitle>
-          <DialogDescription>Add products, adjust selling price per unit, and place the order on the customer's behalf.</DialogDescription>
-        </DialogHeader>
-
-        <div className="space-y-4">
-          <div className="rounded-lg border border-border p-3 space-y-3">
-            <div className="text-sm font-semibold">Products</div>
-            <div className="flex gap-2">
-              <Select value={pickerId} onValueChange={setPickerId}>
-                <SelectTrigger className="flex-1"><SelectValue placeholder="Select a product to add…" /></SelectTrigger>
-                <SelectContent>
-                  {products.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name} — {formatBDT(getAgentPrice(p))}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <Button type="button" onClick={addLine} disabled={!pickerId}><Plus className="size-4 mr-1.5" />Add</Button>
-            </div>
-
-            {lines.length === 0 ? (
-              <div className="rounded-md border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-                No products added yet.
-              </div>
-            ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead className="bg-spec text-xs uppercase text-muted-foreground">
-                    <tr>
-                      <th className="px-2 py-2 text-left">Product</th>
-                      <th className="px-2 py-2 text-right w-24">Qty</th>
-                      <th className="px-2 py-2 text-right w-36">Unit price (৳)</th>
-                      <th className="px-2 py-2 text-right w-32">Line total</th>
-                      <th className="px-2 py-2 w-10"></th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-border">
-                    {lines.map((l) => {
-                      const p = products.find((x) => x.id === l.productId)!;
-                      const agent = getAgentPrice(p);
-                      return (
-                        <tr key={l.productId}>
-                          <td className="px-2 py-2">
-                            <div className="font-medium line-clamp-1">{p.name}</div>
-                            <div className="text-xs text-muted-foreground">Agent ৳ {agent.toLocaleString()} · List ৳ {p.price.toLocaleString()}</div>
-                          </td>
-                          <td className="px-2 py-2">
-                            <Input type="number" min={1} value={l.quantity}
-                              onChange={(e) => updateLine(l.productId, { quantity: Math.max(1, Number(e.target.value) || 1) })}
-                              className="text-right h-8" />
-                          </td>
-                          <td className="px-2 py-2">
-                            <Input type="number" min={0} value={l.unitPrice}
-                              onChange={(e) => updateLine(l.productId, { unitPrice: Math.max(0, Number(e.target.value) || 0) })}
-                              className="text-right h-8" />
-                          </td>
-                          <td className="px-2 py-2 text-right font-semibold">{formatBDT(l.unitPrice * l.quantity)}</td>
-                          <td className="px-2 py-2 text-right">
-                            <Button size="icon" variant="ghost" onClick={() => removeLine(l.productId)} className="text-destructive hover:text-destructive size-8">
-                              <Trash2 className="size-4" />
-                            </Button>
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            )}
-          </div>
-
-          <div className="grid gap-3 md:grid-cols-2">
-            <div>
-              <Label className="mb-1.5 inline-block text-sm">Payment method</Label>
-              <Select value={payment} onValueChange={(v) => setPayment(v as Order["paymentMethod"])}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {(["Bank Transfer", "bKash", "Nagad", "COD"] as const).map((m) => (
-                    <SelectItem key={m} value={m}>{m}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <Label className="mb-1.5 inline-block text-sm">Delivery address</Label>
-              <Textarea rows={2} value={address} onChange={(e) => setAddress(e.target.value)} />
-            </div>
-            <div className="md:col-span-2">
-              <Label className="mb-1.5 inline-block text-sm">Order notes (optional)</Label>
-              <Textarea rows={2} value={notes} onChange={(e) => setNotes(e.target.value)} placeholder="Delivery instructions, PO, etc." />
-            </div>
-          </div>
-
-          <div className="rounded-lg border border-border bg-secondary/30 p-3 text-sm space-y-1">
-            <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>{formatBDT(subtotal)}</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">VAT (5%)</span><span>{formatBDT(vat)}</span></div>
-            <div className="flex justify-between border-t border-border pt-2 font-bold text-base">
-              <span>Total</span><span className="text-primary font-display text-lg">{formatBDT(total)}</span>
-            </div>
-          </div>
-        </div>
-
-        <DialogFooter>
-          <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>Cancel</Button>
-          <Button type="button" onClick={placeOrder}>Place Order</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
   );
 }
 

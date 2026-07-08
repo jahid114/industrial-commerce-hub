@@ -38,6 +38,7 @@ type Action =
   | { type: "UPDATE_PROFILE"; user: Partial<User> }
   | { type: "ADD_ORDER"; order: Order }
   | { type: "UPDATE_ORDER"; id: string; patch: Partial<Order> }
+  | { type: "REMOVE_ORDER"; id: string }
   | { type: "ADD_QUOTATION"; quotation: Quotation }
   | { type: "UPDATE_QUOTATION"; id: string; patch: Partial<Quotation> }
   | { type: "HYDRATE"; state: State };
@@ -88,6 +89,8 @@ function reducer(state: State, action: Action): State {
       return { ...state, orders: [action.order, ...state.orders] };
     case "UPDATE_ORDER":
       return { ...state, orders: state.orders.map((o) => (o.id === action.id ? { ...o, ...action.patch } : o)) };
+    case "REMOVE_ORDER":
+      return { ...state, orders: state.orders.filter((o) => o.id !== action.id) };
     case "ADD_QUOTATION":
       return { ...state, quotations: [action.quotation, ...state.quotations] };
     case "UPDATE_QUOTATION":
