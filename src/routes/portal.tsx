@@ -3,12 +3,15 @@ import { useEffect, useState } from "react";
 import {
   LayoutDashboard, Package, ShoppingBag, Wallet, Users,
   FileText, BarChart3, Briefcase, LogOut, Menu, X, User,
+  PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useStore } from "@/lib/store";
+import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal")({
@@ -38,6 +41,7 @@ function PortalLayout() {
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
   const [open, setOpen] = useState(false);
+  const { collapsed, toggle } = useSidebarCollapsed();
 
   useEffect(() => {
     if (!isAuthenticated) navigate({ to: "/auth/login" });
@@ -50,36 +54,51 @@ function PortalLayout() {
   const surface = isAgent ? "Agent Portal" : "Partner Portal";
 
   return (
+    <TooltipProvider delayDuration={0}>
     <div className="flex min-h-screen bg-secondary">
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-transform lg:static lg:translate-x-0 ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        <div className="border-b border-sidebar-border p-5">
-          <Logo variant="light" />
-          <div className="mt-1 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
-            {surface}
-            <Badge variant="outline" className="border-white/20 text-[10px] text-white/80">Demo</Badge>
-          </div>
+      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-all lg:static lg:translate-x-0 ${collapsed ? "lg:w-16" : "lg:w-64"} ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
+        <div className={`flex items-center justify-between border-b border-sidebar-border ${collapsed ? "p-3" : "p-5"}`}>
+          {collapsed ? (
+            <div className="mx-auto h-7 w-1.5 bg-primary" aria-hidden />
+          ) : (
+            <div>
+              <Logo variant="light" />
+              <div className="mt-1 flex items-center gap-2 text-xs font-bold uppercase tracking-widest text-accent">
+                {surface}
+                <Badge variant="outline" className="border-white/20 text-[10px] text-white/80">Demo</Badge>
+              </div>
+            </div>
+          )}
+          <button onClick={toggle} className="hidden lg:flex size-7 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
+            {collapsed ? <PanelLeftOpen className="size-4" /> : <PanelLeftClose className="size-4" />}
+          </button>
         </div>
         <nav className="flex-1 space-y-1 p-3">
           {nav.map((it) => {
             const isActive = it.exact ? pathname === it.to : pathname.startsWith(it.to);
-            return (
+            const linkEl = (
               <Link
                 key={it.to}
                 to={it.to as never}
                 onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent"}`}
+                className={`flex items-center gap-3 rounded-lg py-3 text-sm font-medium transition-colors ${collapsed ? "justify-center px-2" : "px-4"} ${isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent"}`}
               >
-                <it.icon className="size-4" /> {it.label}
+                <it.icon className="size-4 shrink-0" /> {!collapsed && it.label}
               </Link>
             );
+            return collapsed ? (
+              <Tooltip key={it.to}><TooltipTrigger asChild>{linkEl}</TooltipTrigger><TooltipContent side="right">{it.label}</TooltipContent></Tooltip>
+            ) : linkEl;
           })}
         </nav>
-        <div className="border-t border-sidebar-border p-3">
-          <div className="px-3 py-2 text-xs">
-            <div className="font-semibold">{user?.name}</div>
-            <div className="text-white/50">{user?.email}</div>
+        {!collapsed && (
+          <div className="border-t border-sidebar-border p-3">
+            <div className="px-3 py-2 text-xs">
+              <div className="font-semibold">{user?.name}</div>
+              <div className="text-white/50">{user?.email}</div>
+            </div>
           </div>
-        </div>
+        )}
       </aside>
 
       <div className="flex flex-1 flex-col min-w-0">
@@ -119,5 +138,6 @@ function PortalLayout() {
         </main>
       </div>
     </div>
+    </TooltipProvider>
   );
 }
