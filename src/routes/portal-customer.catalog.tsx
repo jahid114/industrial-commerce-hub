@@ -1,6 +1,5 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { motion } from "framer-motion";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -8,15 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { categories } from "@/data/categories";
-import { brands, getBrand } from "@/data/brands";
+import { brands } from "@/data/brands";
 import { getAllProducts } from "@/lib/products";
-import { formatBDT } from "@/lib/format";
-import { useStore } from "@/lib/store";
-import { getAgentPrice, canSeeAgentPrice } from "@/lib/pricing";
-import { toast } from "sonner";
-import type { Country, Product } from "@/data/types";
-import { Filter, X, Lock, ShoppingCart, Heart, GitCompare } from "lucide-react";
-import { cn } from "@/lib/utils";
+import type { Country } from "@/data/types";
+import { Filter, X, Lock } from "lucide-react";
+import { ProductCard } from "@/components/product/ProductCard";
 
 export const Route = createFileRoute("/portal-customer/catalog")({
   head: () => ({ meta: [{ title: "Browse Catalog — Customer Portal" }] }),
