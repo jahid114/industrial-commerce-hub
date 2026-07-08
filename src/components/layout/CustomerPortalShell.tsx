@@ -3,6 +3,7 @@ import { useState, type ReactNode } from "react";
 import {
   LayoutDashboard, Package, FileText, Heart, GitCompare, User,
   ShoppingCart, ShoppingBag, Menu, X, LogOut,
+  PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -11,7 +12,9 @@ import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useStore } from "@/lib/store";
+import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { toast } from "sonner";
 
 type NavItem = { to: string; label: string; icon: typeof Package; exact?: boolean };
