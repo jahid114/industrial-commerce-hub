@@ -86,6 +86,14 @@ function AdminOrdersPage() {
             {["Unpaid", "Partial", "Paid", "Refunded"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={sourceFilter} onValueChange={(v) => setSourceFilter(v as typeof sourceFilter)}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Sources</SelectItem>
+            <SelectItem value="agent">Agent Orders</SelectItem>
+            <SelectItem value="direct">Direct Orders</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
