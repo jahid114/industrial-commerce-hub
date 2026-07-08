@@ -127,6 +127,7 @@ function AdminLayout() {
         </main>
       </div>
     </div>
+    </TooltipProvider>
     </InventoryProvider>
   );
 }
