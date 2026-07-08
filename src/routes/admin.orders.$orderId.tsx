@@ -521,6 +521,39 @@ function AdminOrderDetail() {
             </div>
           </div>
 
+          {/* Agent (if placed by an agent) */}
+          {agentInfo && (
+            <div className="rounded-lg border border-accent/40 bg-accent/5 p-5">
+              <div className="mb-3 flex items-center gap-2">
+                <Headset className="size-4 text-primary" />
+                <h3 className="font-semibold">Placed by Agent</h3>
+                {!agentInfo.known && (
+                  <Badge variant="outline" className="text-[10px]">Unregistered</Badge>
+                )}
+              </div>
+              <div className="space-y-1 text-sm">
+                <div className="font-semibold">{agentInfo.name}</div>
+                <div className="text-xs text-muted-foreground font-mono">{agentInfo.id}</div>
+                {agentInfo.email && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Mail className="size-3" /> {agentInfo.email}
+                  </div>
+                )}
+                {agentInfo.phone && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <Phone className="size-3" /> {agentInfo.phone}
+                  </div>
+                )}
+                {agentInfo.area && (
+                  <div className="flex items-center gap-1 text-muted-foreground">
+                    <MapPin className="size-3" /> {agentInfo.area}
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+
+
           {/* Addresses */}
           <div className="rounded-lg border border-border bg-card p-5">
             <div className="mb-3 flex items-center gap-2">
