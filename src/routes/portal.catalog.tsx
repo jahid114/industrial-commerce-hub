@@ -66,7 +66,8 @@ function AgentCatalogPage() {
                     <td className="px-4 py-3 text-right text-muted-foreground line-through">{formatBDT(p.price)}</td>
                     <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(ap)}</td>
                     <td className="px-4 py-3 text-right text-success font-semibold">+{formatBDT(margin)}</td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-4 py-3 text-right space-x-1">
+                      <Button size="icon" variant="ghost" onClick={() => setViewing(p)} className="text-primary hover:bg-primary/10 hover:text-primary"><Eye className="size-4" /></Button>
                       <Button size="sm" onClick={() => { dispatch({ type: "ADD_TO_CART", productId: p.id, quantity: p.moq }); toast.success("Added at agent price"); }}>Order</Button>
                     </td>
                   </tr>
@@ -76,6 +77,8 @@ function AgentCatalogPage() {
           </table>
         </div>
       </div>
+
+      <ProductQuickView product={viewing} open={!!viewing} onOpenChange={(v) => { if (!v) setViewing(null); }} />
     </div>
   );
 }
