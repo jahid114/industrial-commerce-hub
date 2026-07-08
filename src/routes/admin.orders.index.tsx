@@ -1,6 +1,6 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Download, FileText, Eye } from "lucide-react";
+import { Download, FileText, Eye, UserCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice, generateOrdersReport } from "@/lib/pdf";
 import { ALL_ORDER_STATUSES, derivePaymentStatus } from "@/lib/order-workflow";
+import { resolveAgentInfo } from "@/data/agents";
 import type { OrderStatus, PaymentStatus } from "@/data/types";
 
 export const Route = createFileRoute("/admin/orders/")({
@@ -38,18 +39,21 @@ function AdminOrdersPage() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [payFilter, setPayFilter] = useState<string>("all");
+  const [sourceFilter, setSourceFilter] = useState<"all" | "agent" | "direct">("all");
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(() => orders.filter((o) => {
     if (statusFilter !== "all" && o.status !== statusFilter) return false;
     if (payFilter !== "all" && derivePaymentStatus(o) !== payFilter) return false;
+    if (sourceFilter === "agent" && !o.agentId) return false;
+    if (sourceFilter === "direct" && o.agentId) return false;
     if (search && !`${o.id} ${o.customerName}`.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
-  }), [orders, statusFilter, payFilter, search]);
+  }), [orders, statusFilter, payFilter, sourceFilter, search]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
-  useEffect(() => { setPage(1); }, [search, statusFilter, payFilter, pageSize]);
+  useEffect(() => { setPage(1); }, [search, statusFilter, payFilter, sourceFilter, pageSize]);
   const currentPage = Math.min(page, totalPages);
   const startIdx = (currentPage - 1) * pageSize;
   const paged = filtered.slice(startIdx, startIdx + pageSize);
@@ -82,6 +86,14 @@ function AdminOrdersPage() {
             {["Unpaid", "Partial", "Paid", "Refunded"].map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
           </SelectContent>
         </Select>
+        <Select value={sourceFilter} onValueChange={(v) => setSourceFilter(v as typeof sourceFilter)}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Sources</SelectItem>
+            <SelectItem value="agent">Agent Orders</SelectItem>
+            <SelectItem value="direct">Direct Orders</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
@@ -90,6 +102,7 @@ function AdminOrdersPage() {
             <tr>
               <th className="px-4 py-3 text-left">Order ID</th>
               <th className="px-4 py-3 text-left">Customer</th>
+              <th className="px-4 py-3 text-left">Source</th>
               <th className="px-4 py-3 text-left">Date</th>
               <th className="px-4 py-3 text-left">Payment</th>
               <th className="px-4 py-3 text-left">Status</th>
@@ -100,6 +113,7 @@ function AdminOrdersPage() {
           <tbody className="divide-y divide-border">
             {paged.map((o) => {
               const pay = derivePaymentStatus(o);
+              const agentInfo = resolveAgentInfo(o.agentId);
               return (
                 <tr key={o.id} className="hover:bg-secondary">
                   <td className="px-4 py-3">
@@ -110,6 +124,18 @@ function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <div>{o.customerName}</div>
                     <div className="text-xs text-muted-foreground">{o.customerEmail}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {agentInfo ? (
+                      <div>
+                        <Badge className="bg-accent/20 text-accent-foreground border-accent/40" variant="outline">
+                          <UserCheck className="size-3 mr-1" /> Agent
+                        </Badge>
+                        <div className="mt-1 text-xs text-muted-foreground line-clamp-1">{agentInfo.name}</div>
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Direct</Badge>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(o.date)}</td>
                   <td className="px-4 py-3">

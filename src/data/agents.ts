@@ -10,3 +10,15 @@ export const agents: Agent[] = [
 ];
 
 export const getAgent = (id: string) => agents.find((a) => a.id === id);
+
+/** Resolve display info for an order.agentId, whether it matches a seeded agent or is a dynamic user marker. */
+export function resolveAgentInfo(agentId: string | undefined): { id: string; name: string; email?: string; phone?: string; area?: string; known: boolean } | null {
+  if (!agentId) return null;
+  const found = agents.find((a) => a.id === agentId);
+  if (found) return { id: found.id, name: found.name, email: found.email, phone: found.phone, area: found.area, known: true };
+  if (agentId.startsWith("ag-user:")) {
+    const email = agentId.slice("ag-user:".length);
+    return { id: agentId, name: email === "agent" ? "Agent" : email, email: email === "agent" ? undefined : email, known: false };
+  }
+  return { id: agentId, name: agentId, known: false };
+}
