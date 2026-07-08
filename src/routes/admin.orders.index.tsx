@@ -102,6 +102,7 @@ function AdminOrdersPage() {
             <tr>
               <th className="px-4 py-3 text-left">Order ID</th>
               <th className="px-4 py-3 text-left">Customer</th>
+              <th className="px-4 py-3 text-left">Source</th>
               <th className="px-4 py-3 text-left">Date</th>
               <th className="px-4 py-3 text-left">Payment</th>
               <th className="px-4 py-3 text-left">Status</th>
@@ -112,6 +113,7 @@ function AdminOrdersPage() {
           <tbody className="divide-y divide-border">
             {paged.map((o) => {
               const pay = derivePaymentStatus(o);
+              const agentInfo = resolveAgentInfo(o.agentId);
               return (
                 <tr key={o.id} className="hover:bg-secondary">
                   <td className="px-4 py-3">
@@ -122,6 +124,18 @@ function AdminOrdersPage() {
                   <td className="px-4 py-3">
                     <div>{o.customerName}</div>
                     <div className="text-xs text-muted-foreground">{o.customerEmail}</div>
+                  </td>
+                  <td className="px-4 py-3">
+                    {agentInfo ? (
+                      <div>
+                        <Badge className="bg-accent/20 text-accent-foreground border-accent/40" variant="outline">
+                          <UserCheck className="size-3 mr-1" /> Agent
+                        </Badge>
+                        <div className="mt-1 text-xs text-muted-foreground line-clamp-1">{agentInfo.name}</div>
+                      </div>
+                    ) : (
+                      <Badge variant="outline" className="text-muted-foreground">Direct</Badge>
+                    )}
                   </td>
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(o.date)}</td>
                   <td className="px-4 py-3">
