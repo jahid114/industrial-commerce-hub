@@ -19,9 +19,9 @@ export function ProductCard({ product, index = 0 }: { product: Product; index?: 
   const [quickOpen, setQuickOpen] = useState(false);
   const brand = getBrand(product.brandId);
   const category = getCategory(product.categoryId);
-  const supplier = getSupplier(product.supplierId);
   const inWishlist = wishlist.includes(product.id);
   const inCompare = compare.includes(product.id);
+
 
   return (
     <>
