@@ -25,7 +25,7 @@ const agentNav: ReadonlyArray<NavItem> = [
   { to: "/portal", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/portal/catalog", label: "Agent Catalog", icon: Package },
   { to: "/portal/orders", label: "My Orders", icon: ShoppingBag },
-  { to: "/portal/leads", label: "Leads", icon: Users },
+  { to: "/portal/leads", label: "Customers", icon: Users },
   { to: "/portal/commissions", label: "Commissions", icon: Wallet },
 ];
 
