@@ -15,8 +15,24 @@ export function PublicHeader() {
   const cartHref = isAuthenticated && !isAdmin && !isAgent && !isPartner ? "/portal-customer/cart" : "/cart";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
+  const megaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!categoriesOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (megaRef.current && !megaRef.current.contains(e.target as Node)) {
+        setCategoriesOpen(false);
+        setActiveCategory(null);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [categoriesOpen]);
+
+  const activeCat = categories.find((c) => c.id === activeCategory) ?? null;
 
   const submitSearch = (e: React.FormEvent) => {
     e.preventDefault();
