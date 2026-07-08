@@ -247,6 +247,11 @@ function AdminOrderDetail() {
                 <AlertTriangle className="size-3 mr-1" /> {order.priority}
               </Badge>
             )}
+            {agentInfo && (
+              <Badge variant="outline" className="border-accent/50 bg-accent/10 text-accent-foreground">
+                <Headset className="size-3 mr-1" /> Agent Order
+              </Badge>
+            )}
           </div>
           <p className="text-xs text-muted-foreground">
             Placed {formatDate(order.date)} · Payment via {order.paymentMethod}
