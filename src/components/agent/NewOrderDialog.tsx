@@ -281,8 +281,9 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                   <thead className="bg-spec text-xs uppercase text-muted-foreground">
                     <tr>
                       <th className="px-2 py-2 text-left">Product</th>
-                      <th className="px-2 py-2 text-right w-24">Qty</th>
-                      <th className="px-2 py-2 text-right w-36">Unit price (৳)</th>
+                      <th className="px-2 py-2 text-right w-20">Qty</th>
+                      <th className="px-2 py-2 text-right w-20">Disc %</th>
+                      <th className="px-2 py-2 text-right w-32">Unit price (৳)</th>
                       <th className="px-2 py-2 text-right w-32">Line total</th>
                       <th className="px-2 py-2 w-10"></th>
                     </tr>
@@ -291,11 +292,13 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                     {lines.map((l) => {
                       const p = products.find((x) => x.id === l.productId)!;
                       const agent = getAgentPrice(p);
+                      const discountPct = p.price > 0 ? Math.round(((p.price - l.unitPrice) / p.price) * 1000) / 10 : 0;
+                      const belowAgent = l.unitPrice < agent;
                       return (
                         <tr key={l.productId}>
                           <td className="px-2 py-2">
                             <div className="font-medium line-clamp-1">{p.name}</div>
-                            <div className="text-xs text-muted-foreground">Agent ৳ {agent.toLocaleString()} · List ৳ {p.price.toLocaleString()}</div>
+                            <div className="text-xs text-muted-foreground">List ৳ {p.price.toLocaleString()} · Agent floor ৳ {agent.toLocaleString()}</div>
                           </td>
                           <td className="px-2 py-2">
                             <Input type="number" min={1} value={l.quantity}
@@ -303,9 +306,17 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                               className="text-right h-8" />
                           </td>
                           <td className="px-2 py-2">
+                            <Input type="number" min={0} max={100} step={0.5} value={discountPct}
+                              onChange={(e) => {
+                                const pct = Math.min(100, Math.max(0, Number(e.target.value) || 0));
+                                updateLine(l.productId, { unitPrice: Math.round(p.price * (1 - pct / 100)) });
+                              }}
+                              className="text-right h-8" />
+                          </td>
+                          <td className="px-2 py-2">
                             <Input type="number" min={0} value={l.unitPrice}
                               onChange={(e) => updateLine(l.productId, { unitPrice: Math.max(0, Number(e.target.value) || 0) })}
-                              className="text-right h-8" />
+                              className={`text-right h-8 ${belowAgent ? "text-destructive" : ""}`} />
                           </td>
                           <td className="px-2 py-2 text-right font-semibold">{formatBDT(l.unitPrice * l.quantity)}</td>
                           <td className="px-2 py-2 text-right">
