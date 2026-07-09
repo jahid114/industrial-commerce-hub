@@ -12,7 +12,6 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as ProductsRouteImport } from './routes/products'
-import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as PortalCustomerRouteImport } from './routes/portal-customer'
 import { Route as PortalRouteImport } from './routes/portal'
 import { Route as PartnersRouteImport } from './routes/partners'
@@ -26,6 +25,7 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalCustomerIndexRouteImport } from './routes/portal-customer.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
@@ -75,11 +75,6 @@ const QuotationRoute = QuotationRouteImport.update({
 const ProductsRoute = ProductsRouteImport.update({
   id: '/products',
   path: '/products',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioRoute = PortfolioRouteImport.update({
-  id: '/portfolio',
-  path: '/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalCustomerRoute = PortalCustomerRouteImport.update({
@@ -147,6 +142,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
+  id: '/portfolio/',
+  path: '/portfolio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalIndexRoute = PortalIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -169,21 +169,21 @@ const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
 } as any)
 const PortfolioStrategicVision2033Route =
   PortfolioStrategicVision2033RouteImport.update({
-    id: '/strategic-vision-2033',
-    path: '/strategic-vision-2033',
-    getParentRoute: () => PortfolioRoute,
+    id: '/portfolio/strategic-vision-2033',
+    path: '/portfolio/strategic-vision-2033',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const PortfolioMarketPotentialRoute =
   PortfolioMarketPotentialRouteImport.update({
-    id: '/market-potential',
-    path: '/market-potential',
-    getParentRoute: () => PortfolioRoute,
+    id: '/portfolio/market-potential',
+    path: '/portfolio/market-potential',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const PortfolioCorporateProfileRoute =
   PortfolioCorporateProfileRouteImport.update({
-    id: '/corporate-profile',
-    path: '/corporate-profile',
-    getParentRoute: () => PortfolioRoute,
+    id: '/portfolio/corporate-profile',
+    path: '/portfolio/corporate-profile',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const PortalOrdersRoute = PortalOrdersRouteImport.update({
   id: '/orders',
@@ -343,7 +343,6 @@ export interface FileRoutesByFullPath {
   '/partners': typeof PartnersRoute
   '/portal': typeof PortalRouteWithChildren
   '/portal-customer': typeof PortalCustomerRouteWithChildren
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
@@ -378,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/portfolio/': typeof PortfolioIndexRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -394,7 +394,6 @@ export interface FileRoutesByTo {
   '/contact': typeof ContactRoute
   '/industries': typeof IndustriesRoute
   '/partners': typeof PartnersRoute
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
@@ -429,6 +428,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/portal-customer': typeof PortalCustomerIndexRoute
   '/portal': typeof PortalIndexRoute
+  '/portfolio': typeof PortfolioIndexRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -449,7 +449,6 @@ export interface FileRoutesById {
   '/partners': typeof PartnersRoute
   '/portal': typeof PortalRouteWithChildren
   '/portal-customer': typeof PortalCustomerRouteWithChildren
-  '/portfolio': typeof PortfolioRouteWithChildren
   '/products': typeof ProductsRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
@@ -484,6 +483,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/portfolio/': typeof PortfolioIndexRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -505,7 +505,6 @@ export interface FileRouteTypes {
     | '/partners'
     | '/portal'
     | '/portal-customer'
-    | '/portfolio'
     | '/products'
     | '/quotation'
     | '/suppliers'
@@ -540,6 +539,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/portal-customer/'
     | '/portal/'
+    | '/portfolio/'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -556,7 +556,6 @@ export interface FileRouteTypes {
     | '/contact'
     | '/industries'
     | '/partners'
-    | '/portfolio'
     | '/products'
     | '/quotation'
     | '/suppliers'
@@ -591,6 +590,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/portal-customer'
     | '/portal'
+    | '/portfolio'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -610,7 +610,6 @@ export interface FileRouteTypes {
     | '/partners'
     | '/portal'
     | '/portal-customer'
-    | '/portfolio'
     | '/products'
     | '/quotation'
     | '/suppliers'
@@ -645,6 +644,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/portal-customer/'
     | '/portal/'
+    | '/portfolio/'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -665,12 +665,15 @@ export interface RootRouteChildren {
   PartnersRoute: typeof PartnersRoute
   PortalRoute: typeof PortalRouteWithChildren
   PortalCustomerRoute: typeof PortalCustomerRouteWithChildren
-  PortfolioRoute: typeof PortfolioRouteWithChildren
   ProductsRoute: typeof ProductsRouteWithChildren
   QuotationRoute: typeof QuotationRoute
   SuppliersRoute: typeof SuppliersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
+  PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
+  PortfolioStrategicVision2033Route: typeof PortfolioStrategicVision2033Route
+  PortfolioIndexRoute: typeof PortfolioIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -694,13 +697,6 @@ declare module '@tanstack/react-router' {
       path: '/products'
       fullPath: '/products'
       preLoaderRoute: typeof ProductsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio': {
-      id: '/portfolio'
-      path: '/portfolio'
-      fullPath: '/portfolio'
-      preLoaderRoute: typeof PortfolioRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal-customer': {
@@ -794,6 +790,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/': {
+      id: '/portfolio/'
+      path: '/portfolio'
+      fullPath: '/portfolio/'
+      preLoaderRoute: typeof PortfolioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/': {
       id: '/portal/'
       path: '/'
@@ -824,24 +827,24 @@ declare module '@tanstack/react-router' {
     }
     '/portfolio/strategic-vision-2033': {
       id: '/portfolio/strategic-vision-2033'
-      path: '/strategic-vision-2033'
+      path: '/portfolio/strategic-vision-2033'
       fullPath: '/portfolio/strategic-vision-2033'
       preLoaderRoute: typeof PortfolioStrategicVision2033RouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/market-potential': {
       id: '/portfolio/market-potential'
-      path: '/market-potential'
+      path: '/portfolio/market-potential'
       fullPath: '/portfolio/market-potential'
       preLoaderRoute: typeof PortfolioMarketPotentialRouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/corporate-profile': {
       id: '/portfolio/corporate-profile'
-      path: '/corporate-profile'
+      path: '/portfolio/corporate-profile'
       fullPath: '/portfolio/corporate-profile'
       preLoaderRoute: typeof PortfolioCorporateProfileRouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portal/orders': {
       id: '/portal/orders'
@@ -1147,22 +1150,6 @@ const PortalCustomerRouteWithChildren = PortalCustomerRoute._addFileChildren(
   PortalCustomerRouteChildren,
 )
 
-interface PortfolioRouteChildren {
-  PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
-  PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
-  PortfolioStrategicVision2033Route: typeof PortfolioStrategicVision2033Route
-}
-
-const PortfolioRouteChildren: PortfolioRouteChildren = {
-  PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
-  PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,
-  PortfolioStrategicVision2033Route: PortfolioStrategicVision2033Route,
-}
-
-const PortfolioRouteWithChildren = PortfolioRoute._addFileChildren(
-  PortfolioRouteChildren,
-)
-
 interface ProductsRouteChildren {
   ProductsProductIdRoute: typeof ProductsProductIdRoute
 }
@@ -1189,12 +1176,15 @@ const rootRouteChildren: RootRouteChildren = {
   PartnersRoute: PartnersRoute,
   PortalRoute: PortalRouteWithChildren,
   PortalCustomerRoute: PortalCustomerRouteWithChildren,
-  PortfolioRoute: PortfolioRouteWithChildren,
   ProductsRoute: ProductsRouteWithChildren,
   QuotationRoute: QuotationRoute,
   SuppliersRoute: SuppliersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
+  PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,
+  PortfolioStrategicVision2033Route: PortfolioStrategicVision2033Route,
+  PortfolioIndexRoute: PortfolioIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
