@@ -129,7 +129,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
     if (lines.some((l) => l.productId === pickerId)) { toast.error("Product already added"); return; }
     const p = products.find((x) => x.id === pickerId);
     if (!p) return;
-    setLines((prev) => [...prev, { productId: p.id, quantity: p.moq, unitPrice: getAgentPrice(p) }]);
+    setLines((prev) => [...prev, { productId: p.id, quantity: p.moq, unitPrice: p.price }]);
     setPickerId("");
   };
 
