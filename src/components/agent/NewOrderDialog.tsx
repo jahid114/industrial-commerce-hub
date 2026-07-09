@@ -264,7 +264,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                 <SelectTrigger className="flex-1"><SelectValue placeholder="Select a product to add…" /></SelectTrigger>
                 <SelectContent>
                   {products.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name} — {formatBDT(getAgentPrice(p))}</SelectItem>
+                    <SelectItem key={p.id} value={p.id}>{p.name} — {formatBDT(p.price)}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
