@@ -3,7 +3,7 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { Download, ArrowRight } from "lucide-react";
 import { Eyebrow, downloadPdf } from "@/components/portfolio/DocChrome";
 
-export const Route = createFileRoute("/portfolio")({
+export const Route = createFileRoute("/portfolio/")({
   head: () => ({
     meta: [
       { title: "Portfolio — MegaHaus Industrial Hub" },
