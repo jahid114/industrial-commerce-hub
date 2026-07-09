@@ -169,21 +169,21 @@ const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
 } as any)
 const PortfolioStrategicVision2033Route =
   PortfolioStrategicVision2033RouteImport.update({
-    id: '/strategic-vision-2033',
-    path: '/strategic-vision-2033',
-    getParentRoute: () => PortfolioRoute,
+    id: '/portfolio/strategic-vision-2033',
+    path: '/portfolio/strategic-vision-2033',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const PortfolioMarketPotentialRoute =
   PortfolioMarketPotentialRouteImport.update({
-    id: '/market-potential',
-    path: '/market-potential',
-    getParentRoute: () => PortfolioRoute,
+    id: '/portfolio/market-potential',
+    path: '/portfolio/market-potential',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const PortfolioCorporateProfileRoute =
   PortfolioCorporateProfileRouteImport.update({
-    id: '/corporate-profile',
-    path: '/corporate-profile',
-    getParentRoute: () => PortfolioRoute,
+    id: '/portfolio/corporate-profile',
+    path: '/portfolio/corporate-profile',
+    getParentRoute: () => rootRouteImport,
   } as any)
 const PortalOrdersRoute = PortalOrdersRouteImport.update({
   id: '/orders',
@@ -670,6 +670,9 @@ export interface RootRouteChildren {
   SuppliersRoute: typeof SuppliersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
+  PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
+  PortfolioStrategicVision2033Route: typeof PortfolioStrategicVision2033Route
   PortfolioIndexRoute: typeof PortfolioIndexRoute
 }
 
@@ -824,24 +827,24 @@ declare module '@tanstack/react-router' {
     }
     '/portfolio/strategic-vision-2033': {
       id: '/portfolio/strategic-vision-2033'
-      path: '/strategic-vision-2033'
+      path: '/portfolio/strategic-vision-2033'
       fullPath: '/portfolio/strategic-vision-2033'
       preLoaderRoute: typeof PortfolioStrategicVision2033RouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/market-potential': {
       id: '/portfolio/market-potential'
-      path: '/market-potential'
+      path: '/portfolio/market-potential'
       fullPath: '/portfolio/market-potential'
       preLoaderRoute: typeof PortfolioMarketPotentialRouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portfolio/corporate-profile': {
       id: '/portfolio/corporate-profile'
-      path: '/corporate-profile'
+      path: '/portfolio/corporate-profile'
       fullPath: '/portfolio/corporate-profile'
       preLoaderRoute: typeof PortfolioCorporateProfileRouteImport
-      parentRoute: typeof PortfolioRoute
+      parentRoute: typeof rootRouteImport
     }
     '/portal/orders': {
       id: '/portal/orders'
@@ -1178,18 +1181,11 @@ const rootRouteChildren: RootRouteChildren = {
   SuppliersRoute: SuppliersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
+  PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,
+  PortfolioStrategicVision2033Route: PortfolioStrategicVision2033Route,
   PortfolioIndexRoute: PortfolioIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
