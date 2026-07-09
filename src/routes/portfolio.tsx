@@ -179,7 +179,7 @@ function PortfolioHub() {
                 </div>
                 <div className="flex flex-col gap-3 md:items-end">
                   <Link
-                    to={d.to}
+                    to={d.to as "/portfolio/corporate-profile"}
                     className="inline-flex items-center gap-2 bg-industrial text-white px-5 py-3 text-xs font-bold uppercase tracking-wider hover:bg-industrial/90 whitespace-nowrap"
                   >
                     Read Online <ArrowRight className="size-4" />
