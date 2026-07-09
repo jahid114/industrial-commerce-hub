@@ -98,12 +98,6 @@ const documents = [
   },
 ];
 
-const swatches = [
-  { hex: "#0F172A", name: "Navy Blue", meaning: "Trust · Engineering · Identity" },
-  { hex: "#F97316", name: "Orange", meaning: "Innovation · Growth · Energy" },
-  { hex: "#FFFFFF", name: "White", meaning: "Clean · Professional" },
-  { hex: "#DC2626", name: "Red", meaning: "Highlights · Key Numbers" },
-];
 
 function PortfolioHub() {
   return (
@@ -179,7 +173,7 @@ function PortfolioHub() {
                 </div>
                 <div className="flex flex-col gap-3 md:items-end">
                   <Link
-                    to={d.to}
+                    to={d.to as "/portfolio/corporate-profile"}
                     className="inline-flex items-center gap-2 bg-industrial text-white px-5 py-3 text-xs font-bold uppercase tracking-wider hover:bg-industrial/90 whitespace-nowrap"
                   >
                     Read Online <ArrowRight className="size-4" />
@@ -197,32 +191,6 @@ function PortfolioHub() {
         </div>
       </section>
 
-      {/* Brand Identity */}
-      <section className="bg-slate-50 border-t border-slate-200">
-        <div className="max-w-7xl mx-auto px-6 py-20">
-          <Eyebrow>Brand Identity</Eyebrow>
-          <h2 className="mt-4 font-display text-3xl md:text-4xl font-extrabold text-industrial">
-            MegaHaus Color System
-          </h2>
-          <div className="mt-10 grid grid-cols-2 md:grid-cols-4 gap-px bg-slate-200 border border-slate-200">
-            {swatches.map((s) => (
-              <div key={s.hex} className="bg-white">
-                <div
-                  className="h-32 border-b border-slate-200"
-                  style={{ backgroundColor: s.hex }}
-                />
-                <div className="p-5">
-                  <p className="font-mono text-xs text-slate-500">{s.hex}</p>
-                  <p className="mt-1 font-display text-lg font-extrabold text-industrial">
-                    {s.name}
-                  </p>
-                  <p className="mt-1 text-xs text-slate-600">{s.meaning}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
     </PublicLayout>
   );
 }
