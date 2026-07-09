@@ -98,12 +98,6 @@ const documents = [
   },
 ];
 
-const swatches = [
-  { hex: "#0F172A", name: "Navy Blue", meaning: "Trust · Engineering · Identity" },
-  { hex: "#F97316", name: "Orange", meaning: "Innovation · Growth · Energy" },
-  { hex: "#FFFFFF", name: "White", meaning: "Clean · Professional" },
-  { hex: "#DC2626", name: "Red", meaning: "Highlights · Key Numbers" },
-];
 
 function PortfolioHub() {
   return (
