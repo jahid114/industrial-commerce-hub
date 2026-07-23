@@ -131,6 +131,7 @@ function AdminLayout() {
       </div>
     </div>
     </TooltipProvider>
+    </RbacProvider>
     </InventoryProvider>
   );
 }
