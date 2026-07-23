@@ -64,38 +64,6 @@ function AdminCustomersPage() {
   const currentPage = Math.min(page, totalPages);
   const pageRows = filtered.slice((currentPage - 1) * PAGE_SIZE, currentPage * PAGE_SIZE);
 
-  const activeCount = customers.filter((c) => c.status === "Active").length;
-  const suspendedCount = customers.filter((c) => c.status === "Suspended").length;
-
-  // Registrations over last 14 days
-  const trendData = useMemo(() => {
-    const days: { day: string; count: number }[] = [];
-    for (let i = 13; i >= 0; i--) {
-      const d = new Date();
-      d.setHours(0, 0, 0, 0);
-      d.setDate(d.getDate() - i);
-      const label = d.toLocaleDateString("en", { day: "2-digit", month: "short" });
-      const count = customers.filter((c) => {
-        const cd = new Date(c.registeredAt);
-        return cd.getFullYear() === d.getFullYear() && cd.getMonth() === d.getMonth() && cd.getDate() === d.getDate();
-      }).length;
-      days.push({ day: label, count });
-    }
-    return days;
-  }, [customers]);
-
-  // Cumulative growth
-  const cumulativeData = useMemo(() => {
-    let cum = 0;
-    return trendData.map((d) => ({ day: d.day, total: (cum += d.count) }));
-  }, [trendData]);
-
-  // Top cities
-  const topCities = useMemo(() => {
-    const m = new Map<string, number>();
-    customers.forEach((c) => { if (c.city) m.set(c.city, (m.get(c.city) ?? 0) + 1); });
-    return Array.from(m.entries()).map(([city, count]) => ({ city, count })).sort((a, b) => b.count - a.count).slice(0, 6);
-  }, [customers]);
 
   const openAdd = () => { setEditing(null); setForm(emptyForm); setDialogOpen(true); };
   const openEdit = (c: RegisteredCustomer) => {
