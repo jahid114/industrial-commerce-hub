@@ -25,6 +25,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package;
   { to: "/admin/agents", label: "Agents", icon: Users },
   { to: "/admin/quotations", label: "Quotations", icon: FileText },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
+  { to: "/admin/roles", label: "Roles & Permissions", icon: Shield },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
