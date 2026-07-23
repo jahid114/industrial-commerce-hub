@@ -45,10 +45,12 @@ function statusClass(s: Agent["status"]) {
 
 function AdminAgentsPage() {
   const { agents, addAgent, updateAgent, deleteAgent } = useDirectory();
+  const { orders } = useStore();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState<Agent | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [viewing, setViewing] = useState<Agent | null>(null);
 
   const totalCommission = agents.reduce((s, a) => s + a.commissionEarned, 0);
 
