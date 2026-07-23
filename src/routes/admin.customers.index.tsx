@@ -106,57 +106,8 @@ function AdminCustomersPage() {
         <Button onClick={openAdd} className="font-semibold"><Plus className="size-4 mr-2" /> Add Customer</Button>
       </div>
 
-      {/* KPIs */}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi icon={Users} label="Total Customers" value={customers.length.toString()} color="bg-primary" />
-        <Kpi icon={UserCheck} label="Active" value={activeCount.toString()} color="bg-success" />
-        <Kpi icon={UserX} label="Suspended" value={suspendedCount.toString()} color="bg-destructive" />
-        <Kpi icon={TrendingUp} label="New (14 days)" value={trendData.reduce((s, d) => s + d.count, 0).toString()} color="bg-accent" />
-      </div>
 
-      {/* Charts */}
-      <div className="grid gap-4 lg:grid-cols-3">
-        <div className="rounded-lg border border-border bg-card p-5 lg:col-span-2">
-          <h2 className="font-display text-lg font-bold mb-4">Daily Registrations (14 days)</h2>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={trendData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-              <XAxis dataKey="day" fontSize={11} />
-              <YAxis fontSize={11} allowDecimals={false} />
-              <RTooltip />
-              <Bar dataKey="count" fill="#DC2626" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-        <div className="rounded-lg border border-border bg-card p-5">
-          <h2 className="font-display text-lg font-bold mb-4">Cumulative Growth</h2>
-          <ResponsiveContainer width="100%" height={240}>
-            <LineChart data={cumulativeData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" />
-              <XAxis dataKey="day" fontSize={11} />
-              <YAxis fontSize={11} allowDecimals={false} />
-              <RTooltip />
-              <Line type="monotone" dataKey="total" stroke="#F97316" strokeWidth={3} dot={{ r: 3 }} />
-            </LineChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
 
-      {topCities.length > 0 && (
-        <div className="rounded-lg border border-border bg-card p-5">
-          <h2 className="font-display text-lg font-bold mb-4">Top Cities</h2>
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {topCities.map((c) => (
-              <div key={c.city}>
-                <div className="flex justify-between text-xs"><span className="font-semibold">{c.city}</span><span className="text-muted-foreground">{c.count}</span></div>
-                <div className="mt-1 h-2 rounded-full bg-secondary overflow-hidden">
-                  <div className="h-full bg-primary" style={{ width: `${(c.count / topCities[0].count) * 100}%` }} />
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Filters */}
       <div className="flex flex-wrap items-center gap-3">
