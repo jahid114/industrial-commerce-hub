@@ -1,6 +1,6 @@
 import { Outlet, Link, createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Package, Boxes, Building2, ShoppingBag, Users, FileText, BarChart3, LogOut, Menu, X, User, Settings, PanelLeftClose, PanelLeftOpen } from "lucide-react";
+import { LayoutDashboard, Package, Boxes, Building2, ShoppingBag, Users, FileText, BarChart3, LogOut, Menu, X, User, Settings, Shield, PanelLeftClose, PanelLeftOpen } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useStore } from "@/lib/store";
 import { InventoryProvider } from "@/lib/inventory-store";
+import { RbacProvider } from "@/lib/rbac-store";
 import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { toast } from "sonner";
 
@@ -24,6 +25,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package;
   { to: "/admin/agents", label: "Agents", icon: Users },
   { to: "/admin/quotations", label: "Quotations", icon: FileText },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
+  { to: "/admin/roles", label: "Roles & Permissions", icon: Shield },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
 
@@ -46,6 +48,7 @@ function AdminLayout() {
 
   return (
     <InventoryProvider>
+    <RbacProvider>
     <TooltipProvider delayDuration={0}>
     <div className="flex min-h-screen bg-secondary">
       {/* Sidebar */}
@@ -128,6 +131,7 @@ function AdminLayout() {
       </div>
     </div>
     </TooltipProvider>
+    </RbacProvider>
     </InventoryProvider>
   );
 }
