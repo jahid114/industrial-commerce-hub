@@ -48,6 +48,7 @@ function AdminLayout() {
 
   return (
     <InventoryProvider>
+    <RbacProvider>
     <TooltipProvider delayDuration={0}>
     <div className="flex min-h-screen bg-secondary">
       {/* Sidebar */}
