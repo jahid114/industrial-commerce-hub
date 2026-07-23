@@ -406,7 +406,7 @@ function UsersTab() {
             <Search className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="pl-8 w-56" />
           </div>
-          <Button onClick={() => setCreating(true)}><Plus className="size-4 mr-2" /> Invite User</Button>
+          <Button onClick={() => setCreating(true)}><Plus className="size-4 mr-2" /> Add Admin</Button>
         </div>
       </CardHeader>
       <CardContent>
@@ -429,18 +429,11 @@ function UsersTab() {
                     <div className="text-xs text-muted-foreground">{u.email}</div>
                   </TableCell>
                   <TableCell>
-                    <Select value={u.roleId} onValueChange={(v) => rbac.updateUser(u.id, { roleId: v })}>
-                      <SelectTrigger className="w-52"><SelectValue /></SelectTrigger>
-                      <SelectContent>
-                        {rbac.roles.map((r) => (
-                          <SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    {role && <div className="text-[11px] text-muted-foreground mt-1">{role.permissions.length} permissions</div>}
+                    <div className="font-medium text-sm">{role?.name ?? "—"}</div>
+                    {role && <div className="text-[11px] text-muted-foreground">{role.permissions.length} permissions</div>}
                   </TableCell>
                   <TableCell>
-                    <Badge variant={u.status === "Active" ? "default" : u.status === "Invited" ? "secondary" : "destructive"}>
+                    <Badge variant={u.status === "Active" ? "default" : "secondary"}>
                       {u.status}
                     </Badge>
                   </TableCell>
@@ -497,28 +490,35 @@ function UsersTab() {
 
 function UserFormDialog({ open, user, onClose }: { open: boolean; user: AdminUser | null; onClose: () => void }) {
   const rbac = useRbac();
+  const isEdit = !!user;
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
   const [roleId, setRoleId] = useState(user?.roleId ?? rbac.roles[0]?.id ?? "");
-  const [status, setStatus] = useState<AdminUser["status"]>(user?.status ?? "Invited");
+  const [status, setStatus] = useState<AdminUser["status"]>(user?.status ?? "Active");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
 
   useMemo(() => {
     if (open) {
       setName(user?.name ?? "");
       setEmail(user?.email ?? "");
       setRoleId(user?.roleId ?? rbac.roles[0]?.id ?? "");
-      setStatus(user?.status ?? "Invited");
+      setStatus(user?.status ?? "Active");
+      setPassword("");
+      setConfirmPassword("");
     }
   }, [open, user, rbac.roles]);
 
   const submit = () => {
     if (!name.trim() || !email.trim()) return toast.error("Name and email are required");
-    if (user) {
-      rbac.updateUser(user.id, { name: name.trim(), email: email.trim(), roleId, status });
+    if (isEdit) {
+      rbac.updateUser(user!.id, { name: name.trim(), email: email.trim(), roleId, status });
       toast.success("User updated");
     } else {
+      if (password.length < 6) return toast.error("Password must be at least 6 characters");
+      if (password !== confirmPassword) return toast.error("Passwords do not match");
       rbac.addUser({ name: name.trim(), email: email.trim(), roleId, status });
-      toast.success("User invited");
+      toast.success("Admin added");
     }
     onClose();
   };
@@ -526,7 +526,7 @@ function UserFormDialog({ open, user, onClose }: { open: boolean; user: AdminUse
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent>
-        <DialogHeader><DialogTitle>{user ? "Edit User" : "Invite User"}</DialogTitle></DialogHeader>
+        <DialogHeader><DialogTitle>{isEdit ? "Edit User" : "Add Admin"}</DialogTitle></DialogHeader>
         <div className="space-y-4">
           <div>
             <Label htmlFor="u-name">Full name</Label>
@@ -536,32 +536,57 @@ function UserFormDialog({ open, user, onClose }: { open: boolean; user: AdminUse
             <Label htmlFor="u-email">Email</Label>
             <Input id="u-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
-          <div>
-            <Label>Role</Label>
-            <Select value={roleId} onValueChange={setRoleId}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {rbac.roles.map((r) => (<SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>))}
-              </SelectContent>
-            </Select>
-          </div>
+          {isEdit && (
+            <div>
+              <Label>Role</Label>
+              <Select value={roleId} onValueChange={setRoleId}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {rbac.roles.map((r) => (<SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>))}
+                </SelectContent>
+              </Select>
+            </div>
+          )}
+          {!isEdit && (
+            <>
+              <div>
+                <Label>Role</Label>
+                <Select value={roleId} onValueChange={setRoleId}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {rbac.roles.map((r) => (<SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <Label htmlFor="u-pw">Password</Label>
+                  <Input id="u-pw" type="password" value={password} onChange={(e) => setPassword(e.target.value)} autoComplete="new-password" />
+                </div>
+                <div>
+                  <Label htmlFor="u-pw2">Confirm password</Label>
+                  <Input id="u-pw2" type="password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} autoComplete="new-password" />
+                </div>
+              </div>
+            </>
+          )}
           <div>
             <Label>Status</Label>
             <Select value={status} onValueChange={(v) => setStatus(v as AdminUser["status"])}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
                 <SelectItem value="Active">Active</SelectItem>
-                <SelectItem value="Invited">Invited</SelectItem>
-                <SelectItem value="Suspended">Suspended</SelectItem>
+                <SelectItem value="Inactive">Inactive</SelectItem>
               </SelectContent>
             </Select>
           </div>
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>Cancel</Button>
-          <Button onClick={submit}>{user ? "Save changes" : "Send invite"}</Button>
+          <Button onClick={submit}>{isEdit ? "Save changes" : "Add admin"}</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
   );
 }
+

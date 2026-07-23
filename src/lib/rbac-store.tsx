@@ -49,7 +49,7 @@ export interface AdminUser {
   name: string;
   email: string;
   roleId: string;
-  status: "Active" | "Invited" | "Suspended";
+  status: "Active" | "Inactive";
   lastActive?: string;
 }
 
@@ -125,7 +125,7 @@ const seedUsers: AdminUser[] = [
   { id: "u-2", name: "Nusrat Jahan",   email: "nusrat@megahaus.bd",  roleId: "role-admin",       status: "Active",  lastActive: now() },
   { id: "u-3", name: "Tanvir Ahmed",   email: "tanvir@megahaus.bd",  roleId: "role-manager",     status: "Active" },
   { id: "u-4", name: "Sabina Yasmin",  email: "sabina@megahaus.bd",  roleId: "role-operator",    status: "Active" },
-  { id: "u-5", name: "Auditor",        email: "audit@megahaus.bd",   roleId: "role-viewer",      status: "Invited" },
+  { id: "u-5", name: "Auditor",        email: "audit@megahaus.bd",   roleId: "role-viewer",      status: "Inactive" },
 ];
 
 interface State { roles: Role[]; users: AdminUser[] }
