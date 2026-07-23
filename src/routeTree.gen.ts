@@ -60,9 +60,11 @@ import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
 import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
+import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -323,6 +325,11 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminCustomersRoute,
+} as any)
 const PortalCustomerOrdersOrderIdRoute =
   PortalCustomerOrdersOrderIdRouteImport.update({
     id: '/$orderId',
@@ -340,6 +347,12 @@ const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCustomersStatisticsRoute =
+  AdminCustomersStatisticsRouteImport.update({
+    id: '/statistics',
+    path: '/statistics',
+    getParentRoute: () => AdminCustomersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -359,7 +372,7 @@ export interface FileRoutesByFullPath {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/customers': typeof AdminCustomersRoute
+  '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
@@ -392,9 +405,11 @@ export interface FileRoutesByFullPath {
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
+  '/admin/customers/': typeof AdminCustomersIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -412,7 +427,6 @@ export interface FileRoutesByTo {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
@@ -445,9 +459,11 @@ export interface FileRoutesByTo {
   '/portal-customer': typeof PortalCustomerIndexRoute
   '/portal': typeof PortalIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
+  '/admin/customers': typeof AdminCustomersIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
 }
 export interface FileRoutesById {
@@ -469,7 +485,7 @@ export interface FileRoutesById {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/customers': typeof AdminCustomersRoute
+  '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
@@ -502,9 +518,11 @@ export interface FileRoutesById {
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
+  '/admin/customers/': typeof AdminCustomersIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
 }
 export interface FileRouteTypes {
@@ -560,9 +578,11 @@ export interface FileRouteTypes {
     | '/portal-customer/'
     | '/portal/'
     | '/portfolio/'
+    | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
+    | '/admin/customers/'
     | '/admin/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -580,7 +600,6 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
-    | '/admin/customers'
     | '/admin/inventory'
     | '/admin/products'
     | '/admin/quotations'
@@ -613,9 +632,11 @@ export interface FileRouteTypes {
     | '/portal-customer'
     | '/portal'
     | '/portfolio'
+    | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
+    | '/admin/customers'
     | '/admin/orders'
   id:
     | '__root__'
@@ -669,9 +690,11 @@ export interface FileRouteTypes {
     | '/portal-customer/'
     | '/portal/'
     | '/portfolio/'
+    | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
+    | '/admin/customers/'
     | '/admin/orders/'
   fileRoutesById: FileRoutesById
 }
@@ -1059,6 +1082,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/customers/': {
+      id: '/admin/customers/'
+      path: '/'
+      fullPath: '/admin/customers/'
+      preLoaderRoute: typeof AdminCustomersIndexRouteImport
+      parentRoute: typeof AdminCustomersRoute
+    }
     '/portal-customer/orders/$orderId': {
       id: '/portal-customer/orders/$orderId'
       path: '/$orderId'
@@ -1080,12 +1110,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/customers/statistics': {
+      id: '/admin/customers/statistics'
+      path: '/statistics'
+      fullPath: '/admin/customers/statistics'
+      preLoaderRoute: typeof AdminCustomersStatisticsRouteImport
+      parentRoute: typeof AdminCustomersRoute
+    }
   }
 }
 
+interface AdminCustomersRouteChildren {
+  AdminCustomersStatisticsRoute: typeof AdminCustomersStatisticsRoute
+  AdminCustomersIndexRoute: typeof AdminCustomersIndexRoute
+}
+
+const AdminCustomersRouteChildren: AdminCustomersRouteChildren = {
+  AdminCustomersStatisticsRoute: AdminCustomersStatisticsRoute,
+  AdminCustomersIndexRoute: AdminCustomersIndexRoute,
+}
+
+const AdminCustomersRouteWithChildren = AdminCustomersRoute._addFileChildren(
+  AdminCustomersRouteChildren,
+)
+
 interface AdminRouteChildren {
   AdminAgentsRoute: typeof AdminAgentsRoute
-  AdminCustomersRoute: typeof AdminCustomersRoute
+  AdminCustomersRoute: typeof AdminCustomersRouteWithChildren
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminQuotationsRoute: typeof AdminQuotationsRoute
@@ -1100,7 +1151,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAgentsRoute: AdminAgentsRoute,
-  AdminCustomersRoute: AdminCustomersRoute,
+  AdminCustomersRoute: AdminCustomersRouteWithChildren,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminQuotationsRoute: AdminQuotationsRoute,
