@@ -1,8 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Search, Eye, Ban, CheckCircle2, Trash2, Pencil, Plus, Users, UserCheck, UserX, TrendingUp } from "lucide-react";
+import { Search, Eye, Ban, CheckCircle2, Trash2, Pencil, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { Bar, BarChart, CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip as RTooltip, XAxis, YAxis } from "recharts";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,18 +10,15 @@ import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter, DialogDescription } from "@/components/ui/dialog";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
-import { CustomersProvider, useCustomers, type RegisteredCustomer } from "@/lib/customers-store";
+import { useCustomers, type RegisteredCustomer } from "@/lib/customers-store";
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 
 export const Route = createFileRoute("/admin/customers/")({
   head: () => ({ meta: [{ title: "Customers — Admin" }] }),
-  component: () => (
-    <CustomersProvider>
-      <AdminCustomersPage />
-    </CustomersProvider>
-  ),
+  component: AdminCustomersPage,
 });
+
 
 type FormState = { name: string; email: string; phone: string; company: string; address: string; city: string; notes: string };
 const emptyForm: FormState = { name: "", email: "", phone: "", company: "", address: "", city: "", notes: "" };
