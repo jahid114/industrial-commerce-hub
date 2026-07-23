@@ -406,7 +406,7 @@ function UsersTab() {
             <Search className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
             <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="pl-8 w-56" />
           </div>
-          <Button onClick={() => setCreating(true)}><Plus className="size-4 mr-2" /> Invite User</Button>
+          <Button onClick={() => setCreating(true)}><Plus className="size-4 mr-2" /> Add Admin</Button>
         </div>
       </CardHeader>
       <CardContent>
