@@ -57,9 +57,9 @@ import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminQuotationsRouteImport } from './routes/admin.quotations'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
-import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
 import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
@@ -308,11 +308,6 @@ const AdminInventoryRoute = AdminInventoryRouteImport.update({
   path: '/inventory',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminCustomersRoute = AdminCustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminAgentsRoute = AdminAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
@@ -321,6 +316,11 @@ const AdminAgentsRoute = AdminAgentsRouteImport.update({
 const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
+  id: '/customers/',
+  path: '/customers/',
   getParentRoute: () => AdminRoute,
 } as any)
 const PortalCustomerOrdersOrderIdRoute =
@@ -359,7 +359,6 @@ export interface FileRoutesByFullPath {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
@@ -395,6 +394,7 @@ export interface FileRoutesByFullPath {
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
+  '/admin/customers/': typeof AdminCustomersIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
 }
 export interface FileRoutesByTo {
@@ -412,7 +412,6 @@ export interface FileRoutesByTo {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
@@ -448,6 +447,7 @@ export interface FileRoutesByTo {
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
+  '/admin/customers': typeof AdminCustomersIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
 }
 export interface FileRoutesById {
@@ -469,7 +469,6 @@ export interface FileRoutesById {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/customers': typeof AdminCustomersRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
@@ -505,6 +504,7 @@ export interface FileRoutesById {
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
+  '/admin/customers/': typeof AdminCustomersIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
 }
 export interface FileRouteTypes {
@@ -527,7 +527,6 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
-    | '/admin/customers'
     | '/admin/inventory'
     | '/admin/products'
     | '/admin/quotations'
@@ -563,6 +562,7 @@ export interface FileRouteTypes {
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
+    | '/admin/customers/'
     | '/admin/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -580,7 +580,6 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
-    | '/admin/customers'
     | '/admin/inventory'
     | '/admin/products'
     | '/admin/quotations'
@@ -616,6 +615,7 @@ export interface FileRouteTypes {
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
+    | '/admin/customers'
     | '/admin/orders'
   id:
     | '__root__'
@@ -636,7 +636,6 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
-    | '/admin/customers'
     | '/admin/inventory'
     | '/admin/products'
     | '/admin/quotations'
@@ -672,6 +671,7 @@ export interface FileRouteTypes {
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
+    | '/admin/customers/'
     | '/admin/orders/'
   fileRoutesById: FileRoutesById
 }
@@ -1038,13 +1038,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminInventoryRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/customers': {
-      id: '/admin/customers'
-      path: '/customers'
-      fullPath: '/admin/customers'
-      preLoaderRoute: typeof AdminCustomersRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/agents': {
       id: '/admin/agents'
       path: '/agents'
@@ -1057,6 +1050,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/admin/orders/'
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/customers/': {
+      id: '/admin/customers/'
+      path: '/customers'
+      fullPath: '/admin/customers/'
+      preLoaderRoute: typeof AdminCustomersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/portal-customer/orders/$orderId': {
@@ -1085,7 +1085,6 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAgentsRoute: typeof AdminAgentsRoute
-  AdminCustomersRoute: typeof AdminCustomersRoute
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminProductsRoute: typeof AdminProductsRoute
   AdminQuotationsRoute: typeof AdminQuotationsRoute
@@ -1095,12 +1094,12 @@ interface AdminRouteChildren {
   AdminSuppliersRoute: typeof AdminSuppliersRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminOrdersOrderIdRoute: typeof AdminOrdersOrderIdRoute
+  AdminCustomersIndexRoute: typeof AdminCustomersIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAgentsRoute: AdminAgentsRoute,
-  AdminCustomersRoute: AdminCustomersRoute,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminProductsRoute: AdminProductsRoute,
   AdminQuotationsRoute: AdminQuotationsRoute,
@@ -1110,6 +1109,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSuppliersRoute: AdminSuppliersRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminOrdersOrderIdRoute: AdminOrdersOrderIdRoute,
+  AdminCustomersIndexRoute: AdminCustomersIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
 }
 

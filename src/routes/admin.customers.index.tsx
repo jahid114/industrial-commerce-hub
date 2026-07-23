@@ -15,7 +15,7 @@ import { CustomersProvider, useCustomers, type RegisteredCustomer } from "@/lib/
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 
-export const Route = createFileRoute("/admin/customers")({
+export const Route = createFileRoute("/admin/customers/")({
   head: () => ({ meta: [{ title: "Customers — Admin" }] }),
   component: () => (
     <CustomersProvider>
