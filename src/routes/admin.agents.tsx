@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { useMemo, useState } from "react";
+import { Pencil, Trash2, Plus, Eye, TrendingUp, ShoppingBag, Wallet, Calendar } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -15,8 +15,9 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useDirectory } from "@/lib/directory-store";
+import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
-import type { Agent } from "@/data/types";
+import type { Agent, Order } from "@/data/types";
 
 export const Route = createFileRoute("/admin/agents")({
   head: () => ({ meta: [{ title: "Manage Agents — Admin" }] }),
