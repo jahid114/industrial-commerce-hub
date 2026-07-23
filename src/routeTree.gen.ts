@@ -52,6 +52,7 @@ import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
 import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
 import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminQuotationsRouteImport } from './routes/admin.quotations'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
@@ -281,6 +282,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminReportsRoute = AdminReportsRouteImport.update({
   id: '/reports',
   path: '/reports',
@@ -351,6 +357,7 @@ export interface FileRoutesByFullPath {
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -402,6 +409,7 @@ export interface FileRoutesByTo {
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -457,6 +465,7 @@ export interface FileRoutesById {
   '/admin/products': typeof AdminProductsRoute
   '/admin/quotations': typeof AdminQuotationsRoute
   '/admin/reports': typeof AdminReportsRoute
+  '/admin/roles': typeof AdminRolesRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
@@ -513,6 +522,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/quotations'
     | '/admin/reports'
+    | '/admin/roles'
     | '/admin/settings'
     | '/admin/suppliers'
     | '/auth/login'
@@ -564,6 +574,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/quotations'
     | '/admin/reports'
+    | '/admin/roles'
     | '/admin/settings'
     | '/admin/suppliers'
     | '/auth/login'
@@ -618,6 +629,7 @@ export interface FileRouteTypes {
     | '/admin/products'
     | '/admin/quotations'
     | '/admin/reports'
+    | '/admin/roles'
     | '/admin/settings'
     | '/admin/suppliers'
     | '/auth/login'
@@ -979,6 +991,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/reports': {
       id: '/admin/reports'
       path: '/reports'
@@ -1051,6 +1070,7 @@ interface AdminRouteChildren {
   AdminProductsRoute: typeof AdminProductsRoute
   AdminQuotationsRoute: typeof AdminQuotationsRoute
   AdminReportsRoute: typeof AdminReportsRoute
+  AdminRolesRoute: typeof AdminRolesRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSuppliersRoute: typeof AdminSuppliersRoute
   AdminIndexRoute: typeof AdminIndexRoute
@@ -1064,6 +1084,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminProductsRoute: AdminProductsRoute,
   AdminQuotationsRoute: AdminQuotationsRoute,
   AdminReportsRoute: AdminReportsRoute,
+  AdminRolesRoute: AdminRolesRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSuppliersRoute: AdminSuppliersRoute,
   AdminIndexRoute: AdminIndexRoute,
