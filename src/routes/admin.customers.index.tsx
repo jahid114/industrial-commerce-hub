@@ -317,15 +317,6 @@ function AdminCustomersPage() {
   );
 }
 
-function Kpi({ icon: Icon, label, value, color }: { icon: typeof Users; label: string; value: string; color: string }) {
-  return (
-    <div className="rounded-lg border border-border bg-card p-5">
-      <div className={`flex size-10 items-center justify-center ${color} text-white`}><Icon className="size-5" /></div>
-      <div className="mt-4 font-display text-2xl font-bold">{value}</div>
-      <div className="text-sm text-muted-foreground">{label}</div>
-    </div>
-  );
-}
 
 function Field({ label, children, className }: { label: string; children: React.ReactNode; className?: string }) {
   return (
