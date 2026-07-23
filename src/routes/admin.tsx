@@ -22,6 +22,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package;
   { to: "/admin/inventory", label: "Inventory", icon: Boxes },
   { to: "/admin/suppliers", label: "Suppliers", icon: Building2 },
   { to: "/admin/orders", label: "Orders", icon: ShoppingBag },
+  { to: "/admin/customers", label: "Customers", icon: Users },
   { to: "/admin/agents", label: "Agents", icon: Users },
   { to: "/admin/quotations", label: "Quotations", icon: FileText },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
