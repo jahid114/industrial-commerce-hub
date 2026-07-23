@@ -8,6 +8,7 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel,
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useStore } from "@/lib/store";
 import { InventoryProvider } from "@/lib/inventory-store";
+import { RbacProvider } from "@/lib/rbac-store";
 import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { toast } from "sonner";
 
