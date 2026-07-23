@@ -49,7 +49,7 @@ export interface AdminUser {
   name: string;
   email: string;
   roleId: string;
-  status: "Active" | "Invited" | "Suspended";
+  status: "Active" | "Inactive";
   lastActive?: string;
 }
 
