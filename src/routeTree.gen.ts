@@ -64,6 +64,7 @@ import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customer
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
+import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
@@ -346,6 +347,12 @@ const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminCustomersStatisticsRoute =
+  AdminCustomersStatisticsRouteImport.update({
+    id: '/statistics',
+    path: '/statistics',
+    getParentRoute: () => AdminCustomersRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -398,6 +405,7 @@ export interface FileRoutesByFullPath {
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -451,6 +459,7 @@ export interface FileRoutesByTo {
   '/portal-customer': typeof PortalCustomerIndexRoute
   '/portal': typeof PortalIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
+  '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -509,6 +518,7 @@ export interface FileRoutesById {
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
+  '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
@@ -568,6 +578,7 @@ export interface FileRouteTypes {
     | '/portal-customer/'
     | '/portal/'
     | '/portfolio/'
+    | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -621,6 +632,7 @@ export interface FileRouteTypes {
     | '/portal-customer'
     | '/portal'
     | '/portfolio'
+    | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -678,6 +690,7 @@ export interface FileRouteTypes {
     | '/portal-customer/'
     | '/portal/'
     | '/portfolio/'
+    | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
@@ -1097,14 +1110,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/customers/statistics': {
+      id: '/admin/customers/statistics'
+      path: '/statistics'
+      fullPath: '/admin/customers/statistics'
+      preLoaderRoute: typeof AdminCustomersStatisticsRouteImport
+      parentRoute: typeof AdminCustomersRoute
+    }
   }
 }
 
 interface AdminCustomersRouteChildren {
+  AdminCustomersStatisticsRoute: typeof AdminCustomersStatisticsRoute
   AdminCustomersIndexRoute: typeof AdminCustomersIndexRoute
 }
 
 const AdminCustomersRouteChildren: AdminCustomersRouteChildren = {
+  AdminCustomersStatisticsRoute: AdminCustomersStatisticsRoute,
   AdminCustomersIndexRoute: AdminCustomersIndexRoute,
 }
 
