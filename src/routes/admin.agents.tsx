@@ -34,6 +34,7 @@ const emptyForm: FormState = {
   phone: "",
   email: "",
   joined: new Date().toISOString().slice(0, 10),
+  commissionPct: 8,
   status: "Pending",
 };
 
@@ -175,6 +176,20 @@ function AdminAgentsPage() {
                   </SelectContent>
                 </Select>
               </div>
+            </div>
+            <div className="grid gap-1.5">
+              <Label>Commission %</Label>
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                step={0.5}
+                value={form.commissionPct ?? 8}
+                onChange={(e) => setForm({ ...form, commissionPct: Math.min(100, Math.max(0, Number(e.target.value) || 0)) })}
+              />
+              <p className="text-xs text-muted-foreground">
+                Discount off customer price this agent earns. Their agent price = customer price − commission%.
+              </p>
             </div>
           </div>
           <DialogFooter>

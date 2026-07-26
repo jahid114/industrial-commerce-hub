@@ -65,6 +65,8 @@ export interface Agent {
   joined: string;
   ordersSubmitted: number;
   commissionEarned: number;
+  /** Discount percentage from customer price this agent gets as their price. Defaults to 8. */
+  commissionPct?: number;
   status: "Active" | "Pending" | "Suspended";
 }
 

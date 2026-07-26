@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { products } from "@/data/products";
 import { agents } from "@/data/agents";
-import { getAgentPrice } from "@/lib/pricing";
+import { getAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
 import { formatBDT, newOrderId } from "@/lib/format";
 import type { Order } from "@/data/types";
 import {
@@ -43,6 +43,7 @@ type Mode = "existing" | "new";
 
 export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart, onPlaced }: Props) {
   const { dispatch, cart, user } = useStore();
+  const commissionPct = useCurrentAgentCommission();
 
   const [customers, setCustomers] = useState<AgentCustomer[]>([]);
   const [mode, setMode] = useState<Mode>("existing");
@@ -291,7 +292,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                   <tbody className="divide-y divide-border">
                     {lines.map((l) => {
                       const p = products.find((x) => x.id === l.productId)!;
-                      const agent = getAgentPrice(p);
+                      const agent = getAgentPrice(p, commissionPct);
                       const discountPct = p.price > 0 ? Math.round(((p.price - l.unitPrice) / p.price) * 1000) / 10 : 0;
                       const belowAgent = l.unitPrice < agent;
                       return (

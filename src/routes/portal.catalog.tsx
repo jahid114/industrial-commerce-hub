@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { products } from "@/data/products";
 import { brands } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
-import { getAgentPrice } from "@/lib/pricing";
+import { getAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { ProductQuickView } from "@/components/product/ProductQuickView";
@@ -20,6 +20,7 @@ export const Route = createFileRoute("/portal/catalog")({
 
 function AgentCatalogPage() {
   const { dispatch, isAgent, cart, cartCount } = useStore();
+  const commissionPct = useCurrentAgentCommission();
   const [q, setQ] = useState("");
   const [viewing, setViewing] = useState<Product | null>(null);
   const [ordering, setOrdering] = useState(false);
@@ -80,7 +81,7 @@ function AgentCatalogPage() {
             </thead>
             <tbody className="divide-y divide-border">
               {list.map((p) => {
-                const ap = getAgentPrice(p);
+                const ap = getAgentPrice(p, commissionPct);
                 const margin = p.price - ap;
                 const inCart = cart.some((c) => c.productId === p.id);
                 return (
