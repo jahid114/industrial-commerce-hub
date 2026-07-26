@@ -34,6 +34,7 @@ const emptyForm: FormState = {
   phone: "",
   email: "",
   joined: new Date().toISOString().slice(0, 10),
+  commissionPct: 8,
   status: "Pending",
 };
 
