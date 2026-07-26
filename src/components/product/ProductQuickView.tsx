@@ -8,11 +8,12 @@ import { getCategory } from "@/data/categories";
 import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
-import { getAgentPrice, canSeeAgentPrice } from "@/lib/pricing";
+import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export function ProductQuickView({ product, open, onOpenChange }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void }) {
   const { dispatch, user } = useStore();
+  const commissionPct = useCurrentAgentCommission();
   const showAgent = canSeeAgentPrice(user?.role);
   if (!product) return null;
   const brand = getBrand(product.brandId);
@@ -62,7 +63,8 @@ export function ProductQuickView({ product, open, onOpenChange }: { product: Pro
               {showAgent && (
                 <div className="mt-2 flex items-center gap-2 rounded-md border border-accent/30 bg-accent/5 px-3 py-1.5">
                   <span className="rounded bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-foreground">Agent</span>
-                  <span className="text-sm font-semibold">{formatBDT(getAgentPrice(product))}</span>
+                  <span className="text-sm font-semibold">{formatBDT(getAgentPrice(product, user?.role === "agent" ? commissionPct : undefined))}</span>
+                  {user?.role === "agent" && <span className="text-[10px] text-muted-foreground">({commissionPct}% off)</span>}
                 </div>
               )}
             </div>
