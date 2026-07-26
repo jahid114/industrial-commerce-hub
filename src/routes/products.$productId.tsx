@@ -62,7 +62,7 @@ function ProductDetailPage() {
   const supplier = getSupplier(product.supplierId);
   const related = getRelatedProducts(product.id);
   const { dispatch, wishlist, compare, user, isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
-  const showAgent = canSeeAgentPrice(user?.role);
+  const showAgent = false; // Agent pricing hidden on public site
   const navigate = useNavigate();
   const [qty, setQty] = useState(product.moq);
   const [activeImage, setActiveImage] = useState(0);
