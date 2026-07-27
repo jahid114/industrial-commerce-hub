@@ -20,13 +20,13 @@ function QuotationsPage() {
           <h2 className="font-display text-xl font-bold">My Quotation Requests</h2>
           <p className="text-sm text-muted-foreground">{mine.length} requests</p>
         </div>
-        <Link to="/quotation" className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90">
+        <Link to="/portal-customer/quotation" className="rounded-md bg-primary px-4 py-2 text-sm font-semibold text-primary-foreground hover:opacity-90">
           + New Quotation
         </Link>
       </div>
       {mine.length === 0 ? (
         <div className="p-12 text-center text-muted-foreground">
-          No quotations yet. <Link to="/quotation" className="text-primary hover:underline">Request one</Link>
+          No quotations yet. <Link to="/portal-customer/quotation" className="text-primary hover:underline">Request one</Link>
         </div>
       ) : (
         <div className="divide-y divide-border">
