@@ -86,7 +86,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
         .map((c) => {
           const p = products.find((x) => x.id === c.productId);
           if (!p) return null;
-          return { productId: p.id, quantity: c.quantity, unitPrice: p.price };
+          return { productId: p.id, quantity: c.quantity, unitPrice: getAgentPrice(p, commissionPct) };
         })
         .filter(Boolean) as LineItem[];
       setLines(preLines);
@@ -130,7 +130,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
     if (lines.some((l) => l.productId === pickerId)) { toast.error("Product already added"); return; }
     const p = products.find((x) => x.id === pickerId);
     if (!p) return;
-    setLines((prev) => [...prev, { productId: p.id, quantity: p.moq, unitPrice: p.price }]);
+    setLines((prev) => [...prev, { productId: p.id, quantity: p.moq, unitPrice: getAgentPrice(p, commissionPct) }]);
     setPickerId("");
   };
 
