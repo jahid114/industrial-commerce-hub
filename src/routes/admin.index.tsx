@@ -18,7 +18,7 @@ function AdminDashboard() {
   const { orders, quotations } = useStore();
 
   const totalRevenue = orders.filter((o) => o.status !== "Cancelled").reduce((s, o) => s + o.total, 0);
-  const openRfqs = quotations.filter((q) => q.status === "Open").length;
+  const openRfqs = quotations.filter((q) => q.status === "New" || q.status === "Under Review" || q.status === "Sourcing").length;
   const activeAgents = agents.filter((a) => a.status === "Active").length;
 
   // Orders by month (mock from order dates)
