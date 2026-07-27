@@ -86,7 +86,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
         .map((c) => {
           const p = products.find((x) => x.id === c.productId);
           if (!p) return null;
-          return { productId: p.id, quantity: c.quantity, unitPrice: p.price };
+          return { productId: p.id, quantity: c.quantity, unitPrice: getAgentPrice(p, commissionPct) };
         })
         .filter(Boolean) as LineItem[];
       setLines(preLines);
