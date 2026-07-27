@@ -116,20 +116,51 @@ export interface Order {
 }
 
 
-export type QuotationStatus = "Open" | "Quoted" | "Accepted" | "Closed";
+export type QuotationStatus =
+  | "New"
+  | "Under Review"
+  | "Sourcing"
+  | "Quoted"
+  | "Negotiating"
+  | "Accepted"
+  | "Rejected"
+  | "Expired"
+  | "Converted";
+
+export interface QuotationItem {
+  productId: string;
+  productName: string;
+  quantity: number;
+  targetPrice?: number;
+  quotedPrice?: number;
+  notes?: string;
+}
+
+export interface QuotationEvent {
+  at: string;
+  by: string;
+  type: "status" | "note" | "quote" | "created" | "conversion";
+  message: string;
+}
 
 export interface Quotation {
   id: string;
-  productId: string;
-  productName: string;
   customerName: string;
   customerEmail: string;
+  customerPhone?: string;
   company?: string;
-  quantity: number;
-  message: string;
   date: string;
+  items: QuotationItem[];
+  message: string;
   status: QuotationStatus;
-  quotedPrice?: number;
+  quotedTotal?: number;
+  validUntil?: string;
+  paymentTerms?: string;
+  deliveryTerms?: string;
+  assignedTo?: string;
+  internalNotes?: string;
+  timeline?: QuotationEvent[];
+  convertedOrderId?: string;
 }
 
 export type Role = "guest" | "customer" | "admin" | "agent" | "partner";
