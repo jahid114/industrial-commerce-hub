@@ -63,6 +63,7 @@ import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.inde
 import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
+import { Route as AdminQuotationsRfqIdRouteImport } from './routes/admin.quotations.$rfqId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
 import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
@@ -342,6 +343,11 @@ const PortalCustomerCatalogProductIdRoute =
     path: '/$productId',
     getParentRoute: () => PortalCustomerCatalogRoute,
   } as any)
+const AdminQuotationsRfqIdRoute = AdminQuotationsRfqIdRouteImport.update({
+  id: '/quotations/$rfqId',
+  path: '/quotations/$rfqId',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
   id: '/orders/$orderId',
   path: '/orders/$orderId',
@@ -406,6 +412,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/': typeof PortfolioIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
+  '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
@@ -460,6 +467,7 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
+  '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers': typeof AdminCustomersIndexRoute
@@ -519,6 +527,7 @@ export interface FileRoutesById {
   '/portfolio/': typeof PortfolioIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
+  '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
@@ -579,6 +588,7 @@ export interface FileRouteTypes {
     | '/portfolio/'
     | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
+    | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers/'
@@ -633,6 +643,7 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
+    | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers'
@@ -691,6 +702,7 @@ export interface FileRouteTypes {
     | '/portfolio/'
     | '/admin/customers/statistics'
     | '/admin/orders/$orderId'
+    | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers/'
@@ -1103,6 +1115,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalCustomerCatalogProductIdRouteImport
       parentRoute: typeof PortalCustomerCatalogRoute
     }
+    '/admin/quotations/$rfqId': {
+      id: '/admin/quotations/$rfqId'
+      path: '/quotations/$rfqId'
+      fullPath: '/admin/quotations/$rfqId'
+      preLoaderRoute: typeof AdminQuotationsRfqIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/orders/$orderId': {
       id: '/admin/orders/$orderId'
       path: '/orders/$orderId'
@@ -1145,6 +1164,7 @@ interface AdminRouteChildren {
   AdminSuppliersRoute: typeof AdminSuppliersRoute
   AdminIndexRoute: typeof AdminIndexRoute
   AdminOrdersOrderIdRoute: typeof AdminOrdersOrderIdRoute
+  AdminQuotationsRfqIdRoute: typeof AdminQuotationsRfqIdRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
 }
@@ -1160,6 +1180,7 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSuppliersRoute: AdminSuppliersRoute,
   AdminIndexRoute: AdminIndexRoute,
   AdminOrdersOrderIdRoute: AdminOrdersOrderIdRoute,
+  AdminQuotationsRfqIdRoute: AdminQuotationsRfqIdRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
 }
