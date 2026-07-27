@@ -1,9 +1,10 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { Eye, Search, Trash2 } from "lucide-react";
+import { Eye, Search, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   AlertDialog,
@@ -37,22 +38,54 @@ function AdminQuotationsPage() {
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
+  const [customerFilter, setCustomerFilter] = useState<string>("all");
+  const [dateFrom, setDateFrom] = useState<string>("");
+  const [dateTo, setDateTo] = useState<string>("");
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
+
+  const customers = useMemo(() => {
+    const map = new Map<string, string>();
+    quotations.forEach((r) => {
+      if (!map.has(r.customerEmail)) map.set(r.customerEmail, r.customerName);
+    });
+    return Array.from(map.entries())
+      .map(([email, name]) => ({ email, name }))
+      .sort((a, b) => a.name.localeCompare(b.name));
+  }, [quotations]);
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
     return quotations.filter((r) => {
       if (statusFilter !== "all" && r.status !== statusFilter) return false;
+      if (customerFilter !== "all" && r.customerEmail !== customerFilter) return false;
+      if (dateFrom && r.date < dateFrom) return false;
+      if (dateTo && r.date > dateTo) return false;
       if (!q) return true;
       return (
         r.id.toLowerCase().includes(q) ||
         r.customerName.toLowerCase().includes(q) ||
         r.customerEmail.toLowerCase().includes(q) ||
+        (r.company?.toLowerCase().includes(q) ?? false) ||
         r.items.some((i) => i.productName.toLowerCase().includes(q))
       );
     });
-  }, [quotations, search, statusFilter]);
+  }, [quotations, search, statusFilter, customerFilter, dateFrom, dateTo]);
+
+  const activeFilterCount =
+    (statusFilter !== "all" ? 1 : 0) +
+    (customerFilter !== "all" ? 1 : 0) +
+    (dateFrom ? 1 : 0) +
+    (dateTo ? 1 : 0);
+
+  const resetFilters = () => {
+    setStatusFilter("all");
+    setCustomerFilter("all");
+    setDateFrom("");
+    setDateTo("");
+    setSearch("");
+    setPage(1);
+  };
 
   const pageCount = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
   const currentPage = Math.min(page, pageCount);
@@ -71,20 +104,57 @@ function AdminQuotationsPage() {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold">Quotation Requests</h1>
-          <p className="text-sm text-muted-foreground">{filtered.length} of {quotations.length} RFQs</p>
+          <p className="text-sm text-muted-foreground">
+            {filtered.length} of {quotations.length} RFQs
+            {activeFilterCount > 0 && <> · {activeFilterCount} filter{activeFilterCount !== 1 ? "s" : ""} active</>}
+          </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
-          <div className="relative">
-            <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-            <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="Search RFQ, customer, product…" className="w-64 pl-9" />
+        {activeFilterCount > 0 && (
+          <Button size="sm" variant="outline" onClick={resetFilters}>
+            <X className="mr-1.5 size-4" /> Clear filters
+          </Button>
+        )}
+      </div>
+
+      <div className="rounded-lg border border-border bg-card p-4">
+        <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-[1fr_180px_220px_160px_160px]">
+          <div>
+            <Label className="mb-1.5 block text-xs font-semibold uppercase text-muted-foreground">Search</Label>
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+              <Input value={search} onChange={(e) => { setSearch(e.target.value); setPage(1); }} placeholder="RFQ, customer, product…" className="pl-9" />
+            </div>
           </div>
-          <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
-            <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="all">All statuses</SelectItem>
-              {ALL_QUOTATION_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-            </SelectContent>
-          </Select>
+          <div>
+            <Label className="mb-1.5 block text-xs font-semibold uppercase text-muted-foreground">Status</Label>
+            <Select value={statusFilter} onValueChange={(v) => { setStatusFilter(v); setPage(1); }}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All statuses</SelectItem>
+                {ALL_QUOTATION_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="mb-1.5 block text-xs font-semibold uppercase text-muted-foreground">Customer</Label>
+            <Select value={customerFilter} onValueChange={(v) => { setCustomerFilter(v); setPage(1); }}>
+              <SelectTrigger><SelectValue placeholder="All customers" /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All customers</SelectItem>
+                {customers.map((c) => (
+                  <SelectItem key={c.email} value={c.email}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+          <div>
+            <Label className="mb-1.5 block text-xs font-semibold uppercase text-muted-foreground">From</Label>
+            <Input type="date" value={dateFrom} max={dateTo || undefined} onChange={(e) => { setDateFrom(e.target.value); setPage(1); }} />
+          </div>
+          <div>
+            <Label className="mb-1.5 block text-xs font-semibold uppercase text-muted-foreground">To</Label>
+            <Input type="date" value={dateTo} min={dateFrom || undefined} onChange={(e) => { setDateTo(e.target.value); setPage(1); }} />
+          </div>
         </div>
       </div>
 
