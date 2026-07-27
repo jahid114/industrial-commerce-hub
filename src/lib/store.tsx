@@ -124,11 +124,39 @@ export function StoreProvider({ children }: { children: ReactNode }) {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
         const parsed = JSON.parse(raw) as State;
+        // Migrate legacy quotations (pre multi-item schema) so the admin/customer
+        // views don't crash on q.items / q.timeline being undefined.
+        if (Array.isArray(parsed.quotations)) {
+          parsed.quotations = parsed.quotations
+            .filter((q: any) => q && typeof q === "object")
+            .map((q: any) => {
+              const items = Array.isArray(q.items) && q.items.length > 0
+                ? q.items
+                : (q.productId || q.productName)
+                  ? [{
+                      productId: q.productId ?? "",
+                      productName: q.productName ?? "Legacy item",
+                      quantity: q.quantity ?? 1,
+                      targetPrice: q.targetPrice,
+                    }]
+                  : [];
+              return {
+                ...q,
+                customerEmail: q.customerEmail ?? "",
+                customerName: q.customerName ?? "Unknown",
+                items,
+                timeline: Array.isArray(q.timeline) ? q.timeline : [],
+              };
+            })
+            // Drop any entry we still can't render safely.
+            .filter((q: any) => q.id && Array.isArray(q.items));
+        }
         dispatch({ type: "HYDRATE", state: { ...initialState, ...parsed } });
       }
     } catch {
       /* ignore */
     }
+
   }, []);
 
   // persist
