@@ -74,8 +74,13 @@ function AdminReportsPage() {
     header(doc, "QUOTATIONS");
     autoTable(doc, {
       startY: 40,
-      head: [["RFQ ID", "Date", "Product", "Customer", "Qty", "Status", "Quoted"]],
-      body: quotations.map((q) => [q.id, formatDate(q.date), q.productName, q.customerName, String(q.quantity), q.status, q.quotedPrice ? formatBDT(q.quotedPrice) : "—"]),
+      head: [["RFQ ID", "Date", "Customer", "Items", "Total Qty", "Status", "Quoted Total"]],
+      body: quotations.map((q) => {
+        const totalQty = q.items.reduce((s, i) => s + i.quantity, 0);
+        const first = q.items[0]?.productName ?? "";
+        const label = q.items.length > 1 ? `${first} +${q.items.length - 1} more` : first;
+        return [q.id, formatDate(q.date), q.customerName, label, String(totalQty), q.status, q.quotedTotal ? formatBDT(q.quotedTotal) : "—"];
+      }),
       theme: "grid",
       headStyles: { fillColor: BLACK, textColor: 255 },
       styles: { fontSize: 8 },
