@@ -44,19 +44,26 @@ function AdminQuotationsPage() {
   const [page, setPage] = useState(1);
   const [pendingDelete, setPendingDelete] = useState<string | null>(null);
 
+  const safeQuotations = useMemo(
+    () => quotations.filter((q) => q && Array.isArray(q.items)),
+    [quotations],
+  );
+
   const customers = useMemo(() => {
     const map = new Map<string, string>();
-    quotations.forEach((r) => {
-      if (!map.has(r.customerEmail)) map.set(r.customerEmail, r.customerName);
+    safeQuotations.forEach((r) => {
+      const email = r.customerEmail?.trim();
+      if (email && !map.has(email)) map.set(email, r.customerName ?? email);
     });
     return Array.from(map.entries())
       .map(([email, name]) => ({ email, name }))
       .sort((a, b) => a.name.localeCompare(b.name));
-  }, [quotations]);
+  }, [safeQuotations]);
+
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return quotations.filter((r) => {
+    return safeQuotations.filter((r) => {
       if (statusFilter !== "all" && r.status !== statusFilter) return false;
       if (customerFilter !== "all" && r.customerEmail !== customerFilter) return false;
       if (dateFrom && r.date < dateFrom) return false;
@@ -64,13 +71,14 @@ function AdminQuotationsPage() {
       if (!q) return true;
       return (
         r.id.toLowerCase().includes(q) ||
-        r.customerName.toLowerCase().includes(q) ||
-        r.customerEmail.toLowerCase().includes(q) ||
+        (r.customerName ?? "").toLowerCase().includes(q) ||
+        (r.customerEmail ?? "").toLowerCase().includes(q) ||
         (r.company?.toLowerCase().includes(q) ?? false) ||
         r.items.some((i) => i.productName.toLowerCase().includes(q))
       );
     });
-  }, [quotations, search, statusFilter, customerFilter, dateFrom, dateTo]);
+  }, [safeQuotations, search, statusFilter, customerFilter, dateFrom, dateTo]);
+
 
   const activeFilterCount =
     (statusFilter !== "all" ? 1 : 0) +
