@@ -107,14 +107,14 @@ export function CustomerPortalShell({ children }: { children: ReactNode }) {
                   <div className="text-xs font-normal text-muted-foreground">{user?.email}</div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem asChild>
-                  <Link to="/portal-customer/profile" className="cursor-pointer">
+                <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 focus:text-primary">
+                  <Link to="/portal-customer/profile">
                     <User className="size-4 mr-2" /> My Profile
                   </Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
-                  className="cursor-pointer text-destructive focus:text-destructive"
+                  className="cursor-pointer text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
                 >
                   <LogOut className="size-4 mr-2" /> Sign Out
                 </DropdownMenuItem>
