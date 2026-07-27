@@ -42,6 +42,7 @@ import { Route as PortalCommissionsRouteImport } from './routes/portal.commissio
 import { Route as PortalCatalogRouteImport } from './routes/portal.catalog'
 import { Route as PortalCustomerWishlistRouteImport } from './routes/portal-customer.wishlist'
 import { Route as PortalCustomerQuotationsRouteImport } from './routes/portal-customer.quotations'
+import { Route as PortalCustomerQuotationRouteImport } from './routes/portal-customer.quotation'
 import { Route as PortalCustomerProfileRouteImport } from './routes/portal-customer.profile'
 import { Route as PortalCustomerOrdersRouteImport } from './routes/portal-customer.orders'
 import { Route as PortalCustomerCompareRouteImport } from './routes/portal-customer.compare'
@@ -236,6 +237,11 @@ const PortalCustomerQuotationsRoute =
     path: '/quotations',
     getParentRoute: () => PortalCustomerRoute,
   } as any)
+const PortalCustomerQuotationRoute = PortalCustomerQuotationRouteImport.update({
+  id: '/quotation',
+  path: '/quotation',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
 const PortalCustomerProfileRoute = PortalCustomerProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
@@ -393,6 +399,7 @@ export interface FileRoutesByFullPath {
   '/portal-customer/compare': typeof PortalCustomerCompareRoute
   '/portal-customer/orders': typeof PortalCustomerOrdersRouteWithChildren
   '/portal-customer/profile': typeof PortalCustomerProfileRoute
+  '/portal-customer/quotation': typeof PortalCustomerQuotationRoute
   '/portal-customer/quotations': typeof PortalCustomerQuotationsRoute
   '/portal-customer/wishlist': typeof PortalCustomerWishlistRoute
   '/portal/catalog': typeof PortalCatalogRoute
@@ -448,6 +455,7 @@ export interface FileRoutesByTo {
   '/portal-customer/compare': typeof PortalCustomerCompareRoute
   '/portal-customer/orders': typeof PortalCustomerOrdersRouteWithChildren
   '/portal-customer/profile': typeof PortalCustomerProfileRoute
+  '/portal-customer/quotation': typeof PortalCustomerQuotationRoute
   '/portal-customer/quotations': typeof PortalCustomerQuotationsRoute
   '/portal-customer/wishlist': typeof PortalCustomerWishlistRoute
   '/portal/catalog': typeof PortalCatalogRoute
@@ -508,6 +516,7 @@ export interface FileRoutesById {
   '/portal-customer/compare': typeof PortalCustomerCompareRoute
   '/portal-customer/orders': typeof PortalCustomerOrdersRouteWithChildren
   '/portal-customer/profile': typeof PortalCustomerProfileRoute
+  '/portal-customer/quotation': typeof PortalCustomerQuotationRoute
   '/portal-customer/quotations': typeof PortalCustomerQuotationsRoute
   '/portal-customer/wishlist': typeof PortalCustomerWishlistRoute
   '/portal/catalog': typeof PortalCatalogRoute
@@ -569,6 +578,7 @@ export interface FileRouteTypes {
     | '/portal-customer/compare'
     | '/portal-customer/orders'
     | '/portal-customer/profile'
+    | '/portal-customer/quotation'
     | '/portal-customer/quotations'
     | '/portal-customer/wishlist'
     | '/portal/catalog'
@@ -624,6 +634,7 @@ export interface FileRouteTypes {
     | '/portal-customer/compare'
     | '/portal-customer/orders'
     | '/portal-customer/profile'
+    | '/portal-customer/quotation'
     | '/portal-customer/quotations'
     | '/portal-customer/wishlist'
     | '/portal/catalog'
@@ -683,6 +694,7 @@ export interface FileRouteTypes {
     | '/portal-customer/compare'
     | '/portal-customer/orders'
     | '/portal-customer/profile'
+    | '/portal-customer/quotation'
     | '/portal-customer/quotations'
     | '/portal-customer/wishlist'
     | '/portal/catalog'
@@ -968,6 +980,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalCustomerQuotationsRouteImport
       parentRoute: typeof PortalCustomerRoute
     }
+    '/portal-customer/quotation': {
+      id: '/portal-customer/quotation'
+      path: '/quotation'
+      fullPath: '/portal-customer/quotation'
+      preLoaderRoute: typeof PortalCustomerQuotationRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
     '/portal-customer/profile': {
       id: '/portal-customer/profile'
       path: '/profile'
@@ -1243,6 +1262,7 @@ interface PortalCustomerRouteChildren {
   PortalCustomerCompareRoute: typeof PortalCustomerCompareRoute
   PortalCustomerOrdersRoute: typeof PortalCustomerOrdersRouteWithChildren
   PortalCustomerProfileRoute: typeof PortalCustomerProfileRoute
+  PortalCustomerQuotationRoute: typeof PortalCustomerQuotationRoute
   PortalCustomerQuotationsRoute: typeof PortalCustomerQuotationsRoute
   PortalCustomerWishlistRoute: typeof PortalCustomerWishlistRoute
   PortalCustomerIndexRoute: typeof PortalCustomerIndexRoute
@@ -1255,6 +1275,7 @@ const PortalCustomerRouteChildren: PortalCustomerRouteChildren = {
   PortalCustomerCompareRoute: PortalCustomerCompareRoute,
   PortalCustomerOrdersRoute: PortalCustomerOrdersRouteWithChildren,
   PortalCustomerProfileRoute: PortalCustomerProfileRoute,
+  PortalCustomerQuotationRoute: PortalCustomerQuotationRoute,
   PortalCustomerQuotationsRoute: PortalCustomerQuotationsRoute,
   PortalCustomerWishlistRoute: PortalCustomerWishlistRoute,
   PortalCustomerIndexRoute: PortalCustomerIndexRoute,
@@ -1303,3 +1324,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
