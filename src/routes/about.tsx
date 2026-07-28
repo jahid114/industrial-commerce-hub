@@ -179,13 +179,13 @@ function AboutPage() {
           <SectionLabel>Executive Overview</SectionLabel>
           <div className="mt-8 space-y-6 text-lg text-slate-700 leading-relaxed">
             <p>
-              MegaHaus Industrial Hub is an emerging Industrial Sourcing, Engineering Support, Distribution and International Partnership Platform based in Bangladesh.
+              Megahaus Marketplace is a $5M project building Bangladesh's destination for industrial products, tools, materials and after-sales services.
             </p>
             <p>
-              Our objective is to bridge the gap between global manufacturers and Bangladesh industries by providing technical support, sourcing solutions, engineering consultancy, industrial products, after-sales services and market development programs.
+              We are inspired by the proven global marketplace model of Bauhaus, OBI and similar industrial retailers who have sold to millions of customers across Europe and beyond for over 47 years. Their legacy of product availability, trusted brands and reliable service is the blueprint we are bringing to Bangladesh.
             </p>
             <p>
-              MegaHaus aims to become a trusted gateway for international industrial brands seeking access to Bangladesh's growing manufacturing sector.
+              Our objective is to create a platform that serves more than 180 million people — connecting factories, contractors, engineers and maintenance teams with the industrial products they need, delivered locally and supported by experts who understand the Bangladesh market.
             </p>
           </div>
         </div>
