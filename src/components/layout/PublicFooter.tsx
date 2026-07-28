@@ -44,6 +44,7 @@ export function PublicFooter() {
           ["Supplier Partnership", "/suppliers"],
           ["Agent Program", "/agents"],
           ["Investment", "/partners"],
+          ["Careers", "/careers"],
           ["About MegaHaus", "/about"],
         ]} />
 
