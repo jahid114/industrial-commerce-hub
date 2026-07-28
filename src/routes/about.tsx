@@ -13,8 +13,8 @@ import {
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About MegaHaus Industrial Hub" },
-      { name: "description", content: "MegaHaus is Bangladesh's first integrated industrial marketplace. A project of Protocol Cashmere Limited." },
+      { title: "About Megahaus Marketplace" },
+      { name: "description", content: "Megahaus is building Bangladesh's marketplace for industrial products, inspired by global leaders like Bauhaus and OBI, serving more than 180 million people." },
     ],
   }),
   component: AboutPage,
