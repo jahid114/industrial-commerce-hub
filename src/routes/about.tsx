@@ -13,8 +13,8 @@ import {
 export const Route = createFileRoute("/about")({
   head: () => ({
     meta: [
-      { title: "About MegaHaus Industrial Hub" },
-      { name: "description", content: "MegaHaus is Bangladesh's first integrated industrial marketplace. A project of Protocol Cashmere Limited." },
+      { title: "About Megahaus Marketplace" },
+      { name: "description", content: "Megahaus is building Bangladesh's marketplace for industrial products, inspired by global leaders like Bauhaus and OBI, serving more than 180 million people." },
     ],
   }),
   component: AboutPage,
@@ -162,13 +162,13 @@ function AboutPage() {
         <div className="mx-auto max-w-5xl px-4">
           <SectionLabel>About Us</SectionLabel>
           <h1 className="mt-6 font-['Archivo'] text-4xl font-extrabold uppercase md:text-6xl lg:text-7xl">
-            MEGAHAUS INDUSTRIAL HUB
+            Megahaus marketplace
           </h1>
           <p className="mt-5 text-lg text-white/80 max-w-3xl">
-            Bangladesh Industrial Sourcing, Engineering & Global Partnership Platform
+            Bangladesh's marketplace for industrial products — inspired by the proven model of global leaders like Bauhaus and OBI, who have sold tools and materials across the world for over 47 years. We are bringing that same trusted solution to Bangladesh, built for more than 180 million people.
           </p>
           <div className="mt-8 inline-block border border-accent/40 px-4 py-2 text-xs font-bold uppercase tracking-widest text-accent">
-            Corporate Profile 2025–2033
+            Project Value: $5M
           </div>
         </div>
       </section>
@@ -179,13 +179,13 @@ function AboutPage() {
           <SectionLabel>Executive Overview</SectionLabel>
           <div className="mt-8 space-y-6 text-lg text-slate-700 leading-relaxed">
             <p>
-              MegaHaus Industrial Hub is an emerging Industrial Sourcing, Engineering Support, Distribution and International Partnership Platform based in Bangladesh.
+              Megahaus Marketplace is a $5M project building Bangladesh's destination for industrial products, tools, materials and after-sales services.
             </p>
             <p>
-              Our objective is to bridge the gap between global manufacturers and Bangladesh industries by providing technical support, sourcing solutions, engineering consultancy, industrial products, after-sales services and market development programs.
+              We are inspired by the proven global marketplace model of Bauhaus, OBI and similar industrial retailers who have sold to millions of customers across Europe and beyond for over 47 years. Their legacy of product availability, trusted brands and reliable service is the blueprint we are bringing to Bangladesh.
             </p>
             <p>
-              MegaHaus aims to become a trusted gateway for international industrial brands seeking access to Bangladesh's growing manufacturing sector.
+              Our objective is to create a platform that serves more than 180 million people — connecting factories, contractors, engineers and maintenance teams with the industrial products they need, delivered locally and supported by experts who understand the Bangladesh market.
             </p>
           </div>
         </div>
@@ -539,7 +539,7 @@ function AboutPage() {
         <div className="mx-auto max-w-5xl px-4 text-center">
           <SectionLabel>Long-Term Vision</SectionLabel>
           <blockquote className="mt-8 font-['Archivo'] text-2xl md:text-3xl font-extrabold uppercase leading-snug text-white max-w-4xl mx-auto">
-            "MegaHaus Industrial Hub aims to become Bangladesh's most trusted Industrial Marketplace, Engineering Service Platform and International Partnership Network, connecting global technologies with local industries."
+            "Megahaus Marketplace aims to become Bangladesh's most trusted destination for industrial products, tools and materials — a marketplace built for more than 180 million people, powered by global brands and local service."
           </blockquote>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
