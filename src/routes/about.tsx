@@ -593,7 +593,7 @@ function AboutPage() {
   );
 }
 
-function SocialLink({ href, label, bg, children }: { href: string; label: string; bg: string; children: React.ReactNode }) {
+function SocialLink({ href, label, bg, children }: { href: string; label: string; bg: string; children: ReactNode }) {
   return (
     <a
       href={href}
