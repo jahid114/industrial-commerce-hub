@@ -539,7 +539,7 @@ function AboutPage() {
         <div className="mx-auto max-w-5xl px-4 text-center">
           <SectionLabel>Long-Term Vision</SectionLabel>
           <blockquote className="mt-8 font-['Archivo'] text-2xl md:text-3xl font-extrabold uppercase leading-snug text-white max-w-4xl mx-auto">
-            "MegaHaus Industrial Hub aims to become Bangladesh's most trusted Industrial Marketplace, Engineering Service Platform and International Partnership Network, connecting global technologies with local industries."
+            "Megahaus Marketplace aims to become Bangladesh's most trusted destination for industrial products, tools and materials — a marketplace built for more than 180 million people, powered by global brands and local service."
           </blockquote>
           <div className="mt-10 flex flex-wrap justify-center gap-3">
             <Link
