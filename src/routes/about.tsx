@@ -162,13 +162,13 @@ function AboutPage() {
         <div className="mx-auto max-w-5xl px-4">
           <SectionLabel>About Us</SectionLabel>
           <h1 className="mt-6 font-['Archivo'] text-4xl font-extrabold uppercase md:text-6xl lg:text-7xl">
-            MEGAHAUS INDUSTRIAL HUB
+            Megahaus marketplace
           </h1>
           <p className="mt-5 text-lg text-white/80 max-w-3xl">
-            Bangladesh Industrial Sourcing, Engineering & Global Partnership Platform
+            Bangladesh's marketplace for industrial products — inspired by the proven model of global leaders like Bauhaus and OBI, who have sold tools and materials across the world for over 47 years. We are bringing that same trusted solution to Bangladesh, built for more than 180 million people.
           </p>
           <div className="mt-8 inline-block border border-accent/40 px-4 py-2 text-xs font-bold uppercase tracking-widest text-accent">
-            Corporate Profile 2025–2033
+            Project Value: $5M
           </div>
         </div>
       </section>
