@@ -55,14 +55,15 @@ function ContactPage() {
               <p className="mt-2 text-muted-foreground">We'll get back to you within 24 hours.</p>
             </div>
           ) : (
-            <form onSubmit={(e) => { e.preventDefault(); setDone(true); }} className="space-y-4">
+            <form onSubmit={submit} className="space-y-4">
               <h3 className="font-display text-xl font-bold border-b border-border pb-3">Send us a message</h3>
               <div className="grid grid-cols-2 gap-3">
-                <div><Label className="mb-1.5 block text-sm">Name</Label><Input required /></div>
-                <div><Label className="mb-1.5 block text-sm">Email</Label><Input type="email" required /></div>
+                <div><Label className="mb-1.5 block text-sm">Name</Label><Input required value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /></div>
+                <div><Label className="mb-1.5 block text-sm">Email</Label><Input type="email" required value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /></div>
               </div>
-              <div><Label className="mb-1.5 block text-sm">Subject</Label><Input required /></div>
-              <div><Label className="mb-1.5 block text-sm">Message</Label><Textarea rows={5} required /></div>
+              <div><Label className="mb-1.5 block text-sm">Subject</Label><Input required value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })} /></div>
+              <div><Label className="mb-1.5 block text-sm">Message</Label><Textarea rows={5} required value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })} /></div>
+
               <Button type="submit" size="lg" className="w-full font-bold uppercase">Send Message</Button>
             </form>
           )}
