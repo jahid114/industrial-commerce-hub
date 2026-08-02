@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,14 +8,12 @@ import {
   MapPin,
   Upload,
   X,
-  Briefcase,
-  Users,
-  TrendingUp,
   Clock,
   Award,
+  ChevronLeft,
+  Briefcase,
 } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
-import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -27,35 +25,66 @@ const schema = z.object({
   email: z.string().trim().email("Invalid email").max(255),
   phone: z.string().trim().min(8, "Phone is required").max(30),
   city: z.string().trim().min(2, "City/District is required").max(100),
+  nid: z.string().trim().min(8, "NID number is required").max(30),
+  tradeLicense: z.string().trim().max(100).optional(),
   experience: z.string().trim().max(50).optional(),
   areas: z.string().trim().max(300).optional(),
   message: z.string().trim().max(1000).optional(),
 });
 type FormData = z.infer<typeof schema>;
 
-export const Route = createFileRoute("/careers")({
+const TITLE = "Field Agent Job — Apply Online | MegaHaus Careers";
+const DESC =
+  "Apply to become a MegaHaus Field Agent in Bangladesh. See responsibilities, requirements and submit your application with NID and trade licence details.";
+
+export const Route = createFileRoute("/careers/field-agent")({
   head: () => ({
     meta: [
-      { title: "Careers — Field Agent | MegaHaus" },
-      {
-        name: "description",
-        content:
-          "Join MegaHaus as a Field Agent. Help build Bangladesh's industrial marketplace across the country.",
-      },
-      { property: "og:title", content: "Careers — Field Agent | MegaHaus" },
-      {
-        property: "og:description",
-        content:
-          "Join MegaHaus as a Field Agent. Help build Bangladesh's industrial marketplace across the country.",
-      },
-      { property: "og:type", content: "website" },
+      { title: TITLE },
+      { name: "description", content: DESC },
+      { property: "og:title", content: TITLE },
+      { property: "og:description", content: DESC },
+      { property: "og:type", content: "article" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "JobPosting",
+          title: "Field Agent",
+          description: DESC,
+          employmentType: "CONTRACTOR",
+          hiringOrganization: { "@type": "Organization", name: "MegaHaus" },
+          jobLocation: {
+            "@type": "Place",
+            address: { "@type": "PostalAddress", addressCountry: "BD" },
+          },
+        }),
+      },
+    ],
   }),
-  component: CareersPage,
+  component: FieldAgentJobPage,
 });
 
-function CareersPage() {
+const responsibilities = [
+  "Visit factories, workshops, and contractors to introduce MegaHaus products",
+  "Identify new customers and understand their machinery, tool, and maintenance needs",
+  "Support customers with product information and connect them to the right supplier",
+  "Collect market feedback and share leads with the MegaHaus team",
+  "Help promote the MegaHaus brand in your assigned area",
+];
+
+const requirements = [
+  "Valid National ID (NID) — required for verification",
+  "Trade licence if you operate a shop or business (optional)",
+  "Local knowledge of industrial areas, factories, or trade zones",
+  "Strong communication skills in Bangla and basic English",
+  "Self-motivated, reliable, and comfortable visiting sites independently",
+];
+
+function FieldAgentJobPage() {
   const [done, setDone] = useState(false);
   const [files, setFiles] = useState<File[]>([]);
   const form = useForm<FormData>({
@@ -65,6 +94,8 @@ function CareersPage() {
       email: "",
       phone: "",
       city: "",
+      nid: "",
+      tradeLicense: "",
       experience: "",
       areas: "",
       message: "",
@@ -80,8 +111,10 @@ function CareersPage() {
     setFiles((prev) => prev.filter((_, i) => i !== idx));
 
   const onSubmit = (data: FormData) => {
-    // Local-only application capture; in production this should be sent to a server.
     const payload = {
+      id: `FAR-${Date.now().toString(36).toUpperCase()}`,
+      role: "Field Agent",
+      status: "New",
       ...data,
       files: files.map((f) => f.name),
       submittedAt: new Date().toISOString(),
@@ -94,84 +127,42 @@ function CareersPage() {
 
   return (
     <PublicLayout>
-      {/* Hero */}
-      <section className="bg-industrial text-industrial-foreground py-16 md:py-24">
+      <section className="bg-industrial text-industrial-foreground py-14 md:py-20">
         <div className="container mx-auto px-4">
-          <div className="max-w-3xl">
-            <Badge className="bg-accent text-industrial hover:bg-accent/90 rounded-none px-3 py-1 text-xs font-bold uppercase tracking-widest">
-              Always Hiring
-            </Badge>
-            <h1 className="mt-5 font-['Archivo'] text-4xl font-extrabold uppercase md:text-5xl lg:text-6xl">
-              Join as a Field Agent
-            </h1>
-            <p className="mt-5 text-lg text-white/80">
-              MegaHaus is building Bangladesh's industrial marketplace across the country. We are always looking for motivated Field Agents who want to grow with us, connect local businesses, and represent global-quality industrial products in their region.
-            </p>
+          <Link
+            to="/careers"
+            className="inline-flex items-center gap-1 text-sm text-white/70 hover:text-white"
+          >
+            <ChevronLeft className="size-4" /> All openings
+          </Link>
+          <h1 className="mt-4 font-['Archivo'] text-4xl font-extrabold uppercase md:text-5xl">
+            Field Agent
+          </h1>
+          <div className="mt-4 flex flex-wrap gap-3 text-sm text-white/80">
+            <Badge className="bg-accent text-industrial hover:bg-accent/90">Open now</Badge>
+            <span className="flex items-center gap-1.5"><MapPin className="size-4" /> All districts, Bangladesh</span>
+            <span className="flex items-center gap-1.5"><Briefcase className="size-4" /> Commission-based · Field role</span>
           </div>
         </div>
       </section>
 
-      {/* Role highlights */}
-      <section className="bg-slate-50 py-16">
-        <div className="container mx-auto px-4">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            {[
-              {
-                Icon: MapPin,
-                title: "Work in Your Area",
-                desc: "Represent MegaHaus in your own district or industrial zone.",
-              },
-              {
-                Icon: Briefcase,
-                title: "Flexible Engagement",
-                desc: "Commission-based field role with performance incentives.",
-              },
-              {
-                Icon: Users,
-                title: "Build Relationships",
-                desc: "Connect factories, suppliers, contractors and maintenance teams.",
-              },
-              {
-                Icon: TrendingUp,
-                title: "Grow With Us",
-                desc: "Progress into agent, partner, and leadership roles.",
-              },
-            ].map(({ Icon, title, desc }) => (
-              <div
-                key={title}
-                className="border border-slate-200 bg-white p-6 hover:border-accent transition-colors"
-              >
-                <Icon className="size-8 text-accent" />
-                <h3 className="mt-4 font-display text-lg font-bold">{title}</h3>
-                <p className="mt-2 text-sm text-slate-600">{desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Role details + form */}
-      <section className="py-16 md:py-20">
+      <section className="py-14 md:py-20">
         <div className="container mx-auto grid gap-12 px-4 lg:grid-cols-2">
           <div>
-            <SectionHeading
-              eyebrow="Open Position"
-              title="Field Agent"
-              description="This role is permanently open. If you understand the local industrial market and enjoy meeting people, we want to hear from you."
-            />
+            <h2 className="font-display text-2xl font-bold">About the role</h2>
+            <p className="mt-3 text-slate-700">
+              MegaHaus is building Bangladesh's industrial marketplace across the country. As a Field
+              Agent you represent MegaHaus in your own region, connect local businesses, and earn
+              commission on the orders you bring in.
+            </p>
+
             <div className="mt-8 space-y-6">
               <div>
-                <h3 className="font-display text-lg font-bold flex items-center gap-2">
+                <h3 className="flex items-center gap-2 font-display text-lg font-bold">
                   <Clock className="size-5 text-accent" /> What You Will Do
                 </h3>
                 <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                  {[
-                    "Visit factories, workshops, and contractors to introduce MegaHaus products",
-                    "Identify new customers and understand their machinery, tool, and maintenance needs",
-                    "Support customers with product information and connect them to the right supplier",
-                    "Collect market feedback and share leads with the MegaHaus team",
-                    "Help promote the MegaHaus brand in your assigned area",
-                  ].map((item) => (
+                  {responsibilities.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-accent" />
                       <span>{item}</span>
@@ -180,17 +171,11 @@ function CareersPage() {
                 </ul>
               </div>
               <div>
-                <h3 className="font-display text-lg font-bold flex items-center gap-2">
+                <h3 className="flex items-center gap-2 font-display text-lg font-bold">
                   <Award className="size-5 text-accent" /> What We Look For
                 </h3>
                 <ul className="mt-3 space-y-2 text-sm text-slate-700">
-                  {[
-                    "Local knowledge of industrial areas, factories, or trade zones",
-                    "Strong communication skills in Bangla and basic English",
-                    "Self-motivated, reliable, and comfortable visiting sites independently",
-                    "Existing network in manufacturing, engineering, or construction is a plus",
-                    "No previous sales experience required — we provide guidance",
-                  ].map((item) => (
+                  {requirements.map((item) => (
                     <li key={item} className="flex items-start gap-2">
                       <span className="mt-1.5 h-1.5 w-1.5 shrink-0 bg-accent" />
                       <span>{item}</span>
@@ -201,7 +186,7 @@ function CareersPage() {
             </div>
           </div>
 
-          <div className="rounded-lg border border-border bg-card p-6 md:p-8">
+          <div id="apply" className="rounded-lg border border-border bg-card p-6 md:p-8">
             {done ? (
               <div className="py-12 text-center">
                 <div className="mx-auto flex size-16 items-center justify-center rounded-full bg-success/10">
@@ -225,9 +210,9 @@ function CareersPage() {
               </div>
             ) : (
               <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                <h3 className="font-display text-xl font-bold border-b border-border pb-3">
+                <h2 className="border-b border-border pb-3 font-display text-xl font-bold">
                   Apply for Field Agent
-                </h3>
+                </h2>
 
                 <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
                   <F label="Full Name" err={form.formState.errors.name?.message}>
@@ -242,17 +227,17 @@ function CareersPage() {
                   <F label="City / District" err={form.formState.errors.city?.message}>
                     <Input {...form.register("city")} />
                   </F>
+                  <F label="NID Number" err={form.formState.errors.nid?.message}>
+                    <Input {...form.register("nid")} placeholder="National ID number" />
+                  </F>
+                  <F label="Trade Licence No. (optional)" err={form.formState.errors.tradeLicense?.message}>
+                    <Input {...form.register("tradeLicense")} placeholder="If you have one" />
+                  </F>
                   <F label="Experience (optional)" err={form.formState.errors.experience?.message}>
-                    <Input
-                      {...form.register("experience")}
-                      placeholder="e.g. 2 years in sales"
-                    />
+                    <Input {...form.register("experience")} placeholder="e.g. 2 years in sales" />
                   </F>
                   <F label="Preferred Work Areas (optional)" err={form.formState.errors.areas?.message}>
-                    <Input
-                      {...form.register("areas")}
-                      placeholder="e.g. Chattogram, Dhaka"
-                    />
+                    <Input {...form.register("areas")} placeholder="e.g. Chattogram, Dhaka" />
                   </F>
                 </div>
 
@@ -264,10 +249,10 @@ function CareersPage() {
                   />
                 </F>
 
-                <F label="Resume / CV Upload (optional)">
+                <F label="Documents (optional) — CV, NID or trade licence copy">
                   <label className="flex cursor-pointer items-center justify-center gap-2 rounded-md border border-dashed border-input bg-background px-3 py-6 text-sm text-muted-foreground hover:border-primary hover:text-primary">
                     <Upload className="size-4" />
-                    <span>Click to upload resume or portfolio (PDF/JPG/PNG)</span>
+                    <span>Click to upload (PDF/JPG/PNG)</span>
                     <input
                       type="file"
                       multiple
@@ -302,11 +287,7 @@ function CareersPage() {
                   )}
                 </F>
 
-                <Button
-                  type="submit"
-                  size="lg"
-                  className="w-full font-bold uppercase"
-                >
+                <Button type="submit" size="lg" className="w-full font-bold uppercase">
                   Submit Application
                 </Button>
               </form>

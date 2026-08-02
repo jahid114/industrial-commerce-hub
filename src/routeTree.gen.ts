@@ -20,7 +20,6 @@ import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CompareRouteImport } from './routes/compare'
 import { Route as CheckoutRouteImport } from './routes/checkout'
 import { Route as CartRouteImport } from './routes/cart'
-import { Route as CareersRouteImport } from './routes/careers'
 import { Route as AgentsRouteImport } from './routes/agents'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AccountRouteImport } from './routes/account'
@@ -29,6 +28,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as PortalCustomerIndexRouteImport } from './routes/portal-customer.index'
+import { Route as CareersIndexRouteImport } from './routes/careers.index'
 import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
 import { Route as PortfolioStrategicVision2033RouteImport } from './routes/portfolio.strategic-vision-2033'
@@ -50,6 +50,7 @@ import { Route as PortalCustomerCompareRouteImport } from './routes/portal-custo
 import { Route as PortalCustomerCheckoutRouteImport } from './routes/portal-customer.checkout'
 import { Route as PortalCustomerCatalogRouteImport } from './routes/portal-customer.catalog'
 import { Route as PortalCustomerCartRouteImport } from './routes/portal-customer.cart'
+import { Route as CareersFieldAgentRouteImport } from './routes/careers.field-agent'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -124,11 +125,6 @@ const CartRoute = CartRouteImport.update({
   path: '/cart',
   getParentRoute: () => rootRouteImport,
 } as any)
-const CareersRoute = CareersRouteImport.update({
-  id: '/careers',
-  path: '/careers',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AgentsRoute = AgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
@@ -168,6 +164,11 @@ const PortalCustomerIndexRoute = PortalCustomerIndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => PortalCustomerRoute,
+} as any)
+const CareersIndexRoute = CareersIndexRouteImport.update({
+  id: '/careers/',
+  path: '/careers/',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
   id: '/',
@@ -278,6 +279,11 @@ const PortalCustomerCartRoute = PortalCustomerCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => PortalCustomerRoute,
 } as any)
+const CareersFieldAgentRoute = CareersFieldAgentRouteImport.update({
+  id: '/careers/field-agent',
+  path: '/careers/field-agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -378,7 +384,6 @@ export interface FileRoutesByFullPath {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/agents': typeof AgentsRoute
-  '/careers': typeof CareersRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
@@ -400,6 +405,7 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogRouteWithChildren
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -421,6 +427,7 @@ export interface FileRoutesByFullPath {
   '/portfolio/strategic-vision-2033': typeof PortfolioStrategicVision2033Route
   '/products/$productId': typeof ProductsProductIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/careers/': typeof CareersIndexRoute
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
@@ -438,7 +445,6 @@ export interface FileRoutesByTo {
   '/about': typeof AboutRoute
   '/account': typeof AccountRoute
   '/agents': typeof AgentsRoute
-  '/careers': typeof CareersRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
@@ -457,6 +463,7 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogRouteWithChildren
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -478,6 +485,7 @@ export interface FileRoutesByTo {
   '/portfolio/strategic-vision-2033': typeof PortfolioStrategicVision2033Route
   '/products/$productId': typeof ProductsProductIdRoute
   '/admin': typeof AdminIndexRoute
+  '/careers': typeof CareersIndexRoute
   '/portal-customer': typeof PortalCustomerIndexRoute
   '/portal': typeof PortalIndexRoute
   '/portfolio': typeof PortfolioIndexRoute
@@ -497,7 +505,6 @@ export interface FileRoutesById {
   '/account': typeof AccountRoute
   '/admin': typeof AdminRouteWithChildren
   '/agents': typeof AgentsRoute
-  '/careers': typeof CareersRoute
   '/cart': typeof CartRoute
   '/checkout': typeof CheckoutRoute
   '/compare': typeof CompareRoute
@@ -519,6 +526,7 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogRouteWithChildren
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -540,6 +548,7 @@ export interface FileRoutesById {
   '/portfolio/strategic-vision-2033': typeof PortfolioStrategicVision2033Route
   '/products/$productId': typeof ProductsProductIdRoute
   '/admin/': typeof AdminIndexRoute
+  '/careers/': typeof CareersIndexRoute
   '/portal-customer/': typeof PortalCustomerIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/portfolio/': typeof PortfolioIndexRoute
@@ -560,7 +569,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/agents'
-    | '/careers'
     | '/cart'
     | '/checkout'
     | '/compare'
@@ -582,6 +590,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/catalog'
     | '/portal-customer/checkout'
@@ -603,6 +612,7 @@ export interface FileRouteTypes {
     | '/portfolio/strategic-vision-2033'
     | '/products/$productId'
     | '/admin/'
+    | '/careers/'
     | '/portal-customer/'
     | '/portal/'
     | '/portfolio/'
@@ -620,7 +630,6 @@ export interface FileRouteTypes {
     | '/about'
     | '/account'
     | '/agents'
-    | '/careers'
     | '/cart'
     | '/checkout'
     | '/compare'
@@ -639,6 +648,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/catalog'
     | '/portal-customer/checkout'
@@ -660,6 +670,7 @@ export interface FileRouteTypes {
     | '/portfolio/strategic-vision-2033'
     | '/products/$productId'
     | '/admin'
+    | '/careers'
     | '/portal-customer'
     | '/portal'
     | '/portfolio'
@@ -678,7 +689,6 @@ export interface FileRouteTypes {
     | '/account'
     | '/admin'
     | '/agents'
-    | '/careers'
     | '/cart'
     | '/checkout'
     | '/compare'
@@ -700,6 +710,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/catalog'
     | '/portal-customer/checkout'
@@ -721,6 +732,7 @@ export interface FileRouteTypes {
     | '/portfolio/strategic-vision-2033'
     | '/products/$productId'
     | '/admin/'
+    | '/careers/'
     | '/portal-customer/'
     | '/portal/'
     | '/portfolio/'
@@ -740,7 +752,6 @@ export interface RootRouteChildren {
   AccountRoute: typeof AccountRoute
   AdminRoute: typeof AdminRouteWithChildren
   AgentsRoute: typeof AgentsRoute
-  CareersRoute: typeof CareersRoute
   CartRoute: typeof CartRoute
   CheckoutRoute: typeof CheckoutRoute
   CompareRoute: typeof CompareRoute
@@ -754,9 +765,11 @@ export interface RootRouteChildren {
   SuppliersRoute: typeof SuppliersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  CareersFieldAgentRoute: typeof CareersFieldAgentRoute
   PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
   PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
   PortfolioStrategicVision2033Route: typeof PortfolioStrategicVision2033Route
+  CareersIndexRoute: typeof CareersIndexRoute
   PortfolioIndexRoute: typeof PortfolioIndexRoute
 }
 
@@ -839,13 +852,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CartRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/careers': {
-      id: '/careers'
-      path: '/careers'
-      fullPath: '/careers'
-      preLoaderRoute: typeof CareersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/agents': {
       id: '/agents'
       path: '/agents'
@@ -901,6 +907,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal-customer/'
       preLoaderRoute: typeof PortalCustomerIndexRouteImport
       parentRoute: typeof PortalCustomerRoute
+    }
+    '/careers/': {
+      id: '/careers/'
+      path: '/careers'
+      fullPath: '/careers/'
+      preLoaderRoute: typeof CareersIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/admin/': {
       id: '/admin/'
@@ -1048,6 +1061,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/portal-customer/cart'
       preLoaderRoute: typeof PortalCustomerCartRouteImport
       parentRoute: typeof PortalCustomerRoute
+    }
+    '/careers/field-agent': {
+      id: '/careers/field-agent'
+      path: '/careers/field-agent'
+      fullPath: '/careers/field-agent'
+      preLoaderRoute: typeof CareersFieldAgentRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
       id: '/auth/register'
@@ -1323,7 +1343,6 @@ const rootRouteChildren: RootRouteChildren = {
   AccountRoute: AccountRoute,
   AdminRoute: AdminRouteWithChildren,
   AgentsRoute: AgentsRoute,
-  CareersRoute: CareersRoute,
   CartRoute: CartRoute,
   CheckoutRoute: CheckoutRoute,
   CompareRoute: CompareRoute,
@@ -1337,9 +1356,11 @@ const rootRouteChildren: RootRouteChildren = {
   SuppliersRoute: SuppliersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  CareersFieldAgentRoute: CareersFieldAgentRoute,
   PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
   PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,
   PortfolioStrategicVision2033Route: PortfolioStrategicVision2033Route,
+  CareersIndexRoute: CareersIndexRoute,
   PortfolioIndexRoute: PortfolioIndexRoute,
 }
 export const routeTree = rootRouteImport
