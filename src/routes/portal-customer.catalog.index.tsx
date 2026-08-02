@@ -13,7 +13,7 @@ import type { Country } from "@/data/types";
 import { Filter, X, Lock } from "lucide-react";
 import { ProductCard } from "@/components/product/ProductCard";
 
-export const Route = createFileRoute("/portal-customer/catalog")({
+export const Route = createFileRoute("/portal-customer/catalog/")({
   head: () => ({ meta: [{ title: "Browse Catalog — Customer Portal" }] }),
   component: PortalCatalog,
 });
