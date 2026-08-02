@@ -23,15 +23,40 @@ export const Route = createFileRoute("/products/$productId")({
     if (!product) throw notFound();
     return { product };
   },
-  head: ({ loaderData }) => ({
+  head: ({ params, loaderData }) => ({
     meta: loaderData
       ? [
           { title: `${loaderData.product.name} — MegaHaus` },
           { name: "description", content: loaderData.product.shortDescription },
           { property: "og:title", content: loaderData.product.name },
           { property: "og:description", content: loaderData.product.shortDescription },
+          { property: "og:type", content: "product" },
+          { property: "og:url", content: `/products/${params.productId}` },
           { property: "og:image", content: loaderData.product.image },
+          { name: "twitter:card", content: "summary_large_image" },
           { name: "twitter:image", content: loaderData.product.image },
+        ]
+      : [{ title: "Product unavailable — MegaHaus" }, { name: "robots", content: "noindex" }],
+    links: [{ rel: "canonical", href: `/products/${params.productId}` }],
+    scripts: loaderData
+      ? [
+          {
+            type: "application/ld+json",
+            children: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Product",
+              name: loaderData.product.name,
+              sku: loaderData.product.sku,
+              description: loaderData.product.shortDescription,
+              image: loaderData.product.image,
+              offers: {
+                "@type": "Offer",
+                priceCurrency: "BDT",
+                price: loaderData.product.price,
+                availability: loaderData.product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
+              },
+            }),
+          },
         ]
       : [],
   }),
