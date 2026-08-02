@@ -5,7 +5,7 @@ import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 
-export const Route = createFileRoute("/careers")({
+export const Route = createFileRoute("/careers/")({
   head: () => ({
     meta: [
       { title: "Careers at MegaHaus — Join Bangladesh's Industrial Marketplace" },
