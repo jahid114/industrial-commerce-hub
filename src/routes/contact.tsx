@@ -20,6 +20,13 @@ export const Route = createFileRoute("/contact")({
 
 function ContactPage() {
   const [done, setDone] = useState(false);
+  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const submit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addMessage(form);
+    setDone(true);
+  };
+
   return (
     <PublicLayout>
       <section className="border-b border-border bg-secondary py-12">
