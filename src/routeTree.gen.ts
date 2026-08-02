@@ -59,6 +59,7 @@ import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminProductsRouteImport } from './routes/admin.products'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
+import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
 import { Route as PortalCustomerCatalogIndexRouteImport } from './routes/portal-customer.catalog.index'
 import { Route as AdminQuotationsIndexRouteImport } from './routes/admin.quotations.index'
@@ -324,6 +325,11 @@ const AdminCustomersRoute = AdminCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
+  id: '/applications',
+  path: '/applications',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAgentsRoute = AdminAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
@@ -396,6 +402,7 @@ export interface FileRoutesByFullPath {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
@@ -455,6 +462,7 @@ export interface FileRoutesByTo {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
   '/admin/reports': typeof AdminReportsRoute
@@ -517,6 +525,7 @@ export interface FileRoutesById {
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
   '/admin/agents': typeof AdminAgentsRoute
+  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/products': typeof AdminProductsRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
+    | '/admin/applications'
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/products'
@@ -640,6 +650,7 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
+    | '/admin/applications'
     | '/admin/inventory'
     | '/admin/products'
     | '/admin/reports'
@@ -701,6 +712,7 @@ export interface FileRouteTypes {
     | '/quotation'
     | '/suppliers'
     | '/admin/agents'
+    | '/admin/applications'
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/products'
@@ -1127,6 +1139,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomersRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/applications': {
+      id: '/admin/applications'
+      path: '/applications'
+      fullPath: '/admin/applications'
+      preLoaderRoute: typeof AdminApplicationsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/agents': {
       id: '/admin/agents'
       path: '/agents'
@@ -1216,6 +1235,7 @@ const AdminCustomersRouteWithChildren = AdminCustomersRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminAgentsRoute: typeof AdminAgentsRoute
+  AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminCustomersRoute: typeof AdminCustomersRouteWithChildren
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminProductsRoute: typeof AdminProductsRoute
@@ -1232,6 +1252,7 @@ interface AdminRouteChildren {
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAgentsRoute: AdminAgentsRoute,
+  AdminApplicationsRoute: AdminApplicationsRoute,
   AdminCustomersRoute: AdminCustomersRouteWithChildren,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminProductsRoute: AdminProductsRoute,
@@ -1346,13 +1367,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
