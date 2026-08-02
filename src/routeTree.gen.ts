@@ -50,6 +50,7 @@ import { Route as PortalCustomerCompareRouteImport } from './routes/portal-custo
 import { Route as PortalCustomerCheckoutRouteImport } from './routes/portal-customer.checkout'
 import { Route as PortalCustomerCatalogRouteImport } from './routes/portal-customer.catalog'
 import { Route as PortalCustomerCartRouteImport } from './routes/portal-customer.cart'
+import { Route as CareersFieldAgentRouteImport } from './routes/careers.field-agent'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -278,6 +279,11 @@ const PortalCustomerCartRoute = PortalCustomerCartRouteImport.update({
   path: '/cart',
   getParentRoute: () => PortalCustomerRoute,
 } as any)
+const CareersFieldAgentRoute = CareersFieldAgentRouteImport.update({
+  id: '/careers/field-agent',
+  path: '/careers/field-agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -399,6 +405,7 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogRouteWithChildren
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -456,6 +463,7 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogRouteWithChildren
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -518,6 +526,7 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogRouteWithChildren
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -581,6 +590,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/catalog'
     | '/portal-customer/checkout'
@@ -638,6 +648,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/catalog'
     | '/portal-customer/checkout'
@@ -699,6 +710,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/catalog'
     | '/portal-customer/checkout'
@@ -753,6 +765,7 @@ export interface RootRouteChildren {
   SuppliersRoute: typeof SuppliersRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  CareersFieldAgentRoute: typeof CareersFieldAgentRoute
   PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
   PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
   PortfolioStrategicVision2033Route: typeof PortfolioStrategicVision2033Route
@@ -1049,6 +1062,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalCustomerCartRouteImport
       parentRoute: typeof PortalCustomerRoute
     }
+    '/careers/field-agent': {
+      id: '/careers/field-agent'
+      path: '/careers/field-agent'
+      fullPath: '/careers/field-agent'
+      preLoaderRoute: typeof CareersFieldAgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -1336,6 +1356,7 @@ const rootRouteChildren: RootRouteChildren = {
   SuppliersRoute: SuppliersRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  CareersFieldAgentRoute: CareersFieldAgentRoute,
   PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
   PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,
   PortfolioStrategicVision2033Route: PortfolioStrategicVision2033Route,
@@ -1345,3 +1366,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
