@@ -51,30 +51,31 @@ function OrderDetail() {
         <Button onClick={() => generateInvoice(order)}><Download className="size-4 mr-2" /> Download Invoice</Button>
       </div>
 
-      <div className="rounded-lg border border-border bg-card p-5">
-        <div className="flex flex-wrap items-center gap-3">
-          <h2 className="font-display text-2xl font-bold">Order {order.id}</h2>
-          <Badge className={statusColor[order.status]}>{order.status}</Badge>
-          <Badge className={paymentColor[derivePaymentStatus(order)]} variant="outline">
-            <CreditCard className="size-3 mr-1" /> {derivePaymentStatus(order)}
-          </Badge>
+      <div className="rounded-lg border border-border bg-card p-5 flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <div className="flex flex-wrap items-center gap-3">
+            <h2 className="font-display text-2xl font-bold">Order {order.id}</h2>
+            <Badge className={statusColor[order.status]}>{order.status}</Badge>
+            <Badge className={paymentColor[derivePaymentStatus(order)]} variant="outline">
+              <CreditCard className="size-3 mr-1" /> {derivePaymentStatus(order)}
+            </Badge>
+          </div>
+          <p className="text-sm text-muted-foreground mt-1">
+            Placed {formatDate(order.date)} · Payment via {order.paymentMethod}
+          </p>
         </div>
-        <p className="text-sm text-muted-foreground mt-1">
-          Placed {formatDate(order.date)} · Payment via {order.paymentMethod}
-        </p>
+        <div className="max-w-xs sm:text-right">
+          <div className="mb-1 flex items-center gap-1.5 text-xs uppercase tracking-wide text-muted-foreground sm:justify-end">
+            <MapPin className="size-3.5 text-primary" /> Delivery Address
+          </div>
+          <div className="text-sm">{order.shippingAddress}</div>
+        </div>
       </div>
 
       <ProcessTimeline order={order} />
 
       <div className="grid gap-3 md:grid-cols-2">
-        <InfoCard icon={<UserIcon className="size-4 text-primary" />} title="Customer">
-          <div className="font-medium">{order.customerName}</div>
-          {order.customerEmail && <div className="text-xs text-muted-foreground">{order.customerEmail}</div>}
-          {order.customerPhone && <div className="text-xs text-muted-foreground">{order.customerPhone}</div>}
-        </InfoCard>
-        <InfoCard icon={<MapPin className="size-4 text-primary" />} title="Delivery">
-          <div className="text-sm">{order.shippingAddress}</div>
-        </InfoCard>
+
         {(order.carrier || order.trackingNumber) && (
           <InfoCard icon={<Truck className="size-4 text-primary" />} title="Shipping">
             {order.carrier && <div><span className="text-xs text-muted-foreground">Carrier: </span>{order.carrier}</div>}
