@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Download } from "lucide-react";
+import { Download, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useStore } from "@/lib/store";
@@ -56,6 +56,9 @@ function OrdersPage() {
                   <td className="px-4 py-3"><Badge className={statusVariant[o.status]}>{o.status}</Badge></td>
                   <td className="px-4 py-3 text-right font-display font-bold text-primary">{formatBDT(o.total)}</td>
                   <td className="px-4 py-3 text-right">
+                    <Button size="sm" variant="outline" asChild className="mr-2">
+                      <Link to="/portal-customer/orders/$orderId" params={{ orderId: o.id }}><Eye className="size-3 mr-1" /> View</Link>
+                    </Button>
                     <Button size="sm" variant="outline" onClick={() => generateInvoice(o)}><Download className="size-3 mr-1" /> PDF</Button>
                   </td>
                 </tr>
