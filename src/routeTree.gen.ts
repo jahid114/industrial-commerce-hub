@@ -62,6 +62,7 @@ import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
 import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
+import { Route as PortalCustomerOrdersIndexRouteImport } from './routes/portal-customer.orders.index'
 import { Route as PortalCustomerCatalogIndexRouteImport } from './routes/portal-customer.catalog.index'
 import { Route as AdminQuotationsIndexRouteImport } from './routes/admin.quotations.index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
@@ -341,6 +342,12 @@ const AdminAgentsRoute = AdminAgentsRouteImport.update({
   path: '/agents',
   getParentRoute: () => AdminRoute,
 } as any)
+const PortalCustomerOrdersIndexRoute =
+  PortalCustomerOrdersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PortalCustomerOrdersRoute,
+  } as any)
 const PortalCustomerCatalogIndexRoute =
   PortalCustomerCatalogIndexRouteImport.update({
     id: '/catalog/',
@@ -454,6 +461,7 @@ export interface FileRoutesByFullPath {
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/quotations/': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog/': typeof PortalCustomerCatalogIndexRoute
+  '/portal-customer/orders/': typeof PortalCustomerOrdersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -483,7 +491,6 @@ export interface FileRoutesByTo {
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
   '/portal-customer/compare': typeof PortalCustomerCompareRoute
-  '/portal-customer/orders': typeof PortalCustomerOrdersRouteWithChildren
   '/portal-customer/profile': typeof PortalCustomerProfileRoute
   '/portal-customer/quotation': typeof PortalCustomerQuotationRoute
   '/portal-customer/quotations': typeof PortalCustomerQuotationsRoute
@@ -514,6 +521,7 @@ export interface FileRoutesByTo {
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/quotations': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogIndexRoute
+  '/portal-customer/orders': typeof PortalCustomerOrdersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -579,6 +587,7 @@ export interface FileRoutesById {
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/quotations/': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog/': typeof PortalCustomerCatalogIndexRoute
+  '/portal-customer/orders/': typeof PortalCustomerOrdersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -645,6 +654,7 @@ export interface FileRouteTypes {
     | '/admin/orders/'
     | '/admin/quotations/'
     | '/portal-customer/catalog/'
+    | '/portal-customer/orders/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -674,7 +684,6 @@ export interface FileRouteTypes {
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
     | '/portal-customer/compare'
-    | '/portal-customer/orders'
     | '/portal-customer/profile'
     | '/portal-customer/quotation'
     | '/portal-customer/quotations'
@@ -705,6 +714,7 @@ export interface FileRouteTypes {
     | '/admin/orders'
     | '/admin/quotations'
     | '/portal-customer/catalog'
+    | '/portal-customer/orders'
   id:
     | '__root__'
     | '/'
@@ -769,6 +779,7 @@ export interface FileRouteTypes {
     | '/admin/orders/'
     | '/admin/quotations/'
     | '/portal-customer/catalog/'
+    | '/portal-customer/orders/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -1172,6 +1183,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAgentsRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/portal-customer/orders/': {
+      id: '/portal-customer/orders/'
+      path: '/'
+      fullPath: '/portal-customer/orders/'
+      preLoaderRoute: typeof PortalCustomerOrdersIndexRouteImport
+      parentRoute: typeof PortalCustomerOrdersRoute
+    }
     '/portal-customer/catalog/': {
       id: '/portal-customer/catalog/'
       path: '/catalog'
@@ -1317,10 +1335,12 @@ const PortalRouteWithChildren =
 
 interface PortalCustomerOrdersRouteChildren {
   PortalCustomerOrdersOrderIdRoute: typeof PortalCustomerOrdersOrderIdRoute
+  PortalCustomerOrdersIndexRoute: typeof PortalCustomerOrdersIndexRoute
 }
 
 const PortalCustomerOrdersRouteChildren: PortalCustomerOrdersRouteChildren = {
   PortalCustomerOrdersOrderIdRoute: PortalCustomerOrdersOrderIdRoute,
+  PortalCustomerOrdersIndexRoute: PortalCustomerOrdersIndexRoute,
 }
 
 const PortalCustomerOrdersRouteWithChildren =
@@ -1388,3 +1408,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
