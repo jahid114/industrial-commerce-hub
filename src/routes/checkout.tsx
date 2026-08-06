@@ -136,7 +136,7 @@ function CheckoutPage() {
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button onClick={() => generateInvoice(placedOrder)} className="font-bold"><Download className="size-4 mr-2" /> Download Invoice (PDF)</Button>
             <Button variant="outline" asChild><Link to="/products">Continue Shopping</Link></Button>
-            <Button variant="outline" asChild><Link to="/account/orders">View My Orders</Link></Button>
+            <Button variant="outline" asChild><Link to="/portal-customer/orders">View My Orders</Link></Button>
           </div>
         </div>
       </PublicLayout>

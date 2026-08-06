@@ -119,7 +119,7 @@ function PortalLayout() {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 focus:text-primary">
-                  <Link to="/account/profile">
+                  <Link to="/portal/documents">
                     <User className="size-4 mr-2" /> My Profile
                   </Link>
                 </DropdownMenuItem>
