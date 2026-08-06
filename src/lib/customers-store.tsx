@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useEffect, useReducer, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useReducer, useRef, type ReactNode } from "react";
 
 export type CustomerStatus = "Active" | "Suspended";
 
@@ -14,6 +14,11 @@ export interface RegisteredCustomer {
   status: CustomerStatus;
   suspendReason?: string;
   notes?: string;
+  /** Set when the account was auto-created from a guest checkout. */
+  source?: "Guest Checkout" | "Registration";
+  /** Demo-only: temporary password issued for auto-created accounts (their email). */
+  tempPassword?: string;
+  mustResetPassword?: boolean;
 }
 
 const seed: RegisteredCustomer[] = (() => {
@@ -73,6 +78,8 @@ interface Ctx extends State {
   update: (id: string, patch: Partial<RegisteredCustomer>) => void;
   remove: (id: string) => void;
   suspend: (id: string, reason: string) => void;
+  /** Finds a customer by email, or auto-registers one (guest checkout). */
+  ensureCustomer: (c: { name: string; email: string; phone?: string; company?: string; address?: string; city?: string }) => { customer: RegisteredCustomer; created: boolean };
   reinstate: (id: string) => void;
 }
 
@@ -81,6 +88,8 @@ const KEY = "megahaus-customers-v1";
 
 export function CustomersProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initial);
+  const stateRef = useRef(state);
+  stateRef.current = state;
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -99,12 +108,30 @@ export function CustomersProvider({ children }: { children: ReactNode }) {
     const id = `CUST-${Math.floor(1000 + Math.random() * 9000)}`;
     dispatch({ type: "ADD", c: { ...c, id, registeredAt: new Date().toISOString(), status: "Active" } });
   }, []);
+  const ensureCustomer: Ctx["ensureCustomer"] = useCallback((c) => {
+    const email = c.email.trim().toLowerCase();
+    const existing = stateRef.current.customers.find((x) => x.email.trim().toLowerCase() === email);
+    if (existing) return { customer: existing, created: false };
+    const customer: RegisteredCustomer = {
+      ...c,
+      email,
+      id: `CUST-${Math.floor(1000 + Math.random() * 9000)}`,
+      registeredAt: new Date().toISOString(),
+      status: "Active",
+      source: "Guest Checkout",
+      tempPassword: email,
+      mustResetPassword: true,
+      notes: "Auto-created from a guest checkout order.",
+    };
+    dispatch({ type: "ADD", c: customer });
+    return { customer, created: true };
+  }, []);
   const update: Ctx["update"] = useCallback((id, patch) => dispatch({ type: "UPDATE", id, patch }), []);
   const remove: Ctx["remove"] = useCallback((id) => dispatch({ type: "REMOVE", id }), []);
   const suspend: Ctx["suspend"] = useCallback((id, reason) => dispatch({ type: "UPDATE", id, patch: { status: "Suspended", suspendReason: reason } }), []);
   const reinstate: Ctx["reinstate"] = useCallback((id) => dispatch({ type: "UPDATE", id, patch: { status: "Active", suspendReason: undefined } }), []);
 
-  return <CustomersContext.Provider value={{ ...state, add, update, remove, suspend, reinstate }}>{children}</CustomersContext.Provider>;
+  return <CustomersContext.Provider value={{ ...state, add, update, remove, suspend, reinstate, ensureCustomer }}>{children}</CustomersContext.Provider>;
 }
 
 export function useCustomers() {
