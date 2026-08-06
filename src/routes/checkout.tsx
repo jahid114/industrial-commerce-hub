@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { useStore } from "@/lib/store";
+import { useCustomers } from "@/lib/customers-store";
 import { getProduct } from "@/data/products";
 import { formatBDT, newOrderId } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
@@ -46,7 +47,9 @@ function CheckoutPage() {
       navigate({ to: "/portal-customer/checkout" });
     }
   }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
+  const { ensureCustomer } = useCustomers();
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
+  const [newAccount, setNewAccount] = useState<{ email: string } | null>(null);
 
   const items = cart.map((i) => ({ ...i, product: getProduct(i.productId)! })).filter((i) => i.product);
   const subtotal = cartSubtotal((id) => getProduct(id)?.price ?? 0);
@@ -84,6 +87,16 @@ function CheckoutPage() {
       paymentMethod: data.paymentMethod,
       shippingAddress: `${data.address}, ${data.city}`,
     };
+    // Guest checkout: register the buyer so the order is traceable to an account.
+    const { created } = ensureCustomer({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      company: data.company,
+      address: data.address,
+      city: data.city,
+    });
+    if (created) setNewAccount({ email: data.email.trim().toLowerCase() });
     dispatch({ type: "ADD_ORDER", order });
     dispatch({ type: "CLEAR_CART" });
     setPlacedOrder(order);
@@ -109,6 +122,17 @@ function CheckoutPage() {
               <span className="text-muted-foreground">Payment</span><span>{placedOrder.paymentMethod}</span>
             </div>
           </div>
+          {newAccount && (
+            <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-5 text-left">
+              <h2 className="font-display text-lg font-bold">We created an account for you</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                So you can track this order, we registered <strong>{newAccount.email}</strong>. Your temporary password is your
+                email address — please sign in and change it.
+              </p>
+              <Button asChild size="sm" className="mt-3 font-bold"><Link to="/auth/login">Sign in now</Link></Button>
+            </div>
+          )}
+
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <Button onClick={() => generateInvoice(placedOrder)} className="font-bold"><Download className="size-4 mr-2" /> Download Invoice (PDF)</Button>
             <Button variant="outline" asChild><Link to="/products">Continue Shopping</Link></Button>
