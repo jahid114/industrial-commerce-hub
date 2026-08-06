@@ -1,5 +1,5 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Download, Check, Circle, Clock, Package, CreditCard, MapPin, User as UserIcon, Truck, StickyNote } from "lucide-react";
+import { ArrowLeft, Download, Check, Circle, Clock, Package, CreditCard, MapPin, Truck, StickyNote } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
