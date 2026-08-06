@@ -1,5 +1,4 @@
 import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-router";
-import { CustomersProvider } from "@/lib/customers-store";
 
 export const Route = createFileRoute("/admin/customers")({
   component: CustomersLayout,
@@ -12,7 +11,6 @@ function CustomersLayout() {
     { to: "/admin/customers/statistics", label: "Statistics" },
   ];
   return (
-    <CustomersProvider>
       <div className="space-y-6">
         <div className="flex gap-1 border-b border-border">
           {tabs.map((t) => {
@@ -30,6 +28,5 @@ function CustomersLayout() {
         </div>
         <Outlet />
       </div>
-    </CustomersProvider>
   );
 }
