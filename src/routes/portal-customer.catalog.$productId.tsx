@@ -120,9 +120,10 @@ function PortalProductDetail() {
               <Button variant="outline" size="sm" onClick={() => { dispatch({ type: "TOGGLE_WISHLIST", productId: product.id }); toast.success(inWishlist ? "Removed from wishlist" : "Saved to wishlist"); }}>
                 <Heart className="size-4 mr-2" fill={inWishlist ? "currentColor" : "none"} /> {inWishlist ? "In Wishlist" : "Save"}
               </Button>
-              <Button variant="outline" size="sm" onClick={() => { dispatch({ type: "TOGGLE_COMPARE", productId: product.id }); toast.success(inCompare ? "Removed from compare" : "Added to compare"); }}>
-                <GitCompare className="size-4 mr-2" /> {inCompare ? "In Compare" : "Compare"}
+              <Button variant="outline" size="sm" onClick={() => { if (!inCompare) { dispatch({ type: "TOGGLE_COMPARE", productId: product.id }); toast.success("Added to compare"); } navigate({ to: "/portal-customer/compare" }); }}>
+                <GitCompare className="size-4 mr-2" /> Compare
               </Button>
+
             </div>
           </div>
         </div>

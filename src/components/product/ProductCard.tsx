@@ -36,12 +36,20 @@ export function ProductCard({ product, index = 0, portal = false }: { product: P
           <Heart className="size-4" fill={inWishlist ? "currentColor" : "none"} />
         </button>
         <button
-          onClick={(e) => { e.preventDefault(); dispatch({ type: "TOGGLE_COMPARE", productId: product.id }); toast.success(inCompare ? "Removed from compare" : "Added to compare"); }}
+          onClick={(e) => {
+            e.preventDefault();
+            if (!inCompare) {
+              dispatch({ type: "TOGGLE_COMPARE", productId: product.id });
+              toast.success("Added to compare");
+            }
+            navigate({ to: portal ? "/portal-customer/compare" : "/compare" });
+          }}
           className={cn("flex size-8 items-center justify-center rounded-full border bg-card hover:bg-accent hover:text-accent-foreground hover:border-accent", inCompare && "bg-accent text-accent-foreground border-accent")}
           aria-label="Compare"
         >
           <GitCompare className="size-4" />
         </button>
+
       </div>
 
       <Link {...detailLink} className="block">
