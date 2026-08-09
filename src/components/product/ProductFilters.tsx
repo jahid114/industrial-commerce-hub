@@ -1,4 +1,4 @@
-import { Filter, X } from "lucide-react";
+import { Filter, X, RotateCcw } from "lucide-react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { categories } from "@/data/categories";
