@@ -133,11 +133,3 @@ function PortalCatalog() {
   );
 }
 
-function FilterGroup({ title, children }: { title: string; children: React.ReactNode }) {
-  return (
-    <div>
-      <h3 className="mb-3 text-xs font-bold uppercase tracking-wider text-muted-foreground">{title}</h3>
-      <div className="space-y-2.5">{children}</div>
-    </div>
-  );
-}
