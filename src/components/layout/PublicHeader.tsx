@@ -1,6 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { useEffect, useRef, useState } from "react";
-import { Search, ShoppingCart, User, Menu, X, ChevronDown, ChevronRight, Tag } from "lucide-react";
+import { Search, ShoppingCart, Heart, User, Menu, X, ChevronDown, ChevronRight, Tag } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +10,11 @@ import { categories } from "@/data/categories";
 import { useNavigate } from "@tanstack/react-router";
 
 export function PublicHeader() {
-  const { cartCount, isAuthenticated, isAdmin, isAgent, isPartner, user } = useStore();
+  const { cartCount, wishlist, isAuthenticated, isAdmin, isAgent, isPartner, user } = useStore();
   const accountHref = isAdmin ? "/admin" : (isAgent || isPartner) ? "/portal" : isAuthenticated ? "/portal-customer" : "/auth/login";
-  const cartHref = isAuthenticated && !isAdmin && !isAgent && !isPartner ? "/portal-customer/cart" : "/cart";
+  const isCustomer = isAuthenticated && !isAdmin && !isAgent && !isPartner;
+  const cartHref = isCustomer ? "/portal-customer/cart" : "/cart";
+  const wishlistHref = isCustomer ? "/portal-customer/wishlist" : "/wishlist";
   const [mobileOpen, setMobileOpen] = useState(false);
   const [categoriesOpen, setCategoriesOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
