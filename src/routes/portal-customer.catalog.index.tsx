@@ -83,7 +83,13 @@ function PortalCatalog() {
               <h2 className="font-display text-lg font-bold flex items-center gap-2"><Filter className="size-4" /> Filters</h2>
               {activeFilterCount > 0 && <button onClick={clearAll} className="text-xs font-medium text-primary hover:underline">Clear all</button>}
             </div>
-            <Input placeholder="Search products…" value={query} onChange={(e) => setQuery(e.target.value)} />
+            <FilterGroup title="Price (BDT)">
+              <Slider min={0} max={MAX_PRICE} step={5000} value={priceRange} onValueChange={(v) => setPriceRange([v[0], v[1]] as [number, number])} />
+              <div className="flex items-center justify-between text-xs text-muted-foreground">
+                <span>৳{priceRange[0].toLocaleString()}</span>
+                <span>৳{priceRange[1].toLocaleString()}</span>
+              </div>
+            </FilterGroup>
             <FilterGroup title="Category">
               {categories.map((c) => (
                 <label key={c.id} className="flex items-center gap-2 text-sm cursor-pointer">
@@ -107,13 +113,6 @@ function PortalCatalog() {
                   {c}
                 </label>
               ))}
-            </FilterGroup>
-            <FilterGroup title="Price (BDT)">
-              <Slider min={0} max={MAX_PRICE} step={5000} value={priceRange} onValueChange={(v) => setPriceRange([v[0], v[1]] as [number, number])} />
-              <div className="flex items-center justify-between text-xs text-muted-foreground">
-                <span>৳{priceRange[0].toLocaleString()}</span>
-                <span>৳{priceRange[1].toLocaleString()}</span>
-              </div>
             </FilterGroup>
           </div>
         </aside>
