@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
 import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as QuotationRouteImport } from './routes/quotation'
 import { Route as PortalCustomerRouteImport } from './routes/portal-customer'
@@ -73,6 +74,11 @@ import { Route as AdminQuotationsRfqIdRouteImport } from './routes/admin.quotati
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
 import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SuppliersRoute = SuppliersRouteImport.update({
   id: '/suppliers',
   path: '/suppliers',
@@ -414,6 +420,7 @@ export interface FileRoutesByFullPath {
   '/portal-customer': typeof PortalCustomerRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/customers': typeof AdminCustomersRouteWithChildren
@@ -476,6 +483,7 @@ export interface FileRoutesByTo {
   '/partners': typeof PartnersRoute
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/inventory': typeof AdminInventoryRoute
@@ -540,6 +548,7 @@ export interface FileRoutesById {
   '/portal-customer': typeof PortalCustomerRouteWithChildren
   '/quotation': typeof QuotationRoute
   '/suppliers': typeof SuppliersRoute
+  '/wishlist': typeof WishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
   '/admin/applications': typeof AdminApplicationsRoute
   '/admin/customers': typeof AdminCustomersRouteWithChildren
@@ -607,6 +616,7 @@ export interface FileRouteTypes {
     | '/portal-customer'
     | '/quotation'
     | '/suppliers'
+    | '/wishlist'
     | '/admin/agents'
     | '/admin/applications'
     | '/admin/customers'
@@ -669,6 +679,7 @@ export interface FileRouteTypes {
     | '/partners'
     | '/quotation'
     | '/suppliers'
+    | '/wishlist'
     | '/admin/agents'
     | '/admin/applications'
     | '/admin/inventory'
@@ -732,6 +743,7 @@ export interface FileRouteTypes {
     | '/portal-customer'
     | '/quotation'
     | '/suppliers'
+    | '/wishlist'
     | '/admin/agents'
     | '/admin/applications'
     | '/admin/customers'
@@ -798,6 +810,7 @@ export interface RootRouteChildren {
   PortalCustomerRoute: typeof PortalCustomerRouteWithChildren
   QuotationRoute: typeof QuotationRoute
   SuppliersRoute: typeof SuppliersRoute
+  WishlistRoute: typeof WishlistRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
   CareersFieldAgentRoute: typeof CareersFieldAgentRoute
@@ -812,6 +825,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/suppliers': {
       id: '/suppliers'
       path: '/suppliers'
@@ -1394,6 +1414,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortalCustomerRoute: PortalCustomerRouteWithChildren,
   QuotationRoute: QuotationRoute,
   SuppliersRoute: SuppliersRoute,
+  WishlistRoute: WishlistRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
   CareersFieldAgentRoute: CareersFieldAgentRoute,
@@ -1408,3 +1429,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}

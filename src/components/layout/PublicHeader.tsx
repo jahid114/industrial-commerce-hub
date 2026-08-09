@@ -73,6 +73,20 @@ export function PublicHeader() {
         </form>
 
         <div className="ml-auto flex items-center gap-1">
+          <Link to={wishlistHref} className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+            <Heart className="size-5" />
+            {wishlist.length > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{wishlist.length}</Badge>
+            )}
+            <span className="hidden lg:inline">Wishlist</span>
+          </Link>
+          <Link to={cartHref} className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+            <ShoppingCart className="size-5" />
+            {cartCount > 0 && (
+              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{cartCount}</Badge>
+            )}
+            <span className="hidden lg:inline">Cart</span>
+          </Link>
           {isAuthenticated ? (
             <Link to={accountHref} className="hidden md:flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
               <User className="size-4" />
@@ -83,13 +97,7 @@ export function PublicHeader() {
               <User className="size-4" /> Login
             </Link>
           )}
-          <Link to={cartHref} className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
-            <ShoppingCart className="size-5" />
-            {cartCount > 0 && (
-              <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{cartCount}</Badge>
-            )}
-            <span className="hidden lg:inline">Cart</span>
-          </Link>
+
           <button className="md:hidden ml-1 p-2" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
             {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
           </button>
