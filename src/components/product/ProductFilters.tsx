@@ -47,8 +47,12 @@ export function ProductFilters({
           <Filter className="size-4" /> Filters
         </h2>
         {activeFilterCount > 0 && (
-          <button onClick={clearAll} className="text-xs font-medium text-primary hover:underline">
-            Clear all
+          <button
+            onClick={clearAll}
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 hover:underline"
+          >
+            <RotateCcw className="size-3.5" />
+            Clear Filters
           </button>
         )}
       </div>
