@@ -22,7 +22,8 @@ export const Route = createFileRoute("/portal-customer/catalog/")({
   component: PortalCatalog,
 });
 
-const countries: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
+import type { Country } from "@/data/types";
+
 const MAX_PRICE = 6_000_000;
 
 function PortalCatalog() {
