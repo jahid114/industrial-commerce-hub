@@ -35,7 +35,6 @@ export const Route = createFileRoute("/products/")({
   component: ProductsPage,
 });
 
-const countries: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
 const MAX_PRICE = 6_000_000;
 
 function ProductsPage() {
