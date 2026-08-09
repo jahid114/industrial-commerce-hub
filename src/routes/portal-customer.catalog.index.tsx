@@ -1,17 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Slider } from "@/components/ui/slider";
-import { Checkbox } from "@/components/ui/checkbox";
-
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { categories } from "@/data/categories";
 import { brands } from "@/data/brands";
 import { getAllProducts } from "@/lib/products";
-import type { Country } from "@/data/types";
 import { Filter, X, Lock } from "lucide-react";
 import { ProductCard } from "@/components/product/ProductCard";
+import { ProductFilters } from "@/components/product/ProductFilters";
 
 type CatalogSearch = { q?: string; category?: string; sub?: string };
 
