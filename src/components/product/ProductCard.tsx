@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link, useNavigate } from "@tanstack/react-router";
 import { motion } from "framer-motion";
 import { Heart, GitCompare, Eye } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
@@ -12,6 +12,7 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, index = 0, portal = false }: { product: Product; index?: number; portal?: boolean }) {
   const { dispatch, wishlist, compare } = useStore();
+  const navigate = useNavigate();
   const brand = getBrand(product.brandId);
   const inWishlist = wishlist.includes(product.id);
   const inCompare = compare.includes(product.id);
