@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Slider } from "@/components/ui/slider";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
@@ -13,8 +13,15 @@ import type { Country } from "@/data/types";
 import { Filter, X, Lock } from "lucide-react";
 import { ProductCard } from "@/components/product/ProductCard";
 
+type CatalogSearch = { q?: string; category?: string; sub?: string };
+
 export const Route = createFileRoute("/portal-customer/catalog/")({
-  head: () => ({ meta: [{ title: "Browse Catalog — Customer Portal" }] }),
+  validateSearch: (s: Record<string, unknown>): CatalogSearch => ({
+    q: typeof s.q === "string" ? s.q : undefined,
+    category: typeof s.category === "string" ? s.category : undefined,
+    sub: typeof s.sub === "string" ? s.sub : undefined,
+  }),
+  head: () => ({ meta: [{ title: "Products — MegaHaus Customer Portal" }] }),
   component: PortalCatalog,
 });
 
@@ -22,14 +29,21 @@ const countries: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Swit
 const MAX_PRICE = 6_000_000;
 
 function PortalCatalog() {
+  const search = Route.useSearch();
   const allProducts = getAllProducts();
-  const [query, setQuery] = useState("");
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [query, setQuery] = useState(search.q ?? "");
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(search.category ? [search.category] : []);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedCountries, setSelectedCountries] = useState<Country[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, MAX_PRICE]);
   const [sort, setSort] = useState("relevance");
   const [showFilters, setShowFilters] = useState(false);
+
+  useEffect(() => {
+    setQuery(search.q ?? "");
+    setSelectedCategories(search.category ? [search.category] : []);
+  }, [search.q, search.category, search.sub]);
+
 
   const filtered = useMemo(() => {
     let list = allProducts.filter((p) => {

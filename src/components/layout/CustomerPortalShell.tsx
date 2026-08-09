@@ -1,103 +1,110 @@
-import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { useState, type ReactNode } from "react";
+import { Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import {
-  LayoutDashboard, Package, FileText, Heart, GitCompare, User,
-  ShoppingCart, ShoppingBag, Menu, X, LogOut,
-  PanelLeftClose, PanelLeftOpen,
+  Search, ShoppingCart, Heart, User, Menu, X, ChevronDown, ChevronRight, Tag,
+  FileText, ShoppingBag, LogOut,
 } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem,
   DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useStore } from "@/lib/store";
-import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
+import { categories } from "@/data/categories";
 import { toast } from "sonner";
 
-type NavItem = { to: string; label: string; icon: typeof Package; exact?: boolean };
-
-const NAV: ReadonlyArray<NavItem> = [
-  { to: "/portal-customer", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/portal-customer/catalog", label: "Browse Catalog", icon: Package },
-  { to: "/portal-customer/cart", label: "Cart", icon: ShoppingCart },
+const NAV = [
   { to: "/portal-customer/orders", label: "My Orders", icon: ShoppingBag },
   { to: "/portal-customer/quotations", label: "Quotations", icon: FileText },
-  { to: "/portal-customer/wishlist", label: "Wishlist", icon: Heart },
-  { to: "/portal-customer/compare", label: "Compare", icon: GitCompare },
   { to: "/portal-customer/profile", label: "Profile", icon: User },
-];
+] as const;
 
 export function CustomerPortalShell({ children }: { children: ReactNode }) {
-  const { user, dispatch, cartCount } = useStore();
+  const { user, dispatch, cartCount, wishlist } = useStore();
   const navigate = useNavigate();
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
-  const [open, setOpen] = useState(false);
-  const { collapsed, toggle } = useSidebarCollapsed();
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [categoriesOpen, setCategoriesOpen] = useState(false);
+  const [activeCategory, setActiveCategory] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const megaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (!categoriesOpen) return;
+    const onDown = (e: MouseEvent) => {
+      if (megaRef.current && !megaRef.current.contains(e.target as Node)) {
+        setCategoriesOpen(false);
+        setActiveCategory(null);
+      }
+    };
+    document.addEventListener("mousedown", onDown);
+    return () => document.removeEventListener("mousedown", onDown);
+  }, [categoriesOpen]);
+
+  const activeCat = categories.find((c) => c.id === activeCategory) ?? null;
+
+  const submitSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    navigate({ to: "/portal-customer/catalog", search: { q: query || undefined } as never });
+  };
+
+  const signOut = () => {
+    dispatch({ type: "LOGOUT" });
+    toast.success("Logged out");
+    navigate({ to: "/" });
+  };
 
   return (
-    <TooltipProvider delayDuration={0}>
-    <div className="flex min-h-screen bg-secondary">
-      <aside className={`fixed inset-y-0 left-0 z-40 flex w-64 flex-col bg-sidebar text-sidebar-foreground transition-all lg:static lg:translate-x-0 ${collapsed ? "lg:w-16" : "lg:w-64"} ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}`}>
-        <div className={`flex items-center justify-between border-b border-sidebar-border ${collapsed ? "p-3" : "p-5"}`}>
-          {collapsed ? (
-            <div className="mx-auto h-7 w-1.5 bg-primary" aria-hidden />
-          ) : (
-            <Logo variant="light" />
-          )}
-          <button onClick={toggle} className="hidden lg:flex size-8 items-center justify-center rounded-md text-sidebar-foreground/70 hover:bg-sidebar-accent hover:text-sidebar-foreground" aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}>
-            {collapsed ? <PanelLeftOpen className="size-5" /> : <PanelLeftClose className="size-5" />}
-          </button>
-        </div>
-        <nav className="flex-1 space-y-1 p-3 overflow-y-auto">
-          {NAV.map((it) => {
-            const isActive = it.exact ? pathname === it.to : pathname.startsWith(it.to);
-            const showBadge = it.to === "/portal-customer/cart" && cartCount > 0;
-            const linkEl = (
-              <Link
-                key={it.to}
-                to={it.to as never}
-                onClick={() => setOpen(false)}
-                className={`flex items-center gap-3 rounded-lg py-3 text-sm font-medium transition-colors ${collapsed ? "justify-center px-2" : "justify-between px-4"} ${isActive ? "bg-sidebar-primary text-sidebar-primary-foreground" : "text-sidebar-foreground hover:bg-sidebar-accent"}`}
-              >
-                <span className="flex items-center gap-3"><it.icon className="size-4 shrink-0" /> {!collapsed && it.label}</span>
-                {!collapsed && showBadge && (
-                  <span className="rounded-full bg-primary px-2 py-0.5 text-[10px] font-bold text-primary-foreground">{cartCount}</span>
-                )}
-              </Link>
-            );
-            return collapsed ? (
-              <Tooltip key={it.to}><TooltipTrigger asChild>{linkEl}</TooltipTrigger><TooltipContent side="right">{it.label}{showBadge ? ` (${cartCount})` : ""}</TooltipContent></Tooltip>
-            ) : linkEl;
-          })}
-        </nav>
-        {!collapsed && (
-          <div className="border-t border-sidebar-border p-3">
-            <div className="px-3 py-2 text-xs">
-              <div className="font-semibold">{user?.name}</div>
-              <div className="text-white/50">{user?.email}</div>
+    <div className="flex min-h-screen flex-col bg-background">
+      <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80">
+        <div className="bg-industrial text-industrial-foreground text-xs">
+          <div className="container mx-auto flex h-8 items-center justify-between px-4">
+            <span className="hidden sm:inline">Welcome back, {user?.name}</span>
+            <div className="flex items-center gap-4">
+              <span className="hidden md:inline">+880 1978 981818</span>
+              <span className="hidden md:inline">info@megahaus.com</span>
+              <span className="text-accent font-medium">Customer Account</span>
             </div>
           </div>
-        )}
-      </aside>
+        </div>
 
-      <div className="flex flex-1 flex-col min-w-0">
-        <header className="sticky top-0 z-30 flex h-16 items-center justify-between border-b border-border bg-card px-4 lg:px-6">
-          <button className="lg:hidden" onClick={() => setOpen((v) => !v)}>{open ? <X className="size-5" /> : <Menu className="size-5" />}</button>
-          <div className="text-sm text-muted-foreground hidden md:block">MegaHaus Industrial Hub · Customer Portal</div>
-          <div className="flex items-center gap-3">
-            <Link to="/portal-customer/cart" className="relative flex items-center gap-1.5 rounded-md border border-input px-3 py-1.5 text-sm hover:bg-secondary">
-              <ShoppingCart className="size-4" />
-              <span className="hidden sm:inline">Cart</span>
-              {cartCount > 0 && (
-                <span className="rounded-full bg-primary px-1.5 py-0.5 text-[10px] font-bold text-primary-foreground">{cartCount}</span>
+        <div className="container mx-auto flex h-16 items-center gap-4 px-4">
+          <Logo to="/portal-customer/catalog" />
+
+
+          <form onSubmit={submitSearch} className="hidden flex-1 max-w-2xl md:flex">
+            <div className="relative flex w-full">
+              <Input
+                type="search"
+                placeholder="Search products, brands, SKU…"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="rounded-r-none border-r-0 h-11"
+              />
+              <Button type="submit" className="rounded-l-none h-11 px-5"><Search className="size-4" /></Button>
+            </div>
+          </form>
+
+          <div className="ml-auto flex items-center gap-1">
+            <Link to="/portal-customer/wishlist" className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+              <Heart className="size-5" />
+              {wishlist.length > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{wishlist.length}</Badge>
               )}
+              <span className="hidden lg:inline">Wishlist</span>
+            </Link>
+            <Link to="/portal-customer/cart" className="relative flex items-center gap-2 px-3 py-2 text-sm font-medium hover:text-primary">
+              <ShoppingCart className="size-5" />
+              {cartCount > 0 && (
+                <Badge className="absolute -top-1 -right-1 h-5 min-w-5 rounded-full px-1 text-[10px]">{cartCount}</Badge>
+              )}
+              <span className="hidden lg:inline">Cart</span>
             </Link>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="icon" className="rounded-full" aria-label="Account menu">
+                <Button variant="outline" size="icon" className="rounded-full ml-1" aria-label="Account menu">
                   <User className="size-4" />
                 </Button>
               </DropdownMenuTrigger>
@@ -108,23 +115,143 @@ export function CustomerPortalShell({ children }: { children: ReactNode }) {
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 focus:text-primary">
-                  <Link to="/portal-customer/profile">
-                    <User className="size-4 mr-2" /> My Profile
-                  </Link>
+                  <Link to="/portal-customer/cart"><ShoppingCart className="size-4 mr-2" /> My Cart</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 focus:text-primary">
+                  <Link to="/portal-customer/orders"><ShoppingBag className="size-4 mr-2" /> My Orders</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild className="cursor-pointer hover:bg-primary/10 focus:bg-primary/10 focus:text-primary">
+                  <Link to="/portal-customer/profile"><User className="size-4 mr-2" /> My Profile</Link>
                 </DropdownMenuItem>
                 <DropdownMenuItem
-                  onClick={() => { dispatch({ type: "LOGOUT" }); toast.success("Logged out"); navigate({ to: "/" }); }}
+                  onClick={signOut}
                   className="cursor-pointer text-destructive hover:bg-destructive/10 focus:bg-destructive/10 focus:text-destructive"
                 >
                   <LogOut className="size-4 mr-2" /> Sign Out
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            <button className="md:hidden ml-1 p-2" onClick={() => setMobileOpen((v) => !v)} aria-label="Menu">
+              {mobileOpen ? <X className="size-6" /> : <Menu className="size-6" />}
+            </button>
           </div>
-        </header>
-        <main className="flex-1 p-4 lg:p-6">{children}</main>
-      </div>
+        </div>
+
+        <nav className="hidden md:block border-t border-border bg-card">
+          <div className="container mx-auto flex items-center gap-1 px-4">
+            <div className="relative" ref={megaRef}>
+              <button
+                onClick={() => { setCategoriesOpen((v) => !v); setActiveCategory(null); }}
+                className="flex items-center gap-2 bg-primary text-primary-foreground px-4 py-3 text-sm font-bold uppercase tracking-wide"
+              >
+                <Menu className="size-4" /> All Categories <ChevronDown className={`size-3 transition-transform ${categoriesOpen ? "rotate-180" : ""}`} />
+              </button>
+              {categoriesOpen && (
+                <div className="absolute left-0 top-full z-50 mt-1 flex w-[720px] max-w-[92vw] overflow-hidden rounded-lg border border-border bg-card shadow-2xl">
+                  <div className="w-[280px] shrink-0 border-r border-border bg-secondary/40">
+                    <div className="border-b border-border px-4 py-2.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                      Categories
+                    </div>
+                    <ul className="max-h-[420px] overflow-y-auto py-1">
+                      {categories.map((c) => {
+                        const isActive = activeCategory === c.id;
+                        return (
+                          <li key={c.id}>
+                            <div className={`flex items-center justify-between gap-2 px-4 py-2.5 text-sm transition-colors ${isActive ? "bg-card text-primary" : "hover:bg-card"}`}>
+                              <Link
+                                to="/portal-customer/catalog"
+                                search={{ category: c.id } as never}
+                                onClick={() => { setCategoriesOpen(false); setActiveCategory(null); }}
+                                className="flex-1 truncate font-medium hover:text-primary"
+                              >
+                                {c.name}
+                              </Link>
+                              <button
+                                type="button"
+                                onClick={(e) => { e.stopPropagation(); setActiveCategory(isActive ? null : c.id); }}
+                                className={`flex size-6 items-center justify-center rounded hover:bg-secondary ${isActive ? "text-primary" : "text-muted-foreground"}`}
+                                aria-label={`Show ${c.name} subcategories`}
+                                aria-expanded={isActive}
+                              >
+                                <ChevronRight className={`size-4 transition-transform ${isActive ? "rotate-90" : ""}`} />
+                              </button>
+                            </div>
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+                  <div className="flex-1 p-5 min-h-[320px]">
+                    {activeCat ? (
+                      <div>
+                        <div className="mb-3 border-b border-border pb-2">
+                          <h4 className="font-display text-base font-bold">{activeCat.name}</h4>
+                        </div>
+                        <ul className="grid grid-cols-2 gap-1.5">
+                          {activeCat.subcategories.map((s) => (
+                            <li key={s}>
+                              <Link
+                                to="/portal-customer/catalog"
+                                search={{ category: activeCat.id, sub: s } as never}
+                                onClick={() => { setCategoriesOpen(false); setActiveCategory(null); }}
+                                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm hover:bg-secondary hover:text-primary"
+                              >
+                                <Tag className="size-3 text-muted-foreground" />
+                                {s}
+                              </Link>
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    ) : (
+                      <div className="flex h-full min-h-[280px] flex-col items-center justify-center text-center text-muted-foreground">
+                        <Menu className="size-8 opacity-40" />
+                        <p className="mt-3 text-sm font-medium">Select a category</p>
+                        <p className="mt-1 text-xs">Click the arrow on any category to see its subcategories</p>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+            </div>
+            {NAV.map((item) => (
+              <Link
+                key={item.to}
+                to={item.to}
+                className="px-4 py-3 text-sm font-medium hover:text-primary"
+                activeProps={{ className: "text-primary border-b-2 border-primary" }}
+              >
+                {item.label}
+              </Link>
+            ))}
+          </div>
+        </nav>
+
+        {mobileOpen && (
+          <div className="md:hidden border-t border-border bg-background">
+            <form onSubmit={submitSearch} className="p-4">
+              <div className="flex">
+                <Input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search…" className="rounded-r-none" />
+                <Button type="submit" className="rounded-l-none"><Search className="size-4" /></Button>
+              </div>
+            </form>
+            <nav className="flex flex-col">
+              {[{ to: "/portal-customer/catalog", label: "Products" }, ...NAV.map((n) => ({ to: n.to, label: n.label }))].map((item) => (
+                <Link
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMobileOpen(false)}
+                  className="border-t border-border px-4 py-3 text-sm font-medium hover:bg-secondary"
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </nav>
+          </div>
+        )}
+      </header>
+
+      <main className="flex-1 container mx-auto px-4 py-6">{children}</main>
     </div>
-    </TooltipProvider>
   );
 }
