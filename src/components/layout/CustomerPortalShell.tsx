@@ -71,9 +71,8 @@ export function CustomerPortalShell({ children }: { children: ReactNode }) {
         </div>
 
         <div className="container mx-auto flex h-16 items-center gap-4 px-4">
-          <Link to="/portal-customer/catalog" className="inline-flex items-center" aria-label="MegaHaus home">
-            <Logo />
-          </Link>
+          <Logo to="/portal-customer/catalog" />
+
 
           <form onSubmit={submitSearch} className="hidden flex-1 max-w-2xl md:flex">
             <div className="relative flex w-full">
