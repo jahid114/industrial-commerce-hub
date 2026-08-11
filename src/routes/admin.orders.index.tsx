@@ -39,6 +39,9 @@ const paymentColor: Record<PaymentStatus, string> = {
 
 function AdminOrdersPage() {
   const { orders } = useStore();
+  const requests = useOrderRequests();
+  const returnCount = requests.filter((r) => r.type === "return" && r.status === "Requested").length;
+  const cancelCount = requests.filter((r) => r.type === "cancellation" && r.status === "Requested").length;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [payFilter, setPayFilter] = useState<string>("all");
