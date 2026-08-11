@@ -1,5 +1,12 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { ArrowLeft, Download, Check, Circle, Clock, Package, CreditCard, MapPin, Truck, StickyNote } from "lucide-react";
+import { useState } from "react";
+import { toast } from "sonner";
+import { ArrowLeft, Download, Check, Circle, Clock, Package, CreditCard, MapPin, Truck, StickyNote, XCircle, Undo2 } from "lucide-react";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { addOrderRequest, hasRequest, useOrderRequests, type OrderRequestType } from "@/lib/order-requests";
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
@@ -38,9 +45,54 @@ const paymentColor: Record<PaymentStatus, string> = {
 
 function OrderDetail() {
   const { orderId } = Route.useParams();
-  const { orders } = useStore();
+  const { orders, user, dispatch } = useStore();
   const order = orders.find((o) => o.id === orderId);
+  const requests = useOrderRequests(user?.email);
+  const [dialog, setDialog] = useState<OrderRequestType | null>(null);
+  const [reason, setReason] = useState("");
   if (!order) throw notFound();
+
+  const cancelled = order.status === "Cancelled";
+  const canCancel = !cancelled && order.status !== "Delivered" && order.status !== "Shipped";
+  const returnRequested = hasRequest(requests, order.id, "return");
+  const canReturn = order.status === "Delivered" && !returnRequested;
+
+  const submit = () => {
+    const text = reason.trim();
+    if (text.length < 5) {
+      toast.error("Please write a short reason (at least 5 characters).");
+      return;
+    }
+    if (text.length > 500) {
+      toast.error("Reason must be under 500 characters.");
+      return;
+    }
+    addOrderRequest({
+      orderId: order.id,
+      customerEmail: order.customerEmail,
+      type: dialog === "return" ? "return" : "cancellation",
+      reason: text,
+      orderTotal: order.total,
+      orderDate: order.date,
+    });
+    const event: OrderEvent = {
+      at: new Date().toISOString(),
+      by: order.customerName || "Customer",
+      type: "status",
+      message: dialog === "return" ? `Return requested: ${text}` : `Order cancelled by customer: ${text}`,
+    };
+    dispatch({
+      type: "UPDATE_ORDER",
+      id: order.id,
+      patch:
+        dialog === "return"
+          ? { timeline: [...(order.timeline ?? []), event] }
+          : { status: "Cancelled", timeline: [...(order.timeline ?? []), event] },
+    });
+    toast.success(dialog === "return" ? "Return request submitted" : "Order cancelled");
+    setDialog(null);
+    setReason("");
+  };
 
   return (
     <div className="space-y-4">
@@ -48,8 +100,53 @@ function OrderDetail() {
         <Link to="/portal-customer/orders" className="inline-flex items-center text-sm text-muted-foreground hover:text-primary">
           <ArrowLeft className="size-4 mr-1" /> Back to orders
         </Link>
-        <Button onClick={() => generateInvoice(order)}><Download className="size-4 mr-2" /> Download Invoice</Button>
+        <div className="flex flex-wrap gap-2">
+          {canCancel && (
+            <Button variant="outline" className="text-destructive hover:bg-destructive hover:text-destructive-foreground" onClick={() => { setReason(""); setDialog("cancellation"); }}>
+              <XCircle className="size-4 mr-2" /> Cancel Order
+            </Button>
+          )}
+          {canReturn && (
+            <Button variant="outline" onClick={() => { setReason(""); setDialog("return"); }}>
+              <Undo2 className="size-4 mr-2" /> Request Return
+            </Button>
+          )}
+          {returnRequested && <Badge className="self-center bg-amber-100 text-amber-800">Return requested</Badge>}
+          <Button onClick={() => generateInvoice(order)}><Download className="size-4 mr-2" /> Download Invoice</Button>
+        </div>
       </div>
+
+      <Dialog open={dialog !== null} onOpenChange={(o) => !o && setDialog(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{dialog === "return" ? "Request a return" : "Cancel this order"}</DialogTitle>
+            <DialogDescription>
+              {dialog === "return"
+                ? "Tell us why you want to return this order. Our team will review your request."
+                : "Please tell us why you are cancelling. This cannot be undone."}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="reason">Reason</Label>
+            <Textarea
+              id="reason"
+              value={reason}
+              maxLength={500}
+              rows={4}
+              onChange={(e) => setReason(e.target.value)}
+              placeholder={dialog === "return" ? "e.g. Item damaged on arrival" : "e.g. Ordered the wrong model"}
+            />
+            <p className="text-xs text-muted-foreground">{reason.length}/500</p>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDialog(null)}>Back</Button>
+            <Button onClick={submit} className={dialog === "cancellation" ? "bg-destructive text-destructive-foreground hover:opacity-90" : ""}>
+              {dialog === "return" ? "Submit request" : "Confirm cancellation"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
 
       <div className="rounded-lg border border-border bg-card p-5 flex flex-wrap items-start justify-between gap-4">
         <div>
