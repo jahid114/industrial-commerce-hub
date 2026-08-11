@@ -68,6 +68,12 @@ function SettingsPage() {
           <TabsTrigger value="subcategories" className="rounded-full px-5 py-2 gap-2">
             <GitBranch className="size-4" /> Sub-categories
           </TabsTrigger>
+          <TabsTrigger value="brands" className="rounded-full px-5 py-2 gap-2">
+            <Award className="size-4" /> Brands
+          </TabsTrigger>
+          <TabsTrigger value="countries" className="rounded-full px-5 py-2 gap-2">
+            <Globe className="size-4" /> Countries
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="categories" className="mt-0">
@@ -77,7 +83,16 @@ function SettingsPage() {
         <TabsContent value="subcategories" className="mt-0">
           <SubcategoriesTab cats={cats} setCats={setCats} />
         </TabsContent>
+
+        <TabsContent value="brands" className="mt-0">
+          <BrandsTab />
+        </TabsContent>
+
+        <TabsContent value="countries" className="mt-0">
+          <CountriesTab />
+        </TabsContent>
       </Tabs>
+
     </div>
   );
 }
