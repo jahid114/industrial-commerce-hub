@@ -79,3 +79,7 @@ export const ORDER_REQUEST_STATUS_COLOR: Record<OrderRequestStatus, string> = {
   Rejected: "bg-destructive/10 text-destructive",
   Completed: "bg-success/20 text-success",
 };
+
+export function updateOrderRequestStatus(id: string, status: OrderRequestStatus) {
+  write(read().map((r) => (r.id === id ? { ...r, status } : r)));
+}
