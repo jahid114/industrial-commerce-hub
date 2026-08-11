@@ -199,6 +199,8 @@ function AdminOrdersPage() {
           <Button size="sm" variant="outline" disabled={currentPage >= totalPages} onClick={() => setPage(totalPages)}>Last »</Button>
         </div>
       </div>
+        </TabsContent>
+      </Tabs>
     </div>
   );
 }
