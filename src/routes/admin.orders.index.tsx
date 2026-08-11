@@ -10,6 +10,9 @@ import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice, generateOrdersReport } from "@/lib/pdf";
 import { ALL_ORDER_STATUSES, derivePaymentStatus } from "@/lib/order-workflow";
 import { resolveAgentInfo } from "@/data/agents";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { OrderRequestsPanel } from "@/components/admin/OrderRequestsPanel";
+import { useOrderRequests } from "@/lib/order-requests";
 import type { OrderStatus, PaymentStatus } from "@/data/types";
 
 export const Route = createFileRoute("/admin/orders/")({
