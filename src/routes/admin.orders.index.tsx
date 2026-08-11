@@ -70,6 +70,17 @@ function AdminOrdersPage() {
         </Button>
       </div>
 
+      <Tabs defaultValue="orders" className="space-y-4">
+        <TabsList>
+          <TabsTrigger value="orders">Orders</TabsTrigger>
+          <TabsTrigger value="returns">Returns{returnCount ? ` (${returnCount})` : ""}</TabsTrigger>
+          <TabsTrigger value="cancellations">Cancellations{cancelCount ? ` (${cancelCount})` : ""}</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="returns"><OrderRequestsPanel type="return" /></TabsContent>
+        <TabsContent value="cancellations"><OrderRequestsPanel type="cancellation" /></TabsContent>
+
+        <TabsContent value="orders" className="space-y-4">
       <div className="flex flex-wrap items-center gap-3 rounded-lg border border-border bg-card p-3">
         <Input placeholder="Search by Order ID or customer…" value={search} onChange={(e) => setSearch(e.target.value)} className="max-w-sm" />
         <Select value={statusFilter} onValueChange={setStatusFilter}>
