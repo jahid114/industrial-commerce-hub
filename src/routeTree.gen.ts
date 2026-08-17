@@ -51,6 +51,7 @@ import { Route as PortalCustomerCompareRouteImport } from './routes/portal-custo
 import { Route as PortalCustomerCheckoutRouteImport } from './routes/portal-customer.checkout'
 import { Route as PortalCustomerCartRouteImport } from './routes/portal-customer.cart'
 import { Route as CareersFieldAgentRouteImport } from './routes/careers.field-agent'
+import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -291,6 +292,11 @@ const CareersFieldAgentRoute = CareersFieldAgentRouteImport.update({
   path: '/careers/field-agent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareersSlugRoute = CareersSlugRouteImport.update({
+  id: '/careers/$slug',
+  path: '/careers/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -452,6 +458,7 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -517,6 +524,7 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -586,6 +594,7 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -657,6 +666,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/$slug'
     | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
@@ -722,6 +732,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/$slug'
     | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
@@ -790,6 +801,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/$slug'
     | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
@@ -849,6 +861,7 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  CareersSlugRoute: typeof CareersSlugRoute
   CareersFieldAgentRoute: typeof CareersFieldAgentRoute
   PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
   PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
@@ -1153,6 +1166,13 @@ declare module '@tanstack/react-router' {
       path: '/careers/field-agent'
       fullPath: '/careers/field-agent'
       preLoaderRoute: typeof CareersFieldAgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers/$slug': {
+      id: '/careers/$slug'
+      path: '/careers/$slug'
+      fullPath: '/careers/$slug'
+      preLoaderRoute: typeof CareersSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/auth/register': {
@@ -1480,6 +1500,7 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  CareersSlugRoute: CareersSlugRoute,
   CareersFieldAgentRoute: CareersFieldAgentRoute,
   PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
   PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,

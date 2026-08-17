@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { FIELD_AGENT_JOB_ID } from "@/lib/jobs";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Full name is required").max(100),
@@ -113,6 +114,7 @@ function FieldAgentJobPage() {
   const onSubmit = (data: FormData) => {
     const payload = {
       id: `FAR-${Date.now().toString(36).toUpperCase()}`,
+      jobId: FIELD_AGENT_JOB_ID,
       role: "Field Agent",
       status: "New",
       ...data,
