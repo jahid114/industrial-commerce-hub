@@ -51,6 +51,7 @@ import { Route as PortalCustomerCompareRouteImport } from './routes/portal-custo
 import { Route as PortalCustomerCheckoutRouteImport } from './routes/portal-customer.checkout'
 import { Route as PortalCustomerCartRouteImport } from './routes/portal-customer.cart'
 import { Route as CareersFieldAgentRouteImport } from './routes/careers.field-agent'
+import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
 import { Route as AuthRegisterRouteImport } from './routes/auth.register'
 import { Route as AuthLoginRouteImport } from './routes/auth.login'
 import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
@@ -62,17 +63,18 @@ import { Route as AdminPartnersRouteImport } from './routes/admin.partners'
 import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
-import { Route as AdminApplicationsRouteImport } from './routes/admin.applications'
 import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
 import { Route as PortalCustomerOrdersIndexRouteImport } from './routes/portal-customer.orders.index'
 import { Route as PortalCustomerCatalogIndexRouteImport } from './routes/portal-customer.catalog.index'
 import { Route as AdminQuotationsIndexRouteImport } from './routes/admin.quotations.index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as AdminJobsIndexRouteImport } from './routes/admin.jobs.index'
 import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
 import { Route as AdminQuotationsRfqIdRouteImport } from './routes/admin.quotations.$rfqId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
+import { Route as AdminJobsJobIdRouteImport } from './routes/admin.jobs.$jobId'
 import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -289,6 +291,11 @@ const CareersFieldAgentRoute = CareersFieldAgentRouteImport.update({
   path: '/careers/field-agent',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CareersSlugRoute = CareersSlugRouteImport.update({
+  id: '/careers/$slug',
+  path: '/careers/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthRegisterRoute = AuthRegisterRouteImport.update({
   id: '/auth/register',
   path: '/auth/register',
@@ -344,11 +351,6 @@ const AdminCustomersRoute = AdminCustomersRouteImport.update({
   path: '/customers',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminApplicationsRoute = AdminApplicationsRouteImport.update({
-  id: '/applications',
-  path: '/applications',
-  getParentRoute: () => AdminRoute,
-} as any)
 const AdminAgentsRoute = AdminAgentsRouteImport.update({
   id: '/agents',
   path: '/agents',
@@ -374,6 +376,11 @@ const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
 const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   id: '/orders/',
   path: '/orders/',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminJobsIndexRoute = AdminJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
@@ -403,6 +410,11 @@ const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
   path: '/orders/$orderId',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminJobsJobIdRoute = AdminJobsJobIdRouteImport.update({
+  id: '/jobs/$jobId',
+  path: '/jobs/$jobId',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCustomersStatisticsRoute =
   AdminCustomersStatisticsRouteImport.update({
     id: '/statistics',
@@ -428,7 +440,6 @@ export interface FileRoutesByFullPath {
   '/suppliers': typeof SuppliersRoute
   '/wishlist': typeof WishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/messages': typeof AdminMessagesRoute
@@ -440,6 +451,7 @@ export interface FileRoutesByFullPath {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -467,11 +479,13 @@ export interface FileRoutesByFullPath {
   '/portfolio/': typeof PortfolioIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
+  '/admin/jobs/$jobId': typeof AdminJobsJobIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/jobs/': typeof AdminJobsIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/quotations/': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog/': typeof PortalCustomerCatalogIndexRoute
@@ -492,7 +506,6 @@ export interface FileRoutesByTo {
   '/suppliers': typeof SuppliersRoute
   '/wishlist': typeof WishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/messages': typeof AdminMessagesRoute
   '/admin/partners': typeof AdminPartnersRoute
@@ -503,6 +516,7 @@ export interface FileRoutesByTo {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -529,11 +543,13 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioIndexRoute
   '/products': typeof ProductsIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
+  '/admin/jobs/$jobId': typeof AdminJobsJobIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers': typeof AdminCustomersIndexRoute
+  '/admin/jobs': typeof AdminJobsIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/quotations': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogIndexRoute
@@ -558,7 +574,6 @@ export interface FileRoutesById {
   '/suppliers': typeof SuppliersRoute
   '/wishlist': typeof WishlistRoute
   '/admin/agents': typeof AdminAgentsRoute
-  '/admin/applications': typeof AdminApplicationsRoute
   '/admin/customers': typeof AdminCustomersRouteWithChildren
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/messages': typeof AdminMessagesRoute
@@ -570,6 +585,7 @@ export interface FileRoutesById {
   '/admin/suppliers': typeof AdminSuppliersRoute
   '/auth/login': typeof AuthLoginRoute
   '/auth/register': typeof AuthRegisterRoute
+  '/careers/$slug': typeof CareersSlugRoute
   '/careers/field-agent': typeof CareersFieldAgentRoute
   '/portal-customer/cart': typeof PortalCustomerCartRoute
   '/portal-customer/checkout': typeof PortalCustomerCheckoutRoute
@@ -597,11 +613,13 @@ export interface FileRoutesById {
   '/portfolio/': typeof PortfolioIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
+  '/admin/jobs/$jobId': typeof AdminJobsJobIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/jobs/': typeof AdminJobsIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/quotations/': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog/': typeof PortalCustomerCatalogIndexRoute
@@ -627,7 +645,6 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/wishlist'
     | '/admin/agents'
-    | '/admin/applications'
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/messages'
@@ -639,6 +656,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/$slug'
     | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
@@ -666,11 +684,13 @@ export interface FileRouteTypes {
     | '/portfolio/'
     | '/products/'
     | '/admin/customers/statistics'
+    | '/admin/jobs/$jobId'
     | '/admin/orders/$orderId'
     | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers/'
+    | '/admin/jobs/'
     | '/admin/orders/'
     | '/admin/quotations/'
     | '/portal-customer/catalog/'
@@ -691,7 +711,6 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/wishlist'
     | '/admin/agents'
-    | '/admin/applications'
     | '/admin/inventory'
     | '/admin/messages'
     | '/admin/partners'
@@ -702,6 +721,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/$slug'
     | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
@@ -728,11 +748,13 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/products'
     | '/admin/customers/statistics'
+    | '/admin/jobs/$jobId'
     | '/admin/orders/$orderId'
     | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers'
+    | '/admin/jobs'
     | '/admin/orders'
     | '/admin/quotations'
     | '/portal-customer/catalog'
@@ -756,7 +778,6 @@ export interface FileRouteTypes {
     | '/suppliers'
     | '/wishlist'
     | '/admin/agents'
-    | '/admin/applications'
     | '/admin/customers'
     | '/admin/inventory'
     | '/admin/messages'
@@ -768,6 +789,7 @@ export interface FileRouteTypes {
     | '/admin/suppliers'
     | '/auth/login'
     | '/auth/register'
+    | '/careers/$slug'
     | '/careers/field-agent'
     | '/portal-customer/cart'
     | '/portal-customer/checkout'
@@ -795,11 +817,13 @@ export interface FileRouteTypes {
     | '/portfolio/'
     | '/products/'
     | '/admin/customers/statistics'
+    | '/admin/jobs/$jobId'
     | '/admin/orders/$orderId'
     | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers/'
+    | '/admin/jobs/'
     | '/admin/orders/'
     | '/admin/quotations/'
     | '/portal-customer/catalog/'
@@ -825,6 +849,7 @@ export interface RootRouteChildren {
   WishlistRoute: typeof WishlistRoute
   AuthLoginRoute: typeof AuthLoginRoute
   AuthRegisterRoute: typeof AuthRegisterRoute
+  CareersSlugRoute: typeof CareersSlugRoute
   CareersFieldAgentRoute: typeof CareersFieldAgentRoute
   PortfolioCorporateProfileRoute: typeof PortfolioCorporateProfileRoute
   PortfolioMarketPotentialRoute: typeof PortfolioMarketPotentialRoute
@@ -1131,6 +1156,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CareersFieldAgentRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/careers/$slug': {
+      id: '/careers/$slug'
+      path: '/careers/$slug'
+      fullPath: '/careers/$slug'
+      preLoaderRoute: typeof CareersSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/auth/register': {
       id: '/auth/register'
       path: '/auth/register'
@@ -1208,13 +1240,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCustomersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/applications': {
-      id: '/admin/applications'
-      path: '/applications'
-      fullPath: '/admin/applications'
-      preLoaderRoute: typeof AdminApplicationsRouteImport
-      parentRoute: typeof AdminRoute
-    }
     '/admin/agents': {
       id: '/admin/agents'
       path: '/agents'
@@ -1248,6 +1273,13 @@ declare module '@tanstack/react-router' {
       path: '/orders'
       fullPath: '/admin/orders/'
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/jobs/': {
+      id: '/admin/jobs/'
+      path: '/jobs'
+      fullPath: '/admin/jobs/'
+      preLoaderRoute: typeof AdminJobsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/customers/': {
@@ -1285,6 +1317,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/jobs/$jobId': {
+      id: '/admin/jobs/$jobId'
+      path: '/jobs/$jobId'
+      fullPath: '/admin/jobs/$jobId'
+      preLoaderRoute: typeof AdminJobsJobIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/customers/statistics': {
       id: '/admin/customers/statistics'
       path: '/statistics'
@@ -1311,7 +1350,6 @@ const AdminCustomersRouteWithChildren = AdminCustomersRoute._addFileChildren(
 
 interface AdminRouteChildren {
   AdminAgentsRoute: typeof AdminAgentsRoute
-  AdminApplicationsRoute: typeof AdminApplicationsRoute
   AdminCustomersRoute: typeof AdminCustomersRouteWithChildren
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminMessagesRoute: typeof AdminMessagesRoute
@@ -1322,15 +1360,16 @@ interface AdminRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSuppliersRoute: typeof AdminSuppliersRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminJobsJobIdRoute: typeof AdminJobsJobIdRoute
   AdminOrdersOrderIdRoute: typeof AdminOrdersOrderIdRoute
   AdminQuotationsRfqIdRoute: typeof AdminQuotationsRfqIdRoute
+  AdminJobsIndexRoute: typeof AdminJobsIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAgentsRoute: AdminAgentsRoute,
-  AdminApplicationsRoute: AdminApplicationsRoute,
   AdminCustomersRoute: AdminCustomersRouteWithChildren,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminMessagesRoute: AdminMessagesRoute,
@@ -1341,8 +1380,10 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSuppliersRoute: AdminSuppliersRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminJobsJobIdRoute: AdminJobsJobIdRoute,
   AdminOrdersOrderIdRoute: AdminOrdersOrderIdRoute,
   AdminQuotationsRfqIdRoute: AdminQuotationsRfqIdRoute,
+  AdminJobsIndexRoute: AdminJobsIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
 }
@@ -1438,6 +1479,7 @@ const rootRouteChildren: RootRouteChildren = {
   WishlistRoute: WishlistRoute,
   AuthLoginRoute: AuthLoginRoute,
   AuthRegisterRoute: AuthRegisterRoute,
+  CareersSlugRoute: CareersSlugRoute,
   CareersFieldAgentRoute: CareersFieldAgentRoute,
   PortfolioCorporateProfileRoute: PortfolioCorporateProfileRoute,
   PortfolioMarketPotentialRoute: PortfolioMarketPotentialRoute,

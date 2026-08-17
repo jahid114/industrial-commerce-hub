@@ -25,7 +25,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package;
   { to: "/admin/customers", label: "Customers", icon: Users },
   { to: "/admin/agents", label: "Agents", icon: Users },
   { to: "/admin/quotations", label: "Quotations", icon: FileText },
-  { to: "/admin/applications", label: "Applications", icon: Briefcase },
+  { to: "/admin/jobs", label: "Jobs & Applications", icon: Briefcase },
   { to: "/admin/partners", label: "Partners & Investors", icon: Handshake },
   { to: "/admin/messages", label: "Messages", icon: Mail },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },

@@ -1,9 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 import { MapPin, Briefcase, Users, TrendingUp, ArrowRight, Clock } from "lucide-react";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { readJobs, type JobPosting } from "@/lib/jobs";
 
 export const Route = createFileRoute("/careers/")({
   head: () => ({
@@ -27,19 +29,12 @@ export const Route = createFileRoute("/careers/")({
   component: CareersPage,
 });
 
-const openings = [
-  {
-    to: "/careers/field-agent" as const,
-    title: "Field Agent",
-    type: "Commission-based · Field role",
-    location: "All districts, Bangladesh",
-    posted: "Open now",
-    summary:
-      "Represent MegaHaus in your own area — visit factories, workshops and contractors, and connect them with global-quality industrial products.",
-  },
-];
-
 function CareersPage() {
+  const [openings, setOpenings] = useState<JobPosting[]>([]);
+  useEffect(() => {
+    setOpenings(readJobs().filter((j) => j.published));
+  }, []);
+
   return (
     <PublicLayout>
       <section className="bg-industrial text-industrial-foreground py-16 md:py-24">
@@ -83,15 +78,20 @@ function CareersPage() {
             description="Browse our open roles and apply online. Each listing has full details and an application form."
           />
           <div className="mt-8 space-y-4">
+            {openings.length === 0 && (
+              <p className="text-muted-foreground">
+                No open positions right now. Please check back soon.
+              </p>
+            )}
             {openings.map((job) => (
               <article
-                key={job.title}
+                key={job.id}
                 className="rounded-lg border border-border bg-card p-6 transition-shadow hover:shadow-md md:flex md:items-center md:justify-between md:gap-6"
               >
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="font-display text-2xl font-bold">{job.title}</h2>
-                    <Badge variant="secondary" className="text-xs">{job.posted}</Badge>
+                    <Badge variant="secondary" className="text-xs">Open now</Badge>
                   </div>
                   <p className="mt-2 max-w-2xl text-sm text-muted-foreground">{job.summary}</p>
                   <div className="mt-3 flex flex-wrap gap-4 text-xs text-muted-foreground">
@@ -100,7 +100,7 @@ function CareersPage() {
                   </div>
                 </div>
                 <Button asChild size="lg" className="mt-5 w-full gap-2 font-bold uppercase md:mt-0 md:w-auto">
-                  <Link to={job.to}>
+                  <Link to="/careers/$slug" params={{ slug: job.slug }}>
                     Apply Now <ArrowRight className="size-4" />
                   </Link>
                 </Button>
