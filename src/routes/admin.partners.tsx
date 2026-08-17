@@ -103,6 +103,7 @@ function PartnersAdminPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"requests" | "records">("requests");
 
   useEffect(() => {
     setItems(readPartnerRequests());
