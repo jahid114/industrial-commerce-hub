@@ -2,6 +2,7 @@ export type ApplicationStatus = "New" | "Reviewed" | "Shortlisted" | "Rejected";
 
 export type CareerApplication = {
   id: string;
+  jobId?: string;
   role: string;
   status: ApplicationStatus;
   name: string;
