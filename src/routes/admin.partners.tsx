@@ -31,6 +31,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate } from "@/lib/format";
 import {
   PARTNER_STATUSES,
@@ -103,6 +104,7 @@ function PartnersAdminPage() {
   const [formOpen, setFormOpen] = useState(false);
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [tab, setTab] = useState<"requests" | "records">("requests");
 
   useEffect(() => {
     setItems(readPartnerRequests());
@@ -155,6 +157,7 @@ function PartnersAdminPage() {
       const item: PartnerRequest = {
         ...draft,
         id: `PRT-${Date.now().toString(36).toUpperCase()}`,
+        source: "Manual",
         submittedAt: new Date().toISOString(),
       };
       persist([...items, item]);
@@ -171,9 +174,20 @@ function PartnersAdminPage() {
     toast.success("Request deleted");
   };
 
+  const counts = useMemo(
+    () => ({
+      requests: items.filter((p) => (p.source ?? "Public") === "Public").length,
+      records: items.filter((p) => p.source === "Manual").length,
+    }),
+    [items],
+  );
+
   const filtered = useMemo(
     () =>
       items
+        .filter((p) =>
+          tab === "requests" ? (p.source ?? "Public") === "Public" : p.source === "Manual",
+        )
         .filter((p) => (statusFilter === "All" ? true : p.status === statusFilter))
         .filter((p) => (typeFilter === "All" ? true : p.type === typeFilter))
         .filter((p) =>
@@ -185,7 +199,7 @@ function PartnersAdminPage() {
             : true,
         )
         .sort((a, b) => (a.submittedAt < b.submittedAt ? 1 : -1)),
-    [items, statusFilter, typeFilter, q],
+    [items, statusFilter, typeFilter, q, tab],
   );
 
   return (
@@ -194,13 +208,24 @@ function PartnersAdminPage() {
         <div>
           <h1 className="font-display text-3xl font-bold">Partners & Investors</h1>
           <p className="text-sm text-muted-foreground">
-            Partnership and investment requests from the public site, plus records you add manually.
+            {tab === "requests"
+              ? "Partnership and investment requests submitted from the public website."
+              : "Partner and investor records you manage manually."}
           </p>
         </div>
-        <Button onClick={openAdd} className="font-bold uppercase">
-          <Plus className="size-4 mr-2" /> Add Record
-        </Button>
+        {tab === "records" && (
+          <Button onClick={openAdd} className="font-bold uppercase">
+            <Plus className="size-4 mr-2" /> Add Record
+          </Button>
+        )}
       </div>
+
+      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+        <TabsList>
+          <TabsTrigger value="requests">Public Requests ({counts.requests})</TabsTrigger>
+          <TabsTrigger value="records">Partners & Investors ({counts.records})</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-56">

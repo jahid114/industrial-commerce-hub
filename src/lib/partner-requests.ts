@@ -26,8 +26,11 @@ export const PARTNER_STATUSES: PartnerStatus[] = [
   "Rejected",
 ];
 
+export type PartnerSource = "Public" | "Manual";
+
 export interface PartnerRequest {
   id: string;
+  source?: PartnerSource;
   name: string;
   company: string;
   email: string;
@@ -73,6 +76,7 @@ export function addPartnerRequest(
     ...input,
     id: `PRT-${Date.now().toString(36).toUpperCase()}`,
     status: input.status ?? "New",
+    source: input.source ?? "Public",
     submittedAt: new Date().toISOString(),
   };
   writePartnerRequests([...readPartnerRequests(), item]);
