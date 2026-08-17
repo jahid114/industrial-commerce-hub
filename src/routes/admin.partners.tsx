@@ -198,7 +198,7 @@ function PartnersAdminPage() {
             : true,
         )
         .sort((a, b) => (a.submittedAt < b.submittedAt ? 1 : -1)),
-    [items, statusFilter, typeFilter, q],
+    [items, statusFilter, typeFilter, q, tab],
   );
 
   return (
@@ -207,13 +207,24 @@ function PartnersAdminPage() {
         <div>
           <h1 className="font-display text-3xl font-bold">Partners & Investors</h1>
           <p className="text-sm text-muted-foreground">
-            Partnership and investment requests from the public site, plus records you add manually.
+            {tab === "requests"
+              ? "Partnership and investment requests submitted from the public website."
+              : "Partner and investor records you manage manually."}
           </p>
         </div>
-        <Button onClick={openAdd} className="font-bold uppercase">
-          <Plus className="size-4 mr-2" /> Add Record
-        </Button>
+        {tab === "records" && (
+          <Button onClick={openAdd} className="font-bold uppercase">
+            <Plus className="size-4 mr-2" /> Add Record
+          </Button>
+        )}
       </div>
+
+      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+        <TabsList>
+          <TabsTrigger value="requests">Public Requests ({counts.requests})</TabsTrigger>
+          <TabsTrigger value="records">Partners & Investors ({counts.records})</TabsTrigger>
+        </TabsList>
+      </Tabs>
 
       <div className="flex flex-wrap items-center gap-3">
         <div className="relative flex-1 min-w-56">
