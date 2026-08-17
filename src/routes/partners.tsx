@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { addPartnerRequest } from "@/lib/partner-requests";
 
 const schema = z.object({
   name: z.string().trim().min(2, "Name is required").max(100),
@@ -102,7 +103,7 @@ function PartnersPage() {
                 <p className="mt-2 text-muted-foreground">Our partnership team will reach out within 48 hours.</p>
               </div>
             ) : (
-              <form onSubmit={form.handleSubmit(() => setDone(true))} className="space-y-4">
+              <form onSubmit={form.handleSubmit((values) => { addPartnerRequest({ ...values, files: files.map((f) => f.name) }); setDone(true); })} className="space-y-4">
                 <h3 className="font-display text-xl font-bold border-b border-border pb-3">Talk to Us</h3>
 
                 <F label="Partnership Type">
