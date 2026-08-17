@@ -173,9 +173,20 @@ function PartnersAdminPage() {
     toast.success("Request deleted");
   };
 
+  const counts = useMemo(
+    () => ({
+      requests: items.filter((p) => (p.source ?? "Public") === "Public").length,
+      records: items.filter((p) => p.source === "Manual").length,
+    }),
+    [items],
+  );
+
   const filtered = useMemo(
     () =>
       items
+        .filter((p) =>
+          tab === "requests" ? (p.source ?? "Public") === "Public" : p.source === "Manual",
+        )
         .filter((p) => (statusFilter === "All" ? true : p.status === statusFilter))
         .filter((p) => (typeFilter === "All" ? true : p.type === typeFilter))
         .filter((p) =>
