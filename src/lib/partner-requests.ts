@@ -26,8 +26,11 @@ export const PARTNER_STATUSES: PartnerStatus[] = [
   "Rejected",
 ];
 
+export type PartnerSource = "Public" | "Manual";
+
 export interface PartnerRequest {
   id: string;
+  source?: PartnerSource;
   name: string;
   company: string;
   email: string;
