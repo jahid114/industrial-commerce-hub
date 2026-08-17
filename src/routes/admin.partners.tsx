@@ -156,6 +156,7 @@ function PartnersAdminPage() {
       const item: PartnerRequest = {
         ...draft,
         id: `PRT-${Date.now().toString(36).toUpperCase()}`,
+        source: "Manual",
         submittedAt: new Date().toISOString(),
       };
       persist([...items, item]);
