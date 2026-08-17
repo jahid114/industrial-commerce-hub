@@ -68,11 +68,13 @@ import { Route as PortalCustomerOrdersIndexRouteImport } from './routes/portal-c
 import { Route as PortalCustomerCatalogIndexRouteImport } from './routes/portal-customer.catalog.index'
 import { Route as AdminQuotationsIndexRouteImport } from './routes/admin.quotations.index'
 import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as AdminJobsIndexRouteImport } from './routes/admin.jobs.index'
 import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
 import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
 import { Route as AdminQuotationsRfqIdRouteImport } from './routes/admin.quotations.$rfqId'
 import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
+import { Route as AdminJobsJobIdRouteImport } from './routes/admin.jobs.$jobId'
 import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
 const WishlistRoute = WishlistRouteImport.update({
@@ -376,6 +378,11 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => AdminRoute,
 } as any)
+const AdminJobsIndexRoute = AdminJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -401,6 +408,11 @@ const AdminQuotationsRfqIdRoute = AdminQuotationsRfqIdRouteImport.update({
 const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
   id: '/orders/$orderId',
   path: '/orders/$orderId',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminJobsJobIdRoute = AdminJobsJobIdRouteImport.update({
+  id: '/jobs/$jobId',
+  path: '/jobs/$jobId',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminCustomersStatisticsRoute =
@@ -467,11 +479,13 @@ export interface FileRoutesByFullPath {
   '/portfolio/': typeof PortfolioIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
+  '/admin/jobs/$jobId': typeof AdminJobsJobIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/jobs/': typeof AdminJobsIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/quotations/': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog/': typeof PortalCustomerCatalogIndexRoute
@@ -529,11 +543,13 @@ export interface FileRoutesByTo {
   '/portfolio': typeof PortfolioIndexRoute
   '/products': typeof ProductsIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
+  '/admin/jobs/$jobId': typeof AdminJobsJobIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers': typeof AdminCustomersIndexRoute
+  '/admin/jobs': typeof AdminJobsIndexRoute
   '/admin/orders': typeof AdminOrdersIndexRoute
   '/admin/quotations': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog': typeof PortalCustomerCatalogIndexRoute
@@ -597,11 +613,13 @@ export interface FileRoutesById {
   '/portfolio/': typeof PortfolioIndexRoute
   '/products/': typeof ProductsIndexRoute
   '/admin/customers/statistics': typeof AdminCustomersStatisticsRoute
+  '/admin/jobs/$jobId': typeof AdminJobsJobIdRoute
   '/admin/orders/$orderId': typeof AdminOrdersOrderIdRoute
   '/admin/quotations/$rfqId': typeof AdminQuotationsRfqIdRoute
   '/portal-customer/catalog/$productId': typeof PortalCustomerCatalogProductIdRoute
   '/portal-customer/orders/$orderId': typeof PortalCustomerOrdersOrderIdRoute
   '/admin/customers/': typeof AdminCustomersIndexRoute
+  '/admin/jobs/': typeof AdminJobsIndexRoute
   '/admin/orders/': typeof AdminOrdersIndexRoute
   '/admin/quotations/': typeof AdminQuotationsIndexRoute
   '/portal-customer/catalog/': typeof PortalCustomerCatalogIndexRoute
@@ -666,11 +684,13 @@ export interface FileRouteTypes {
     | '/portfolio/'
     | '/products/'
     | '/admin/customers/statistics'
+    | '/admin/jobs/$jobId'
     | '/admin/orders/$orderId'
     | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers/'
+    | '/admin/jobs/'
     | '/admin/orders/'
     | '/admin/quotations/'
     | '/portal-customer/catalog/'
@@ -728,11 +748,13 @@ export interface FileRouteTypes {
     | '/portfolio'
     | '/products'
     | '/admin/customers/statistics'
+    | '/admin/jobs/$jobId'
     | '/admin/orders/$orderId'
     | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers'
+    | '/admin/jobs'
     | '/admin/orders'
     | '/admin/quotations'
     | '/portal-customer/catalog'
@@ -795,11 +817,13 @@ export interface FileRouteTypes {
     | '/portfolio/'
     | '/products/'
     | '/admin/customers/statistics'
+    | '/admin/jobs/$jobId'
     | '/admin/orders/$orderId'
     | '/admin/quotations/$rfqId'
     | '/portal-customer/catalog/$productId'
     | '/portal-customer/orders/$orderId'
     | '/admin/customers/'
+    | '/admin/jobs/'
     | '/admin/orders/'
     | '/admin/quotations/'
     | '/portal-customer/catalog/'
@@ -1250,6 +1274,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
+    '/admin/jobs/': {
+      id: '/admin/jobs/'
+      path: '/jobs'
+      fullPath: '/admin/jobs/'
+      preLoaderRoute: typeof AdminJobsIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/customers/': {
       id: '/admin/customers/'
       path: '/'
@@ -1283,6 +1314,13 @@ declare module '@tanstack/react-router' {
       path: '/orders/$orderId'
       fullPath: '/admin/orders/$orderId'
       preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/jobs/$jobId': {
+      id: '/admin/jobs/$jobId'
+      path: '/jobs/$jobId'
+      fullPath: '/admin/jobs/$jobId'
+      preLoaderRoute: typeof AdminJobsJobIdRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/customers/statistics': {
@@ -1322,8 +1360,10 @@ interface AdminRouteChildren {
   AdminSettingsRoute: typeof AdminSettingsRoute
   AdminSuppliersRoute: typeof AdminSuppliersRoute
   AdminIndexRoute: typeof AdminIndexRoute
+  AdminJobsJobIdRoute: typeof AdminJobsJobIdRoute
   AdminOrdersOrderIdRoute: typeof AdminOrdersOrderIdRoute
   AdminQuotationsRfqIdRoute: typeof AdminQuotationsRfqIdRoute
+  AdminJobsIndexRoute: typeof AdminJobsIndexRoute
   AdminOrdersIndexRoute: typeof AdminOrdersIndexRoute
   AdminQuotationsIndexRoute: typeof AdminQuotationsIndexRoute
 }
@@ -1341,8 +1381,10 @@ const AdminRouteChildren: AdminRouteChildren = {
   AdminSettingsRoute: AdminSettingsRoute,
   AdminSuppliersRoute: AdminSuppliersRoute,
   AdminIndexRoute: AdminIndexRoute,
+  AdminJobsJobIdRoute: AdminJobsJobIdRoute,
   AdminOrdersOrderIdRoute: AdminOrdersOrderIdRoute,
   AdminQuotationsRfqIdRoute: AdminQuotationsRfqIdRoute,
+  AdminJobsIndexRoute: AdminJobsIndexRoute,
   AdminOrdersIndexRoute: AdminOrdersIndexRoute,
   AdminQuotationsIndexRoute: AdminQuotationsIndexRoute,
 }
