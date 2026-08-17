@@ -76,6 +76,7 @@ export function addPartnerRequest(
     ...input,
     id: `PRT-${Date.now().toString(36).toUpperCase()}`,
     status: input.status ?? "New",
+    source: input.source ?? "Public",
     submittedAt: new Date().toISOString(),
   };
   writePartnerRequests([...readPartnerRequests(), item]);
