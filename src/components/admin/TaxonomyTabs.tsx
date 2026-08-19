@@ -268,7 +268,7 @@ function CountryDialog({
   existingIds: string[];
 }) {
   const [form, setForm] = useState<BusinessCountry>(
-    editing ?? { id: "", name: "", code: "", active: true },
+    editing ?? { id: "", name: "", code: "" },
   );
 
   const submit = () => {
@@ -291,15 +291,6 @@ function CountryDialog({
         </Field>
         <Field label="ISO code">
           <Input value={form.code} maxLength={3} placeholder="DE" onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} />
-        </Field>
-        <Field label="Status">
-          <Select value={form.active ? "active" : "inactive"} onValueChange={(v) => setForm({ ...form, active: v === "active" })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
         </Field>
       </div>
       <DialogFooter>
