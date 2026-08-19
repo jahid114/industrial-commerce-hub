@@ -54,6 +54,7 @@ export interface Supplier {
   phone: string;
   productsCount: number;
   since: string;
+  status: "Active" | "Pending" | "Suspended";
 }
 
 export interface Agent {
