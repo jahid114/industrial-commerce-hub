@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Star, Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -31,7 +31,7 @@ const emptyForm: FormState = {
   country: "Germany",
   contactName: "",
   email: "",
-  rating: 4.5,
+  phone: "",
   since: new Date().toISOString().slice(0, 10),
 };
 
@@ -91,8 +91,8 @@ function AdminSuppliersPage() {
               <th className="px-4 py-3 text-left">Country</th>
               <th className="px-4 py-3 text-left">Contact</th>
               <th className="px-4 py-3 text-left">Email</th>
+              <th className="px-4 py-3 text-left">Phone</th>
               <th className="px-4 py-3 text-right">Products</th>
-              <th className="px-4 py-3 text-right">Rating</th>
               <th className="px-4 py-3 text-right">Since</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -104,8 +104,8 @@ function AdminSuppliersPage() {
                 <td className="px-4 py-3"><Badge variant="outline">{s.country}</Badge></td>
                 <td className="px-4 py-3">{s.contactName}</td>
                 <td className="px-4 py-3 text-muted-foreground">{s.email}</td>
+                <td className="px-4 py-3 text-muted-foreground">{s.phone}</td>
                 <td className="px-4 py-3 text-right">{s.productsCount}</td>
-                <td className="px-4 py-3 text-right"><span className="inline-flex items-center gap-1"><Star className="size-3 fill-accent text-accent" />{s.rating}</span></td>
                 <td className="px-4 py-3 text-right text-muted-foreground">{new Date(s.since).getFullYear()}</td>
                 <td className="px-4 py-3 text-right space-x-1">
                   <Button size="icon" variant="ghost" onClick={() => openEdit(s)} className="text-amber-600 hover:bg-amber-500/10 hover:text-amber-700"><Pencil className="size-4" /></Button>
@@ -155,8 +155,8 @@ function AdminSuppliersPage() {
               <Input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             </div>
             <div className="grid gap-1.5">
-              <Label>Rating</Label>
-              <Input type="number" step="0.1" min={0} max={5} value={form.rating} onChange={(e) => setForm({ ...form, rating: Number(e.target.value) || 0 })} />
+              <Label>Contact number</Label>
+              <Input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} />
             </div>
           </div>
           <DialogFooter>
