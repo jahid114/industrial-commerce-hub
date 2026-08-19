@@ -51,8 +51,8 @@ export interface Supplier {
   country: Country;
   contactName: string;
   email: string;
+  phone: string;
   productsCount: number;
-  rating: number;
   since: string;
 }
 
