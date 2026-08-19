@@ -30,11 +30,8 @@ export const Route = createFileRoute("/portal-customer/profile")({
 const emptyAddress = (): CustomerAddress => ({
   id: newAddressId(),
   label: "",
-  contactName: "",
-  phone: "",
   line1: "",
   city: "",
-  postcode: "",
   isDefault: false,
 });
 
@@ -212,9 +209,8 @@ function AddressBook() {
                 {a.isDefault && <Badge variant="secondary">Default</Badge>}
               </div>
               <div className="text-sm text-muted-foreground">
-                <div>{a.contactName}{a.phone ? ` · ${a.phone}` : ""}</div>
                 <div>{a.line1}</div>
-                <div>{[a.city, a.postcode].filter(Boolean).join(" ")}</div>
+                <div>{a.city}</div>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" onClick={() => setEditing(a)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit</Button>
@@ -249,8 +245,8 @@ function AddressDialog({ address, onClose, onSave }: { address: CustomerAddress 
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.contactName.trim() || !form.line1.trim() || !form.city.trim()) {
-      toast.error("Contact name, address and city are required");
+    if (!form.line1.trim() || !form.city.trim()) {
+      toast.error("Address and city are required");
       return;
     }
     onSave(form);
@@ -262,15 +258,8 @@ function AddressDialog({ address, onClose, onSave }: { address: CustomerAddress 
         <DialogHeader><DialogTitle>{address.label || address.line1 ? "Edit Address" : "Add Address"}</DialogTitle></DialogHeader>
         <form onSubmit={submit} className="space-y-3">
           <div><Label className="mb-1.5 block text-sm">Label (e.g. Factory, Office)</Label><Input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} /></div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div><Label className="mb-1.5 block text-sm">Contact Name *</Label><Input value={form.contactName} onChange={(e) => setForm({ ...form, contactName: e.target.value })} /></div>
-            <div><Label className="mb-1.5 block text-sm">Phone</Label><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></div>
-          </div>
-          <div><Label className="mb-1.5 block text-sm">Address *</Label><Textarea rows={2} value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} /></div>
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div><Label className="mb-1.5 block text-sm">City *</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-            <div><Label className="mb-1.5 block text-sm">Postcode</Label><Input value={form.postcode ?? ""} onChange={(e) => setForm({ ...form, postcode: e.target.value })} /></div>
-          </div>
+          <div><Label className="mb-1.5 block text-sm">City *</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
+          <div><Label className="mb-1.5 block text-sm">Address *</Label><Input value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} /></div>
           <label className="flex items-center gap-2 text-sm">
             <Checkbox checked={!!form.isDefault} onCheckedChange={(v) => setForm({ ...form, isDefault: !!v })} />
             Set as default delivery address

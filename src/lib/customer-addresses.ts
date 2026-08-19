@@ -3,11 +3,8 @@ import { useCallback, useEffect, useState } from "react";
 export interface CustomerAddress {
   id: string;
   label: string;
-  contactName: string;
-  phone: string;
   line1: string;
   city: string;
-  postcode?: string;
   isDefault?: boolean;
 }
 
