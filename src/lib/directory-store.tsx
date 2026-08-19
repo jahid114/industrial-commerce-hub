@@ -24,6 +24,19 @@ function uid(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 6)}`;
 }
 
+function migrateSuppliers(persisted: Supplier[], seed: Supplier[]): Supplier[] {
+  const seedById = new Map(seed.map((s) => [s.id, s]));
+  return persisted.map((s) => {
+    const base = seedById.get(s.id);
+    return {
+      ...s,
+      status: s.status ?? base?.status ?? "Pending",
+      phone: s.phone ?? base?.phone ?? "-",
+      productsCount: s.productsCount ?? base?.productsCount ?? 0,
+    };
+  });
+}
+
 export function DirectoryProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<State>({ suppliers: seedSuppliers, agents: seedAgents });
 
@@ -31,7 +44,13 @@ export function DirectoryProvider({ children }: { children: ReactNode }) {
     if (typeof window === "undefined") return;
     try {
       const raw = localStorage.getItem(KEY);
-      if (raw) setState(JSON.parse(raw));
+      if (raw) {
+        const parsed: State = JSON.parse(raw);
+        setState({
+          suppliers: migrateSuppliers(parsed.suppliers ?? [], seedSuppliers),
+          agents: parsed.agents ?? seedAgents,
+        });
+      }
     } catch { /* ignore */ }
   }, []);
 

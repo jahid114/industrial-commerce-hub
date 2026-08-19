@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Pencil, Trash2, Plus } from "lucide-react";
+import { Pencil, Trash2, Plus, Search, X } from "lucide-react";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -49,6 +49,17 @@ function AdminSuppliersPage() {
   const [editing, setEditing] = useState<Supplier | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [deleteId, setDeleteId] = useState<string | null>(null);
+  const [nameQuery, setNameQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<Supplier["status"] | "all">("all");
+
+  const filteredSuppliers = suppliers.filter((s) => {
+    const matchesName = s.name.toLowerCase().includes(nameQuery.trim().toLowerCase());
+    const matchesStatus = statusFilter === "all" || s.status === statusFilter;
+    return matchesName && matchesStatus;
+  });
+
+  const hasFilters = nameQuery.trim() !== "" || statusFilter !== "all";
+  const clearFilters = () => { setNameQuery(""); setStatusFilter("all"); };
 
   const openAdd = () => { setEditing(null); setForm(emptyForm); setDialogOpen(true); };
   const openEdit = (s: Supplier) => {
@@ -86,9 +97,39 @@ function AdminSuppliersPage() {
       <div className="flex items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-3xl font-bold">Suppliers</h1>
-          <p className="text-sm text-muted-foreground">{suppliers.length} verified suppliers</p>
+          <p className="text-sm text-muted-foreground">
+            {filteredSuppliers.length} of {suppliers.length} verified suppliers
+          </p>
         </div>
         <Button onClick={openAdd} className="gap-2"><Plus className="size-4" /> Add supplier</Button>
+      </div>
+
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="relative flex-1">
+          <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            placeholder="Filter by supplier name..."
+            value={nameQuery}
+            onChange={(e) => setNameQuery(e.target.value)}
+            className="pl-9"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as Supplier["status"] | "all")}>
+            <SelectTrigger className="w-[160px]">
+              <SelectValue placeholder="All statuses" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">All statuses</SelectItem>
+              {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+            </SelectContent>
+          </Select>
+          {hasFilters && (
+            <Button variant="outline" size="icon" onClick={clearFilters} title="Clear filters">
+              <X className="size-4" />
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
@@ -107,7 +148,7 @@ function AdminSuppliersPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {suppliers.map((s) => (
+            {filteredSuppliers.map((s) => (
               <tr key={s.id} className="hover:bg-secondary">
                 <td className="px-4 py-3 font-semibold">{s.name}</td>
                 <td className="px-4 py-3"><Badge className={statusClass(s.status)}>{s.status}</Badge></td>
@@ -123,8 +164,8 @@ function AdminSuppliersPage() {
                 </td>
               </tr>
             ))}
-            {suppliers.length === 0 && (
-              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No suppliers yet.</td></tr>
+            {filteredSuppliers.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No suppliers match your filters.</td></tr>
             )}
           </tbody>
         </table>
