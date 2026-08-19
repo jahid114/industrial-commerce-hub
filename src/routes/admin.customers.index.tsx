@@ -13,6 +13,8 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useCustomers, type RegisteredCustomer } from "@/lib/customers-store";
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
+import { AddressBook } from "@/components/customer/AddressBook";
+import { getDefaultAddress } from "@/lib/customer-addresses";
 
 export const Route = createFileRoute("/admin/customers/")({
   head: () => ({ meta: [{ title: "Customers — Admin" }] }),
@@ -208,10 +210,20 @@ function AdminCustomersPage() {
                 <InfoCard label="Phone" value={viewing.phone ?? "—"} />
                 <InfoCard label="Company" value={viewing.company ?? "—"} />
                 <InfoCard label="City" value={viewing.city ?? "—"} />
-                <InfoCard label="Address" value={viewing.address ?? "—"} className="md:col-span-2" />
+                <InfoCard label="Default Address" value={viewing.address ?? "—"} className="md:col-span-2" />
                 {viewing.status === "Suspended" && viewing.suspendReason && (
                   <InfoCard label="Suspend Reason" value={viewing.suspendReason} className="md:col-span-2 text-destructive" />
                 )}
+              </div>
+
+              <div className="mt-2 rounded-lg border border-border p-4">
+                <AddressBook
+                  ownerEmail={viewing.email}
+                  readOnly
+                  compact
+                  title="Delivery Addresses"
+                  description="All addresses saved by this customer."
+                />
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3 mt-2">
@@ -262,7 +274,7 @@ function AdminCustomersPage() {
 
       {/* Add / Edit dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-        <DialogContent className="max-w-2xl">
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>{editing ? "Edit Customer" : "Add Customer"}</DialogTitle>
             <DialogDescription>Registered customer details.</DialogDescription>
@@ -273,8 +285,23 @@ function AdminCustomersPage() {
             <Field label="Phone"><Input value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
             <Field label="Company"><Input value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></Field>
             <Field label="City"><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></Field>
-            <Field label="Address" className="sm:col-span-2"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
+            <Field label="Default Address" className="sm:col-span-2"><Input value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /></Field>
             <Field label="Notes" className="sm:col-span-2"><Textarea rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} /></Field>
+          </div>
+
+          <div className="mt-4 rounded-lg border border-border p-4">
+            <AddressBook
+              ownerEmail={editing?.email}
+              compact
+              title="Delivery Addresses"
+              description="Multiple addresses can be saved; one is the default."
+              onDefaultChange={(addr) => {
+                const next = addr ?? (editing ? getDefaultAddress(editing.email) : undefined);
+                if (!next || !editing) return;
+                setForm((f) => ({ ...f, address: `${next.line1}, ${next.city}`, city: next.city }));
+                update(editing.id, { address: `${next.line1}, ${next.city}`, city: next.city });
+              }}
+            />
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setDialogOpen(false)}>Cancel</Button>
