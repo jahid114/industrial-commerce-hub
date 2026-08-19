@@ -6,20 +6,19 @@ export interface BusinessCountry {
   id: string;
   name: string;
   code: string; // ISO-2, e.g. DE
-  active: boolean;
 }
 
 const BRANDS_KEY = "mh_admin_brands_v1";
 const COUNTRIES_KEY = "mh_admin_countries_v1";
 
 export const SEED_COUNTRIES: BusinessCountry[] = [
-  { id: "de", name: "Germany", code: "DE", active: true },
-  { id: "jp", name: "Japan", code: "JP", active: true },
-  { id: "cn", name: "China", code: "CN", active: true },
-  { id: "us", name: "USA", code: "US", active: true },
-  { id: "it", name: "Italy", code: "IT", active: true },
-  { id: "ch", name: "Switzerland", code: "CH", active: true },
-  { id: "bd", name: "Bangladesh", code: "BD", active: true },
+  { id: "de", name: "Germany", code: "DE" },
+  { id: "jp", name: "Japan", code: "JP" },
+  { id: "cn", name: "China", code: "CN" },
+  { id: "us", name: "USA", code: "US" },
+  { id: "it", name: "Italy", code: "IT" },
+  { id: "ch", name: "Switzerland", code: "CH" },
+  { id: "bd", name: "Bangladesh", code: "BD" },
 ];
 
 function usePersisted<T>(key: string, seed: T[]) {
@@ -77,9 +76,5 @@ export function useCountriesAdmin() {
     setCountries((prev) => prev.filter((x) => x.id !== id));
   }, [setCountries]);
 
-  const toggleActive = useCallback((id: string) => {
-    setCountries((prev) => prev.map((x) => (x.id === id ? { ...x, active: !x.active } : x)));
-  }, [setCountries]);
-
-  return { countries, save, remove, toggleActive };
+  return { countries, save, remove };
 }

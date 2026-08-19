@@ -43,7 +43,7 @@ export function BrandsTab() {
     [brands, search],
   );
 
-  const countryNames = countries.filter((c) => c.active).map((c) => c.name);
+  const countryNames = countries.map((c) => c.name);
 
   return (
     <div className="space-y-3">
@@ -174,7 +174,7 @@ function BrandDialog({
 /* ============================= Countries ============================= */
 
 export function CountriesTab() {
-  const { countries, save, remove, toggleActive } = useCountriesAdmin();
+  const { countries, save, remove } = useCountriesAdmin();
   const { brands } = useBrandsAdmin();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<BusinessCountry | null>(null);
@@ -212,7 +212,6 @@ export function CountriesTab() {
             <tr>
               <th className="px-4 py-3 text-left">Country</th>
               <th className="px-4 py-3 text-left">Code</th>
-              <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-right">Brands</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -222,13 +221,6 @@ export function CountriesTab() {
               <tr key={c.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 font-medium">{c.name}</td>
                 <td className="px-4 py-3 font-mono text-xs">{c.code}</td>
-                <td className="px-4 py-3">
-                  <button type="button" onClick={() => toggleActive(c.id)}>
-                    <Badge className={c.active ? "bg-success/20 text-success" : "bg-muted text-muted-foreground"}>
-                      {c.active ? "Active" : "Inactive"}
-                    </Badge>
-                  </button>
-                </td>
                 <td className="px-4 py-3 text-right">{brands.filter((b) => b.country === c.name).length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
@@ -239,7 +231,7 @@ export function CountriesTab() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={5} className="p-8 text-center text-sm text-muted-foreground">No countries match your search.</td></tr>
+              <tr><td colSpan={4} className="p-8 text-center text-sm text-muted-foreground">No countries match your search.</td></tr>
             )}
           </tbody>
         </table>
@@ -276,7 +268,7 @@ function CountryDialog({
   existingIds: string[];
 }) {
   const [form, setForm] = useState<BusinessCountry>(
-    editing ?? { id: "", name: "", code: "", active: true },
+    editing ?? { id: "", name: "", code: "" },
   );
 
   const submit = () => {
@@ -299,15 +291,6 @@ function CountryDialog({
         </Field>
         <Field label="ISO code">
           <Input value={form.code} maxLength={3} placeholder="DE" onChange={(e) => setForm({ ...form, code: e.target.value.toUpperCase() })} />
-        </Field>
-        <Field label="Status">
-          <Select value={form.active ? "active" : "inactive"} onValueChange={(v) => setForm({ ...form, active: v === "active" })}>
-            <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent>
-              <SelectItem value="active">Active</SelectItem>
-              <SelectItem value="inactive">Inactive</SelectItem>
-            </SelectContent>
-          </Select>
         </Field>
       </div>
       <DialogFooter>
