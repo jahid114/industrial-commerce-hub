@@ -174,7 +174,7 @@ function BrandDialog({
 /* ============================= Countries ============================= */
 
 export function CountriesTab() {
-  const { countries, save, remove, toggleActive } = useCountriesAdmin();
+  const { countries, save, remove } = useCountriesAdmin();
   const { brands } = useBrandsAdmin();
   const [search, setSearch] = useState("");
   const [editing, setEditing] = useState<BusinessCountry | null>(null);
