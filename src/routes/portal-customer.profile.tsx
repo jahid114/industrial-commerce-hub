@@ -6,11 +6,10 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { Badge } from "@/components/ui/badge";
 import { useStore } from "@/lib/store";
-import { useCustomerAddresses, newAddressId, type CustomerAddress } from "@/lib/customer-addresses";
-import { Checkbox } from "@/components/ui/checkbox";
-import { KeyRound, MapPin, Pencil, Plus, Star, Trash2 } from "lucide-react";
+import { getDefaultAddress } from "@/lib/customer-addresses";
+import { AddressBook } from "@/components/customer/AddressBook";
+import { KeyRound, Pencil } from "lucide-react";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal-customer/profile")({
@@ -25,14 +24,6 @@ export const Route = createFileRoute("/portal-customer/profile")({
     ],
   }),
   component: ProfilePage,
-});
-
-const emptyAddress = (): CustomerAddress => ({
-  id: newAddressId(),
-  label: "",
-  line1: "",
-  city: "",
-  isDefault: false,
 });
 
 function ProfilePage() {
@@ -51,7 +42,7 @@ function ProfilePage() {
           <ProfileForm />
         </TabsContent>
         <TabsContent value="addresses" className="mt-5">
-          <AddressBook />
+          <CustomerAddresses />
         </TabsContent>
       </Tabs>
     </div>
@@ -178,98 +169,16 @@ function ChangePasswordDialog({ open, onClose }: { open: boolean; onClose: () =>
   );
 }
 
-
-function AddressBook() {
-  const { addresses, upsert, remove, makeDefault } = useCustomerAddresses();
-  const [editing, setEditing] = useState<CustomerAddress | null>(null);
-
+function CustomerAddresses() {
+  const { user, dispatch } = useStore();
   return (
-    <div>
-      <div className="mb-4 flex items-center justify-between">
-        <div>
-          <h2 className="font-display text-base font-bold">Saved Addresses</h2>
-          <p className="text-sm text-muted-foreground">Keep multiple delivery addresses and mark one as default.</p>
-        </div>
-        <Button size="sm" className="font-bold uppercase" onClick={() => setEditing(emptyAddress())}>
-          <Plus className="mr-1.5 h-4 w-4" /> Add Address
-        </Button>
-      </div>
-
-      {addresses.length === 0 ? (
-        <div className="rounded-lg border border-dashed border-border p-10 text-center">
-          <MapPin className="mx-auto mb-2 h-6 w-6 text-muted-foreground" />
-          <p className="text-sm text-muted-foreground">No addresses saved yet.</p>
-        </div>
-      ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {addresses.map((a) => (
-            <div key={a.id} className="rounded-lg border border-border p-4">
-              <div className="mb-1 flex items-start justify-between gap-2">
-                <div className="font-semibold">{a.label || "Address"}</div>
-                {a.isDefault && <Badge variant="secondary">Default</Badge>}
-              </div>
-              <div className="text-sm text-muted-foreground">
-                <div>{a.line1}</div>
-                <div>{a.city}</div>
-              </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" onClick={() => setEditing(a)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit</Button>
-                {!a.isDefault && (
-                  <Button size="sm" variant="outline" onClick={() => { makeDefault(a.id); toast.success("Default address updated"); }}>
-                    <Star className="mr-1.5 h-3.5 w-3.5" /> Set Default
-                  </Button>
-                )}
-                <Button size="sm" variant="outline" onClick={() => { remove(a.id); toast.success("Address removed"); }}>
-                  <Trash2 className="mr-1.5 h-3.5 w-3.5" /> Delete
-                </Button>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <AddressDialog
-        address={editing}
-        onClose={() => setEditing(null)}
-        onSave={(a) => { upsert(a); setEditing(null); toast.success("Address saved"); }}
-      />
-    </div>
-  );
-}
-
-function AddressDialog({ address, onClose, onSave }: { address: CustomerAddress | null; onClose: () => void; onSave: (a: CustomerAddress) => void }) {
-  const [form, setForm] = useState<CustomerAddress | null>(address);
-
-  if (address && (!form || form.id !== address.id)) setForm(address);
-  if (!address || !form) return null;
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!form.line1.trim() || !form.city.trim()) {
-      toast.error("Address and city are required");
-      return;
-    }
-    onSave(form);
-  };
-
-  return (
-    <Dialog open onOpenChange={(o) => { if (!o) onClose(); }}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader><DialogTitle>{address.label || address.line1 ? "Edit Address" : "Add Address"}</DialogTitle></DialogHeader>
-        <form onSubmit={submit} className="space-y-3">
-          <div><Label className="mb-1.5 block text-sm">Label (e.g. Factory, Office)</Label><Input value={form.label} onChange={(e) => setForm({ ...form, label: e.target.value })} /></div>
-          <div><Label className="mb-1.5 block text-sm">City *</Label><Input value={form.city} onChange={(e) => setForm({ ...form, city: e.target.value })} /></div>
-          <div><Label className="mb-1.5 block text-sm">Address *</Label><Input value={form.line1} onChange={(e) => setForm({ ...form, line1: e.target.value })} /></div>
-          <label className="flex items-center gap-2 text-sm">
-            <Checkbox checked={!!form.isDefault} onCheckedChange={(v) => setForm({ ...form, isDefault: !!v })} />
-            Set as default delivery address
-          </label>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>Cancel</Button>
-            <Button type="submit" className="font-bold uppercase">Save Address</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+    <AddressBook
+      ownerEmail={user?.email}
+      onDefaultChange={(addr) => {
+        const fallback = user?.email ? getDefaultAddress(user.email) : undefined;
+        const next = addr ?? fallback;
+        if (next) dispatch({ type: "UPDATE_PROFILE", user: { address: `${next.line1}, ${next.city}` } });
+      }}
+    />
   );
 }
