@@ -76,9 +76,5 @@ export function useCountriesAdmin() {
     setCountries((prev) => prev.filter((x) => x.id !== id));
   }, [setCountries]);
 
-  const toggleActive = useCallback((id: string) => {
-    setCountries((prev) => prev.map((x) => (x.id === id ? { ...x, active: !x.active } : x)));
-  }, [setCountries]);
-
-  return { countries, save, remove, toggleActive };
+  return { countries, save, remove };
 }

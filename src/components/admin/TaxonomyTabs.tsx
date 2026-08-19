@@ -43,7 +43,7 @@ export function BrandsTab() {
     [brands, search],
   );
 
-  const countryNames = countries.filter((c) => c.active).map((c) => c.name);
+  const countryNames = countries.map((c) => c.name);
 
   return (
     <div className="space-y-3">
