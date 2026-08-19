@@ -2,6 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { suppliers } from "@/data/suppliers";
 import { ArrowRight } from "lucide-react";
 
@@ -15,7 +16,15 @@ export const Route = createFileRoute("/suppliers")({
   component: SuppliersPage,
 });
 
+function statusClass(s: typeof suppliers[number]["status"]) {
+  if (s === "Active") return "bg-success/20 text-success";
+  if (s === "Pending") return "bg-accent/20 text-accent-foreground";
+  return "bg-muted";
+}
+
 function SuppliersPage() {
+  const activeSuppliers = suppliers.filter((s) => s.status === "Active");
+
   return (
     <PublicLayout>
       <section className="border-b border-border bg-secondary py-12">
@@ -26,13 +35,14 @@ function SuppliersPage() {
 
       <div className="container mx-auto px-4 py-12">
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {suppliers.map((s) => (
+          {activeSuppliers.map((s) => (
             <div key={s.id} className="rounded-lg border border-border bg-card p-5 hover:border-primary transition-colors">
               <div className="flex items-start justify-between">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wider text-primary">{s.country}</div>
                   <h3 className="mt-1 font-display text-lg font-bold">{s.name}</h3>
                 </div>
+                <Badge className={statusClass(s.status)}>{s.status}</Badge>
               </div>
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>Contact: <span className="text-foreground">{s.contactName}</span></p>

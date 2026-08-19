@@ -23,6 +23,7 @@ export const Route = createFileRoute("/admin/suppliers")({
 });
 
 const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
+const STATUSES: Supplier["status"][] = ["Active", "Pending", "Suspended"];
 
 type FormState = Omit<Supplier, "id" | "productsCount">;
 
@@ -33,7 +34,14 @@ const emptyForm: FormState = {
   email: "",
   phone: "",
   since: new Date().toISOString().slice(0, 10),
+  status: "Pending",
 };
+
+function statusClass(s: Supplier["status"]) {
+  if (s === "Active") return "bg-success/20 text-success";
+  if (s === "Pending") return "bg-accent/20 text-accent-foreground";
+  return "bg-muted";
+}
 
 function AdminSuppliersPage() {
   const { suppliers, addSupplier, updateSupplier, deleteSupplier } = useDirectory();
@@ -88,6 +96,7 @@ function AdminSuppliersPage() {
           <thead className="bg-spec text-xs uppercase tracking-wider text-muted-foreground">
             <tr>
               <th className="px-4 py-3 text-left">Supplier</th>
+              <th className="px-4 py-3 text-left">Status</th>
               <th className="px-4 py-3 text-left">Country</th>
               <th className="px-4 py-3 text-left">Contact</th>
               <th className="px-4 py-3 text-left">Email</th>
@@ -101,6 +110,7 @@ function AdminSuppliersPage() {
             {suppliers.map((s) => (
               <tr key={s.id} className="hover:bg-secondary">
                 <td className="px-4 py-3 font-semibold">{s.name}</td>
+                <td className="px-4 py-3"><Badge className={statusClass(s.status)}>{s.status}</Badge></td>
                 <td className="px-4 py-3"><Badge variant="outline">{s.country}</Badge></td>
                 <td className="px-4 py-3">{s.contactName}</td>
                 <td className="px-4 py-3 text-muted-foreground">{s.email}</td>
@@ -114,7 +124,7 @@ function AdminSuppliersPage() {
               </tr>
             ))}
             {suppliers.length === 0 && (
-              <tr><td colSpan={8} className="px-4 py-8 text-center text-muted-foreground">No suppliers yet.</td></tr>
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No suppliers yet.</td></tr>
             )}
           </tbody>
         </table>
@@ -131,13 +141,22 @@ function AdminSuppliersPage() {
               <Label>Company name</Label>
               <Input value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-3 gap-3">
               <div className="grid gap-1.5">
                 <Label>Country</Label>
                 <Select value={form.country} onValueChange={(v) => setForm({ ...form, country: v as Country })}>
                   <SelectTrigger><SelectValue /></SelectTrigger>
                   <SelectContent>
                     {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-1.5">
+                <Label>Status</Label>
+                <Select value={form.status} onValueChange={(v) => setForm({ ...form, status: v as Supplier["status"] })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                   </SelectContent>
                 </Select>
               </div>
