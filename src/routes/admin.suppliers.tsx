@@ -23,6 +23,7 @@ export const Route = createFileRoute("/admin/suppliers")({
 });
 
 const COUNTRIES: Country[] = ["Germany", "Japan", "China", "USA", "Italy", "Switzerland"];
+const STATUSES: Supplier["status"][] = ["Active", "Pending", "Suspended"];
 
 type FormState = Omit<Supplier, "id" | "productsCount">;
 
@@ -33,7 +34,14 @@ const emptyForm: FormState = {
   email: "",
   phone: "",
   since: new Date().toISOString().slice(0, 10),
+  status: "Pending",
 };
+
+function statusClass(s: Supplier["status"]) {
+  if (s === "Active") return "bg-success/20 text-success";
+  if (s === "Pending") return "bg-accent/20 text-accent-foreground";
+  return "bg-muted";
+}
 
 function AdminSuppliersPage() {
   const { suppliers, addSupplier, updateSupplier, deleteSupplier } = useDirectory();
