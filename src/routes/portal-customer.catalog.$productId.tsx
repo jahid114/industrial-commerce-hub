@@ -159,7 +159,7 @@ function PortalProductDetail() {
                 <div className="mt-4 space-y-1 text-sm">
                   <p><strong>Contact:</strong> {supplier.contactName}</p>
                   <p><strong>Email:</strong> {supplier.email}</p>
-                  <p><strong>Rating:</strong> ⭐ {supplier.rating}/5</p>
+                  <p><strong>Phone:</strong> {supplier.phone}</p>
                 </div>
               </div>
             )}
