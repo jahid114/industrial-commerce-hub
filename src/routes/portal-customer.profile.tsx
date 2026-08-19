@@ -30,11 +30,8 @@ export const Route = createFileRoute("/portal-customer/profile")({
 const emptyAddress = (): CustomerAddress => ({
   id: newAddressId(),
   label: "",
-  contactName: "",
-  phone: "",
   line1: "",
   city: "",
-  postcode: "",
   isDefault: false,
 });
 
