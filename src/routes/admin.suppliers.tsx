@@ -148,7 +148,7 @@ function AdminSuppliersPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {suppliers.map((s) => (
+            {filteredSuppliers.map((s) => (
               <tr key={s.id} className="hover:bg-secondary">
                 <td className="px-4 py-3 font-semibold">{s.name}</td>
                 <td className="px-4 py-3"><Badge className={statusClass(s.status)}>{s.status}</Badge></td>
@@ -164,8 +164,8 @@ function AdminSuppliersPage() {
                 </td>
               </tr>
             ))}
-            {suppliers.length === 0 && (
-              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No suppliers yet.</td></tr>
+            {filteredSuppliers.length === 0 && (
+              <tr><td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">No suppliers match your filters.</td></tr>
             )}
           </tbody>
         </table>
