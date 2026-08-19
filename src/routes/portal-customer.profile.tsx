@@ -245,8 +245,8 @@ function AddressDialog({ address, onClose, onSave }: { address: CustomerAddress 
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!form.contactName.trim() || !form.line1.trim() || !form.city.trim()) {
-      toast.error("Contact name, address and city are required");
+    if (!form.line1.trim() || !form.city.trim()) {
+      toast.error("Address and city are required");
       return;
     }
     onSave(form);
