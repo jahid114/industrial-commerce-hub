@@ -2,9 +2,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { SectionHeading } from "@/components/SectionHeading";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { suppliers } from "@/data/suppliers";
-import { Star, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
 export const Route = createFileRoute("/suppliers")({
   head: () => ({
@@ -34,10 +33,10 @@ function SuppliersPage() {
                   <div className="text-xs font-bold uppercase tracking-wider text-primary">{s.country}</div>
                   <h3 className="mt-1 font-display text-lg font-bold">{s.name}</h3>
                 </div>
-                <Badge variant="outline" className="gap-1"><Star className="size-3 fill-accent text-accent" /> {s.rating}</Badge>
               </div>
               <div className="mt-4 space-y-1 text-sm text-muted-foreground">
                 <p>Contact: <span className="text-foreground">{s.contactName}</span></p>
+                <p>Phone: <span className="text-foreground">{s.phone}</span></p>
                 <p>Products: <span className="text-foreground">{s.productsCount}</span></p>
                 <p>Partner since: <span className="text-foreground">{new Date(s.since).getFullYear()}</span></p>
               </div>
