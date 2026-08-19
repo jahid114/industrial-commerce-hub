@@ -209,9 +209,8 @@ function AddressBook() {
                 {a.isDefault && <Badge variant="secondary">Default</Badge>}
               </div>
               <div className="text-sm text-muted-foreground">
-                <div>{a.contactName}{a.phone ? ` · ${a.phone}` : ""}</div>
                 <div>{a.line1}</div>
-                <div>{[a.city, a.postcode].filter(Boolean).join(" ")}</div>
+                <div>{a.city}</div>
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <Button size="sm" variant="outline" onClick={() => setEditing(a)}><Pencil className="mr-1.5 h-3.5 w-3.5" /> Edit</Button>
