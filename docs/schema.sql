@@ -56,7 +56,7 @@ CREATE TYPE inventory_reason     AS ENUM ('purchase','sale','return','adjustment
 -- =============================================================================
 CREATE TABLE users (
   id             uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  email          citext_or_text  NOT NULL, -- see note below; use citext if extension enabled
+  email          text            NOT NULL,
   password_hash  text            NOT NULL,
   full_name      text            NOT NULL,
   phone          text,
@@ -67,9 +67,7 @@ CREATE TABLE users (
   created_at     timestamptz     NOT NULL DEFAULT now(),
   updated_at     timestamptz     NOT NULL DEFAULT now()
 );
--- If the citext extension is unavailable, declare email as `text` and rely on
--- the lower() unique index below (already the case for portability).
-ALTER TABLE users ALTER COLUMN email TYPE text;
+-- Case-insensitive uniqueness without requiring the citext extension.
 CREATE UNIQUE INDEX users_email_lower_uidx ON users (lower(email));
 CREATE TRIGGER users_touch BEFORE UPDATE ON users
   FOR EACH ROW EXECUTE FUNCTION set_updated_at();
