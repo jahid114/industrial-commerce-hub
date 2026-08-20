@@ -34,8 +34,12 @@ import {
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { formatDate } from "@/lib/format";
 import {
+  PARTNER_STAGES,
   PARTNER_STATUSES,
   PARTNER_TYPES,
+  isTerminalPartner,
+  nextPartnerAction,
+  partnerStageIndex,
   readPartnerRequests,
   writePartnerRequests,
   type PartnerRequest,
