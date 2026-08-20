@@ -120,8 +120,25 @@ function PartnersAdminPage() {
   };
 
   const setStatus = (id: string, status: PartnerStatus) => {
-    persist(items.map((p) => (p.id === id ? { ...p, status } : p)));
-    setActive((cur) => (cur && cur.id === id ? { ...cur, status } : cur));
+    const apply = (p: PartnerRequest): PartnerRequest =>
+      p.status === status
+        ? p
+        : {
+            ...p,
+            status,
+            timeline: [
+              ...(p.timeline ?? []),
+              {
+                at: new Date().toISOString(),
+                by: "Admin",
+                type: "status" as const,
+                message: `Status changed from ${p.status} to ${status}`,
+              },
+            ],
+          };
+    persist(items.map((p) => (p.id === id ? apply(p) : p)));
+    setActive((cur) => (cur && cur.id === id ? apply(cur) : cur));
+    toast.success(`Marked as ${status}`);
   };
 
   const openAdd = () => {
