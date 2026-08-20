@@ -200,11 +200,10 @@ export function CountriesTab() {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Countries we source from and sell into.</p>
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by country name or code…">
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-lg font-bold uppercase"><Plus className="size-4 mr-2" /> Add Country</Button>
+            <Button size="sm" className="ml-auto rounded-lg h-9 font-bold uppercase"><Plus className="size-4 mr-1" /> Add Country</Button>
           </DialogTrigger>
           <CountryDialog
             key={editing?.id ?? "new"}
@@ -213,9 +212,8 @@ export function CountriesTab() {
             onSave={(c) => { save(c); toast.success(editing ? "Country updated" : "Country created"); setEditing(null); setOpen(false); }}
           />
         </Dialog>
-      </div>
+      </TableSearchBar>
 
-      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by country name or code…" />
 
       <div className="rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
