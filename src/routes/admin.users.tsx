@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { UserCog, Plus, Pencil, Trash2, Search, Users, ShieldCheck, UserX } from "lucide-react";
+import { UserCog, Plus, Pencil, Trash2, Users, ShieldCheck, UserX } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,6 +13,7 @@ import {
   AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { TableSearchBar } from "@/components/admin/TableToolbar";
 import { toast } from "sonner";
 import { useRbac, type AdminUser } from "@/lib/rbac-store";
 
@@ -75,58 +76,56 @@ function StatCard({ icon: Icon, label, value }: { icon: typeof Users; label: str
 function UsersTab() {
   const rbac = useRbac();
   const [q, setQ] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("all");
   const [editing, setEditing] = useState<AdminUser | null>(null);
   const [creating, setCreating] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
 
   const filtered = rbac.users.filter((u) => {
     const s = q.toLowerCase().trim();
-    if (!s) return true;
-    return u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s);
+    const matchesQ = !s || u.name.toLowerCase().includes(s) || u.email.toLowerCase().includes(s);
+    const matchesStatus = statusFilter === "all" || u.status === statusFilter;
+    return matchesQ && matchesStatus;
   });
 
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between gap-4 flex-wrap">
-        <div>
-          <CardTitle>Admin Users</CardTitle>
-          <CardDescription>Assign roles to team members with access to the admin console.</CardDescription>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className="relative">
-            <Search className="size-4 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted-foreground" />
-            <Input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search…" className="pl-8 w-56" />
-          </div>
-          <Button onClick={() => setCreating(true)}><Plus className="size-4 mr-2" /> Add Admin</Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        <Table>
-          <TableHeader>
-            <TableRow>
-              <TableHead>User</TableHead>
-              <TableHead>Role</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
-            {filtered.map((u) => {
-              const role = rbac.roles.find((r) => r.id === u.roleId);
-              return (
+    <div className="space-y-4">
+      <TableSearchBar value={q} onChange={setQ} placeholder="Search by name or email…">
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Statuses</SelectItem>
+            <SelectItem value="Active">Active</SelectItem>
+            <SelectItem value="Inactive">Inactive</SelectItem>
+          </SelectContent>
+        </Select>
+        <Button className="ml-auto" onClick={() => setCreating(true)}>
+          <Plus className="size-4 mr-2" /> Add Admin
+        </Button>
+      </TableSearchBar>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Admin Users ({filtered.length})</CardTitle>
+          <CardDescription>Team members with access to the admin console.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>User</TableHead>
+                <TableHead>Email</TableHead>
+                <TableHead>Status</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {filtered.map((u) => (
                 <TableRow key={u.id}>
+                  <TableCell className="font-medium">{u.name}</TableCell>
+                  <TableCell className="text-sm text-muted-foreground">{u.email}</TableCell>
                   <TableCell>
-                    <div className="font-medium">{u.name}</div>
-                    <div className="text-xs text-muted-foreground">{u.email}</div>
-                  </TableCell>
-                  <TableCell>
-                    <div className="font-medium text-sm">{role?.name ?? "—"}</div>
-                    {role && <div className="text-[11px] text-muted-foreground">{role.permissions.length} permissions</div>}
-                  </TableCell>
-                  <TableCell>
-                    <Badge variant={u.status === "Active" ? "default" : "secondary"}>
-                      {u.status}
-                    </Badge>
+                    <Badge variant={u.status === "Active" ? "default" : "secondary"}>{u.status}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="inline-flex items-center gap-1">
@@ -143,14 +142,14 @@ function UsersTab() {
                     </div>
                   </TableCell>
                 </TableRow>
-              );
-            })}
-            {filtered.length === 0 && (
-              <TableRow><TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-8">No users found.</TableCell></TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </CardContent>
+              ))}
+              {filtered.length === 0 && (
+                <TableRow><TableCell colSpan={4} className="text-center text-sm text-muted-foreground py-8">No users found.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </CardContent>
+      </Card>
 
       <UserFormDialog
         open={creating || !!editing}
@@ -175,7 +174,7 @@ function UsersTab() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-    </Card>
+    </div>
   );
 }
 
@@ -184,7 +183,7 @@ function UserFormDialog({ open, user, onClose }: { open: boolean; user: AdminUse
   const isEdit = !!user;
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
-  const [roleId, setRoleId] = useState(user?.roleId ?? rbac.roles[0]?.id ?? "");
+  const roleId = user?.roleId ?? rbac.roles[0]?.id ?? "";
   const [status, setStatus] = useState<AdminUser["status"]>(user?.status ?? "Active");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -193,7 +192,6 @@ function UserFormDialog({ open, user, onClose }: { open: boolean; user: AdminUse
     if (open) {
       setName(user?.name ?? "");
       setEmail(user?.email ?? "");
-      setRoleId(user?.roleId ?? rbac.roles[0]?.id ?? "");
       setStatus(user?.status ?? "Active");
       setPassword("");
       setConfirmPassword("");
@@ -226,15 +224,6 @@ function UserFormDialog({ open, user, onClose }: { open: boolean; user: AdminUse
           <div>
             <Label htmlFor="u-email">Email</Label>
             <Input id="u-email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div>
-            <Label>Role</Label>
-            <Select value={roleId} onValueChange={setRoleId}>
-              <SelectTrigger><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {rbac.roles.map((r) => (<SelectItem key={r.id} value={r.id}>{r.name}</SelectItem>))}
-              </SelectContent>
-            </Select>
           </div>
           {!isEdit && (
             <div className="grid grid-cols-2 gap-3">
