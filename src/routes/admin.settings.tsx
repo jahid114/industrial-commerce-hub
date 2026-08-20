@@ -142,17 +142,15 @@ function CategoriesTab({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Top-level catalog categories.</p>
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by category name or slug…">
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-lg font-bold uppercase"><Plus className="size-4 mr-2" /> Add Category</Button>
+            <Button size="sm" className="ml-auto rounded-lg h-9 font-bold uppercase"><Plus className="size-4 mr-1" /> Add Category</Button>
           </DialogTrigger>
           <CategoryDialog editing={editing} onSave={saveCategory} existingIds={cats.map((c) => c.id)} />
         </Dialog>
-      </div>
+      </TableSearchBar>
 
-      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by category name or slug…" />
 
       <div className="rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
