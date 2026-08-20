@@ -248,20 +248,19 @@ function PartnersAdminPage() {
           <h1 className="font-display text-3xl font-bold">Partners & Investors</h1>
           <p className="text-sm text-muted-foreground">
             {tab === "requests"
-              ? "Partnership and investment requests submitted from the public website."
-              : "Partner and investor records you manage manually."}
+              ? "Requests in progress — public submissions and admin-added records awaiting approval."
+              : "Approved partners and investors."}
           </p>
         </div>
-        {tab === "records" && (
-          <Button onClick={openAdd} className="font-bold uppercase">
-            <Plus className="size-4 mr-2" /> Add Record
-          </Button>
-        )}
+        <Button onClick={openAdd} className="font-bold uppercase">
+          <Plus className="size-4 mr-2" /> Add Partner / Investor
+        </Button>
       </div>
 
       <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
         <TabsList>
-          <TabsTrigger value="requests">Public Requests ({counts.requests})</TabsTrigger>
+          <TabsTrigger value="requests">Requests ({counts.requests})</TabsTrigger>
+
           <TabsTrigger value="records">Partners & Investors ({counts.records})</TabsTrigger>
         </TabsList>
       </Tabs>
