@@ -15,6 +15,7 @@ import { brands } from "@/data/brands";
 import { getPublicProducts } from "@/lib/products";
 import type { Country } from "@/data/types";
 import { Filter, X } from "lucide-react";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 
 const searchSchema = z.object({
   q: z.string().optional(),

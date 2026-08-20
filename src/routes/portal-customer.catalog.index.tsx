@@ -23,6 +23,7 @@ export const Route = createFileRoute("/portal-customer/catalog/")({
 });
 
 import type { Country } from "@/data/types";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 
 const MAX_PRICE = 6_000_000;
 

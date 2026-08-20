@@ -12,6 +12,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
 import { formatBDT, newOrderId } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { generateInvoice } from "@/lib/pdf";
 import type { Order } from "@/data/types";
 

@@ -14,6 +14,7 @@ import { useStore } from "@/lib/store";
 import { useCustomers } from "@/lib/customers-store";
 import { getProduct } from "@/data/products";
 import { formatBDT, newOrderId } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { generateInvoice } from "@/lib/pdf";
 import type { Order } from "@/data/types";
 
