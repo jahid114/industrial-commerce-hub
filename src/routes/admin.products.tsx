@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
-import { Plus, Edit, Trash2, Search, Eye } from "lucide-react";
+import { Plus, Edit, Trash2, Eye } from "lucide-react";
 import { ProductQuickView } from "@/components/product/ProductQuickView";
 
 import { Button } from "@/components/ui/button";
@@ -25,6 +25,8 @@ import { categories } from "@/data/categories";
 import { suppliers } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { TableSearchBar } from "@/components/admin/TableToolbar";
 import { toast } from "sonner";
 import { useInventory } from "@/lib/inventory-store";
 import type { Product, Country, ProductSpec } from "@/data/types";
@@ -40,6 +42,9 @@ function AdminProductsPage() {
   const inv = useInventory();
   const [products, setProducts] = useState<Product[]>(seedProducts);
   const [search, setSearch] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [brandFilter, setBrandFilter] = useState("all");
+  const [countryFilter, setCountryFilter] = useState("all");
   const [editing, setEditing] = useState<Product | null>(null);
   const [open, setOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
@@ -75,22 +80,40 @@ function AdminProductsPage() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h1 className="font-display text-3xl font-bold">Products</h1>
-          <p className="text-sm text-muted-foreground">{products.length} products in catalog</p>
-        </div>
-        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
-          <DialogTrigger asChild><Button className="font-bold uppercase"><Plus className="size-4 mr-2" /> Add Product</Button></DialogTrigger>
-          <ProductDialog editing={editing} onSave={save} />
-        </Dialog>
+      <div>
+        <h1 className="font-display text-3xl font-bold">Products</h1>
+        <p className="text-sm text-muted-foreground">{products.length} products in catalog</p>
       </div>
 
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search products by name or SKU…">
+        <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+          <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {categories.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={brandFilter} onValueChange={setBrandFilter}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Brands</SelectItem>
+            {brands.map((b) => <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Select value={countryFilter} onValueChange={setCountryFilter}>
+          <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Countries</SelectItem>
+            {COUNTRIES.map((c) => <SelectItem key={c} value={c}>{c}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
+          <DialogTrigger asChild><Button className="ml-auto"><Plus className="size-4 mr-2" /> Add Product</Button></DialogTrigger>
+          <ProductDialog editing={editing} onSave={save} />
+        </Dialog>
+      </TableSearchBar>
+
       <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center gap-2 border-b border-border p-3">
-          <Search className="size-4 text-muted-foreground" />
-          <Input placeholder="Search products by name or SKU…" value={search} onChange={(e) => setSearch(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" />
-        </div>
         <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead className="bg-spec text-xs uppercase tracking-wider text-muted-foreground">
