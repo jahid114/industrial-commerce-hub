@@ -340,10 +340,68 @@ function PartnersAdminPage() {
                   <Block label="Attachments">{active.files.join(", ")}</Block>
                 )}
                 {active.internalNotes && <Block label="Internal Notes">{active.internalNotes}</Block>}
-                <div className="flex items-center gap-3 border-t border-border pt-4">
-                  <span className="text-sm font-semibold">Status</span>
+                {/* Stage stepper */}
+                <div className="rounded-lg border border-border bg-secondary/30 p-4">
+                  <div className="grid grid-cols-4 gap-2">
+                    {PARTNER_STAGES.map((s, i) => {
+                      const idx = partnerStageIndex(active.status);
+                      const rejected = active.status === "Rejected";
+                      const done = !rejected && idx > i;
+                      const isActive = !rejected && idx === i;
+                      return (
+                        <div key={s.key} className="flex flex-col items-center text-center">
+                          <div
+                            className={`flex size-8 items-center justify-center rounded-full border-2 ${
+                              done
+                                ? "border-success bg-success text-white"
+                                : isActive
+                                  ? "border-primary bg-primary text-primary-foreground"
+                                  : "border-border bg-background text-muted-foreground"
+                            }`}
+                          >
+                            {done ? <Check className="size-4" /> : <Circle className="size-3 fill-current" />}
+                          </div>
+                          <div
+                            className={`mt-2 text-xs font-semibold ${
+                              isActive ? "text-primary" : done ? "text-success" : "text-muted-foreground"
+                            }`}
+                          >
+                            {s.label}
+                          </div>
+                          <div className="mt-0.5 text-[10px] text-muted-foreground">{s.description}</div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                  {active.status === "Rejected" && (
+                    <p className="mt-3 text-center text-xs font-semibold text-destructive">
+                      This request was rejected.
+                    </p>
+                  )}
+                </div>
+
+                {/* Workflow actions */}
+                <div className="flex flex-wrap items-center gap-2 border-t border-border pt-4">
+                  {(() => {
+                    const na = nextPartnerAction(active.status);
+                    return na ? (
+                      <Button size="sm" className="font-semibold" onClick={() => setStatus(active.id, na.next)}>
+                        <Check className="mr-1 size-4" /> {na.label}
+                      </Button>
+                    ) : null;
+                  })()}
+                  {!isTerminalPartner(active.status) && (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="text-destructive hover:text-destructive"
+                      onClick={() => setStatus(active.id, "Rejected")}
+                    >
+                      <Ban className="mr-1 size-4" /> Reject
+                    </Button>
+                  )}
                   <Select value={active.status} onValueChange={(v) => setStatus(active.id, v as PartnerStatus)}>
-                    <SelectTrigger className="w-52"><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="w-44"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       {PARTNER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
                     </SelectContent>
@@ -351,6 +409,28 @@ function PartnersAdminPage() {
                   <Button variant="outline" className="ml-auto" onClick={() => { openEdit(active); setActive(null); }}>
                     <Pencil className="size-4 mr-1.5" /> Edit
                   </Button>
+                </div>
+
+                {/* Activity timeline */}
+                <div className="border-t border-border pt-4">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-semibold">
+                    <Clock className="size-4" /> Activity
+                  </div>
+                  {active.timeline && active.timeline.length > 0 ? (
+                    <ol className="relative border-l border-border pl-4">
+                      {[...active.timeline].reverse().map((ev, i) => (
+                        <li key={i} className="mb-4 last:mb-0">
+                          <div className="absolute -left-1.5 size-3 rounded-full bg-primary" />
+                          <div className="text-sm font-medium">{ev.message}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {new Date(ev.at).toLocaleString()} · {ev.by} · {ev.type}
+                          </div>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No activity recorded yet.</p>
+                  )}
                 </div>
               </div>
             </>
