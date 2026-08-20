@@ -14,7 +14,7 @@ import { toast } from "sonner";
 import { useStore } from "@/lib/store";
 import { products } from "@/data/products";
 import { agents } from "@/data/agents";
-import { getAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
+import { getAgentPrice, useCurrentAgentCommission, getEffectivePrice } from "@/lib/pricing";
 import { formatBDT, newOrderId } from "@/lib/format";
 import type { Order } from "@/data/types";
 import {
@@ -265,7 +265,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                 <SelectTrigger className="flex-1"><SelectValue placeholder="Select a product to add…" /></SelectTrigger>
                 <SelectContent>
                   {products.map((p) => (
-                    <SelectItem key={p.id} value={p.id}>{p.name} — {formatBDT(p.price)}</SelectItem>
+                    <SelectItem key={p.id} value={p.id}>{p.name} — {formatBDT(getEffectivePrice(p))}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
@@ -293,13 +293,14 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                     {lines.map((l) => {
                       const p = products.find((x) => x.id === l.productId)!;
                       const agent = getAgentPrice(p, commissionPct);
-                      const discountPct = p.price > 0 ? Math.round(((p.price - l.unitPrice) / p.price) * 1000) / 10 : 0;
+                      const listPrice = getEffectivePrice(p);
+                      const discountPct = listPrice > 0 ? Math.round(((listPrice - l.unitPrice) / listPrice) * 1000) / 10 : 0;
                       const belowAgent = l.unitPrice < agent;
                       return (
                         <tr key={l.productId}>
                           <td className="px-2 py-2">
                             <div className="font-medium line-clamp-1">{p.name}</div>
-                            <div className="text-xs text-muted-foreground">List ৳ {p.price.toLocaleString()} · Agent floor ৳ {agent.toLocaleString()}</div>
+                            <div className="text-xs text-muted-foreground">List ৳ {listPrice.toLocaleString()} · Agent floor ৳ {agent.toLocaleString()}</div>
                           </td>
                           <td className="px-2 py-2">
                             <Input type="number" min={1} value={l.quantity}
@@ -310,7 +311,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
                             <Input type="number" min={0} max={100} step={0.5} value={discountPct}
                               onChange={(e) => {
                                 const pct = Math.min(100, Math.max(0, Number(e.target.value) || 0));
-                                updateLine(l.productId, { unitPrice: Math.round(p.price * (1 - pct / 100)) });
+                                updateLine(l.productId, { unitPrice: Math.round(listPrice * (1 - pct / 100)) });
                               }}
                               className="text-right h-8" />
                           </td>

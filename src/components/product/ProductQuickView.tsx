@@ -8,7 +8,7 @@ import { getCategory } from "@/data/categories";
 import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
-import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
+import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission, getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export function ProductQuickView({ product, open, onOpenChange }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void }) {

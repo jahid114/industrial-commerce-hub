@@ -24,6 +24,7 @@ import { brands } from "@/data/brands";
 import { categories } from "@/data/categories";
 import { suppliers } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 import { useInventory } from "@/lib/inventory-store";
 import type { Product, Country, ProductSpec } from "@/data/types";
@@ -91,6 +92,7 @@ function AdminProductsPage() {
                 <th className="px-4 py-3 text-left">SKU</th>
                 <th className="px-4 py-3 text-left">Brand</th>
                 <th className="px-4 py-3 text-right">Customer ৳</th>
+                <th className="px-4 py-3 text-right">Discount</th>
                 <th className="px-4 py-3 text-right">Agent ৳</th>
                 <th className="px-4 py-3 text-right">Stock</th>
                 <th className="px-4 py-3 text-right">Actions</th>
@@ -110,8 +112,16 @@ function AdminProductsPage() {
                   </td>
                   <td className="px-4 py-3 font-mono text-xs">{p.sku}</td>
                   <td className="px-4 py-3"><Badge variant="outline">{brands.find((b) => b.id === p.brandId)?.name}</Badge></td>
-                  <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(p.price)}</td>
-                  <td className="px-4 py-3 text-right text-accent-foreground"><span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{formatBDT(p.agentPrice ?? Math.round(p.price * 0.92))}</span></td>
+                  <td className="px-4 py-3 text-right font-semibold text-primary">
+                    {formatBDT(getEffectivePrice(p))}
+                    {getDiscountPct(p) > 0 && <div className="text-xs font-normal text-muted-foreground line-through">{formatBDT(p.price)}</div>}
+                  </td>
+                  <td className="px-4 py-3 text-right">
+                    {getDiscountPct(p) > 0
+                      ? <span className="rounded bg-destructive/10 px-2 py-0.5 text-xs font-semibold text-destructive">-{getDiscountPct(p)}%</span>
+                      : <span className="text-xs text-muted-foreground">—</span>}
+                  </td>
+                  <td className="px-4 py-3 text-right text-accent-foreground"><span className="rounded bg-accent/10 px-2 py-0.5 text-xs font-semibold text-accent">{formatBDT(p.agentPrice ?? Math.round(getEffectivePrice(p) * 0.92))}</span></td>
                   <td className="px-4 py-3 text-right">{inv.records[p.id]?.good ?? p.stock}</td>
                   <td className="px-4 py-3 text-right space-x-1">
                     <Button size="icon" variant="ghost" onClick={() => setViewing(p)} className="text-primary hover:bg-primary/10 hover:text-primary"><Eye className="size-4" /></Button>
@@ -159,6 +169,7 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
     country: "Germany",
     price: 0,
     agentPrice: undefined,
+    discountPct: 0,
     moq: 1,
     deliveryDays: "7-10 days",
     image: "https://images.unsplash.com/photo-1581147036324-c47a03a81d48?w=800&q=80",
@@ -175,7 +186,8 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
   });
   const [tagInput, setTagInput] = useState((editing?.tags ?? []).join(", "));
 
-  const suggestedAgent = Math.round((form.price || 0) * 0.92);
+  const discountedPrice = Math.round((form.price || 0) * (1 - Math.min(90, Math.max(0, form.discountPct ?? 0)) / 100));
+  const suggestedAgent = Math.round(discountedPrice * 0.92);
   const activeCategory = categories.find((c) => c.id === form.categoryId);
 
   const slugify = (s: string) => s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
@@ -241,6 +253,18 @@ function ProductDialog({ editing, onSave }: { editing: Product | null; onSave: (
             </select>
           </Field>
           <Field label="Customer Price (BDT)"><Input type="number" value={form.price} onChange={(e) => setForm({ ...form, price: Number(e.target.value) })} /></Field>
+          <Field label="Discount (%)">
+            <Input
+              type="number"
+              min={0}
+              max={90}
+              value={form.discountPct ?? 0}
+              onChange={(e) => setForm({ ...form, discountPct: Math.min(90, Math.max(0, Number(e.target.value) || 0)) })}
+            />
+            {(form.discountPct ?? 0) > 0 && (
+              <p className="mt-1 text-xs text-muted-foreground">Sells at <strong className="text-primary">{formatBDT(discountedPrice)}</strong> (was {formatBDT(form.price || 0)})</p>
+            )}
+          </Field>
           <Field label={`Agent Price (BDT) — suggested ${suggestedAgent}`}>
             <Input
               type="number"
