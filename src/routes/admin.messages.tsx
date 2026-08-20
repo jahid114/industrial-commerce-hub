@@ -1,15 +1,11 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
-import { Eye, Mail, Pencil, Plus, Trash2, Check } from "lucide-react";
+import { Eye, Mail, Check } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Textarea } from "@/components/ui/textarea";
 import {
   Dialog,
   DialogContent,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
@@ -42,23 +38,6 @@ const statusTone: Record<MessageStatus, string> = {
   Resolved: "bg-success/10 text-success border-success/30",
 };
 
-type Draft = {
-  name: string;
-  email: string;
-  phone: string;
-  subject: string;
-  message: string;
-  status: MessageStatus;
-};
-
-const emptyDraft: Draft = {
-  name: "",
-  email: "",
-  phone: "",
-  subject: "",
-  message: "",
-  status: "New",
-};
 
 function MessagesPage() {
   const [items, setItems] = useState<ContactMessage[]>([]);
@@ -67,10 +46,6 @@ function MessagesPage() {
   const [active, setActive] = useState<ContactMessage | null>(null);
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  const [editing, setEditing] = useState<ContactMessage | null>(null);
-  const [formOpen, setFormOpen] = useState(false);
-  const [draft, setDraft] = useState<Draft>(emptyDraft);
-  const [confirmDelete, setConfirmDelete] = useState<ContactMessage | null>(null);
 
   useEffect(() => {
     setItems(readMessages());
@@ -91,46 +66,6 @@ function MessagesPage() {
     if ((m.status ?? "New") === "New") setStatus(m.id, "Read");
   };
 
-  const openCreate = () => {
-    setEditing(null);
-    setDraft(emptyDraft);
-    setFormOpen(true);
-  };
-
-  const openEdit = (m: ContactMessage) => {
-    setEditing(m);
-    setDraft({
-      name: m.name,
-      email: m.email,
-      phone: m.phone ?? "",
-      subject: m.subject,
-      message: m.message,
-      status: m.status ?? "New",
-    });
-    setFormOpen(true);
-  };
-
-  const saveDraft = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (editing) {
-      persist(items.map((m) => (m.id === editing.id ? { ...m, ...draft } : m)));
-      setActive((cur) => (cur && cur.id === editing.id ? { ...cur, ...draft } : cur));
-    } else {
-      const item: ContactMessage = {
-        ...draft,
-        id: `MSG-${Date.now().toString(36).toUpperCase()}`,
-        submittedAt: new Date().toISOString(),
-      };
-      persist([...items, item]);
-    }
-    setFormOpen(false);
-  };
-
-  const remove = (m: ContactMessage) => {
-    persist(items.filter((x) => x.id !== m.id));
-    setConfirmDelete(null);
-    setActive((cur) => (cur && cur.id === m.id ? null : cur));
-  };
 
   const filtered = items
     .filter((m) => (filter === "All" ? true : (m.status ?? "New") === filter))
@@ -155,9 +90,6 @@ function MessagesPage() {
             Enquiries submitted through the public contact page.
           </p>
         </div>
-        <Button onClick={openCreate}>
-          <Plus className="size-4 mr-1.5" /> Add Message
-        </Button>
       </div>
 
       <TableSearchBar
@@ -222,17 +154,6 @@ function MessagesPage() {
                   <div className="flex items-center justify-end gap-1.5">
                     <Button variant="outline" size="sm" onClick={() => open(m)}>
                       <Eye className="size-4 mr-1.5" /> View
-                    </Button>
-                    <Button variant="outline" size="icon" className="size-8" onClick={() => openEdit(m)}>
-                      <Pencil className="size-4" />
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="icon"
-                      className="size-8 text-destructive"
-                      onClick={() => setConfirmDelete(m)}
-                    >
-                      <Trash2 className="size-4" />
                     </Button>
                   </div>
                 </td>
@@ -317,106 +238,6 @@ function MessagesPage() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={formOpen} onOpenChange={setFormOpen}>
-        <DialogContent className="max-w-lg">
-          <DialogHeader>
-            <DialogTitle>{editing ? "Edit Message" : "Add Message"}</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={saveDraft} className="space-y-4">
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="mb-1.5 block text-sm">Name</Label>
-                <Input
-                  required
-                  value={draft.name}
-                  onChange={(e) => setDraft({ ...draft, name: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label className="mb-1.5 block text-sm">Email</Label>
-                <Input
-                  type="email"
-                  required
-                  value={draft.email}
-                  onChange={(e) => setDraft({ ...draft, email: e.target.value })}
-                />
-              </div>
-            </div>
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <Label className="mb-1.5 block text-sm">Phone</Label>
-                <Input
-                  value={draft.phone}
-                  onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
-                />
-              </div>
-              <div>
-                <Label className="mb-1.5 block text-sm">Status</Label>
-                <Select
-                  value={draft.status}
-                  onValueChange={(v) => setDraft({ ...draft, status: v as MessageStatus })}
-                >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUSES.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-            <div>
-              <Label className="mb-1.5 block text-sm">Subject</Label>
-              <Input
-                required
-                value={draft.subject}
-                onChange={(e) => setDraft({ ...draft, subject: e.target.value })}
-              />
-            </div>
-            <div>
-              <Label className="mb-1.5 block text-sm">Message</Label>
-              <Textarea
-                rows={5}
-                required
-                value={draft.message}
-                onChange={(e) => setDraft({ ...draft, message: e.target.value })}
-              />
-            </div>
-            <DialogFooter>
-              <Button type="button" variant="outline" onClick={() => setFormOpen(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">{editing ? "Save Changes" : "Add Message"}</Button>
-            </DialogFooter>
-          </form>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={!!confirmDelete} onOpenChange={(o) => !o && setConfirmDelete(null)}>
-        <DialogContent className="max-w-sm">
-          <DialogHeader>
-            <DialogTitle>Delete message?</DialogTitle>
-          </DialogHeader>
-          <p className="text-sm text-muted-foreground">
-            {confirmDelete?.subject} — this cannot be undone.
-          </p>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(null)}>
-              Cancel
-            </Button>
-            <Button
-              variant="destructive"
-              onClick={() => confirmDelete && remove(confirmDelete)}
-            >
-              Delete
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
     </div>
   );
 }
