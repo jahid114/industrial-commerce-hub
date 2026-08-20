@@ -30,6 +30,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package;
   { to: "/admin/messages", label: "Messages", icon: Mail },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
 
+  { to: "/admin/users", label: "Admin Users", icon: UserCog },
   { to: "/admin/roles", label: "Roles & Permissions", icon: Shield },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
