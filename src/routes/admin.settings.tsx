@@ -111,11 +111,16 @@ function CategoriesTab({
   const [editing, setEditing] = useState<Category | null>(null);
   const [open, setOpen] = useState(false);
   const [catToDelete, setCatToDelete] = useState<Category | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(
     () => cats.filter((c) => `${c.name} ${c.slug}`.toLowerCase().includes(search.toLowerCase())),
     [cats, search],
   );
+  useEffect(() => { setPage(1); }, [search, pageSize]);
+  const paged = paginate(filtered, page, pageSize);
+
 
   const saveCategory = (data: Category) => {
     setCats((cs) => {
