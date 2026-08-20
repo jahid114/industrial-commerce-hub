@@ -91,6 +91,7 @@ export interface PartnerRequest {
   files?: string[];
   status: PartnerStatus;
   internalNotes?: string;
+  timeline?: PartnerEvent[];
   submittedAt: string;
 }
 
