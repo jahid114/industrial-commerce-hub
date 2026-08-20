@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import type { Product } from "@/data/types";
 import { getBrand } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
@@ -58,6 +59,7 @@ export function ProductCard({ product, index = 0, portal = false }: { product: P
           <img src={product.image} alt={product.name} loading="lazy" className="size-full object-cover transition-transform duration-500 group-hover:scale-105" />
           <div className="absolute left-2 top-2 flex flex-col gap-1">
             {product.featured && <Badge className="bg-accent text-accent-foreground hover:bg-accent">Featured</Badge>}
+            {getDiscountPct(product) > 0 && <Badge className="bg-destructive text-destructive-foreground hover:bg-destructive">-{getDiscountPct(product)}%</Badge>}
             <Badge variant="outline" className="bg-card/90 text-[10px]">{product.country}</Badge>
           </div>
         </div>
@@ -86,7 +88,15 @@ export function ProductCard({ product, index = 0, portal = false }: { product: P
         <div className="mt-auto flex items-end justify-between">
           <div>
             <div className="text-[10px] uppercase text-muted-foreground">From</div>
-            <div className="font-display text-lg font-bold text-primary">{formatBDT(product.price)}</div>
+            <div className="flex flex-wrap items-baseline gap-2">
+              <div className="font-display text-lg font-bold text-primary">{formatBDT(getEffectivePrice(product))}</div>
+              {getDiscountPct(product) > 0 && (
+                <>
+                  <span className="text-xs text-muted-foreground line-through">{formatBDT(product.price)}</span>
+                  <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-[10px] font-bold text-destructive">-{getDiscountPct(product)}%</span>
+                </>
+              )}
+            </div>
           </div>
           <Link
             {...detailLink}
