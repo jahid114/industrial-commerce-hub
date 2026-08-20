@@ -28,6 +28,49 @@ export const PARTNER_STATUSES: PartnerStatus[] = [
 
 export type PartnerSource = "Public" | "Manual";
 
+export interface PartnerStageInfo {
+  key: PartnerStatus;
+  label: string;
+  description: string;
+}
+
+export const PARTNER_STAGES: PartnerStageInfo[] = [
+  { key: "New", label: "New", description: "Request received, awaiting triage" },
+  { key: "In Review", label: "In Review", description: "Team reviewing the proposal" },
+  { key: "Meeting Scheduled", label: "Meeting", description: "Discussion scheduled with applicant" },
+  { key: "Approved", label: "Approved", description: "Partnership approved" },
+];
+
+export function partnerStageIndex(status: PartnerStatus): number {
+  return PARTNER_STAGES.findIndex((s) => s.key === status);
+}
+
+export function nextPartnerAction(
+  status: PartnerStatus,
+): { next: PartnerStatus; label: string } | null {
+  switch (status) {
+    case "New":
+      return { next: "In Review", label: "Start Review" };
+    case "In Review":
+      return { next: "Meeting Scheduled", label: "Schedule Meeting" };
+    case "Meeting Scheduled":
+      return { next: "Approved", label: "Approve Partner" };
+    default:
+      return null;
+  }
+}
+
+export function isTerminalPartner(status: PartnerStatus): boolean {
+  return status === "Approved" || status === "Rejected";
+}
+
+export interface PartnerEvent {
+  at: string;
+  by: string;
+  type: "created" | "status" | "note";
+  message: string;
+}
+
 export interface PartnerRequest {
   id: string;
   source?: PartnerSource;
@@ -48,6 +91,7 @@ export interface PartnerRequest {
   files?: string[];
   status: PartnerStatus;
   internalNotes?: string;
+  timeline?: PartnerEvent[];
   submittedAt: string;
 }
 
@@ -78,6 +122,14 @@ export function addPartnerRequest(
     status: input.status ?? "New",
     source: input.source ?? "Public",
     submittedAt: new Date().toISOString(),
+    timeline: [
+      {
+        at: new Date().toISOString(),
+        by: "System",
+        type: "created",
+        message: "Request submitted from public website",
+      },
+    ],
   };
   writePartnerRequests([...readPartnerRequests(), item]);
   return item;
