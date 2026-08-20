@@ -189,11 +189,16 @@ export function CountriesTab() {
   const [editing, setEditing] = useState<BusinessCountry | null>(null);
   const [open, setOpen] = useState(false);
   const [toDelete, setToDelete] = useState<BusinessCountry | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(
     () => countries.filter((c) => `${c.name} ${c.code}`.toLowerCase().includes(search.toLowerCase())),
     [countries, search],
   );
+  useEffect(() => { setPage(1); }, [search, pageSize]);
+  const paged = paginate(filtered, page, pageSize);
+
 
   return (
     <div className="space-y-3">
