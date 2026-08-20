@@ -151,34 +151,26 @@ function CategoriesTab({
         </Dialog>
       </div>
 
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by category name or slug…" />
+
       <div className="rounded-lg border border-border bg-card">
-        <div className="flex items-center gap-2 border-b border-border p-3">
-          <Input
-            placeholder="Search categories…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="border-0 shadow-none focus-visible:ring-0"
-          />
-        </div>
         <table className="w-full text-sm">
           <thead className="text-xs uppercase text-muted-foreground border-b border-border">
             <tr>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">Slug</th>
-              
               <th className="px-4 py-3 text-right">Sub-categories</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filtered.map((c) => (
+            {paged.map((c) => (
               <tr key={c.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">
                   <div className="font-medium">{c.name}</div>
                   {c.description && <div className="text-xs text-muted-foreground">{c.description}</div>}
                 </td>
                 <td className="px-4 py-3 font-mono text-xs">{c.slug}</td>
-                
                 <td className="px-4 py-3 text-right">{c.subcategories.length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
@@ -194,6 +186,9 @@ function CategoriesTab({
           </tbody>
         </table>
       </div>
+
+      <TablePagination total={filtered.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+
 
       <AlertDialog open={!!catToDelete} onOpenChange={(v) => { if (!v) setCatToDelete(null); }}>
         <AlertDialogContent>
