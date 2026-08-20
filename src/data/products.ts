@@ -29,6 +29,7 @@ export const products: Product[] = [
     featured: true,
     stock: 42,
     sku: "BSH-GBH-2-26",
+    discountPct: 10,
   },
   {
     id: "makita-ga9020",
@@ -54,6 +55,7 @@ export const products: Product[] = [
     featured: true,
     stock: 30,
     sku: "MKT-GA9020",
+    discountPct: 15,
   },
   {
     id: "siemens-s7-1200",
