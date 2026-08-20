@@ -70,10 +70,9 @@ export function BrandsTab() {
         </Dialog>
       </div>
 
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by brand name or country…" />
+
       <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border p-3">
-          <Input placeholder="Search brands…" value={search} onChange={(e) => setSearch(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" />
-        </div>
         <table className="w-full text-sm">
           <thead className="border-b border-border text-xs uppercase text-muted-foreground">
             <tr>
@@ -84,7 +83,7 @@ export function BrandsTab() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((b) => (
+            {paged.map((b) => (
               <tr key={b.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">
                   <div className="font-medium">{b.name}</div>
@@ -106,6 +105,9 @@ export function BrandsTab() {
           </tbody>
         </table>
       </div>
+
+      <TablePagination total={filtered.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+
 
       <AlertDialog open={!!toDelete} onOpenChange={(v) => { if (!v) setToDelete(null); }}>
         <AlertDialogContent>
