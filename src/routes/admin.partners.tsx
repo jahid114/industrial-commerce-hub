@@ -172,17 +172,34 @@ function PartnersAdminPage() {
       return;
     }
     if (editing) {
-      persist(items.map((p) => (p.id === editing.id ? { ...p, ...draft } : p)));
-      toast.success("Request updated");
+      // Status is managed by the workflow, never edited directly here.
+      const { status: _ignored, ...rest } = draft;
+      const next = items.map((p) => (p.id === editing.id ? { ...p, ...rest } : p));
+      persist(next);
+      setActive((cur) => (cur && cur.id === editing.id ? { ...cur, ...rest } : cur));
+      toast.success("Record updated");
     } else {
+      const now = new Date().toISOString();
       const item: PartnerRequest = {
         ...draft,
         id: `PRT-${Date.now().toString(36).toUpperCase()}`,
         source: "Manual",
-        submittedAt: new Date().toISOString(),
+        submittedAt: now,
+        timeline: [
+          {
+            at: now,
+            by: "Admin",
+            type: "created",
+            message: `Record created by admin with status ${draft.status}`,
+          },
+        ],
       };
       persist([...items, item]);
-      toast.success("Request added");
+      toast.success(
+        draft.status === "Approved"
+          ? "Added to Partners & Investors"
+          : "Added to requests — approve it to list as a partner",
+      );
     }
     setFormOpen(false);
   };
@@ -195,10 +212,12 @@ function PartnersAdminPage() {
     toast.success("Request deleted");
   };
 
+  const inRecords = (p: PartnerRequest) => p.status === "Approved";
+
   const counts = useMemo(
     () => ({
-      requests: items.filter((p) => (p.source ?? "Public") === "Public").length,
-      records: items.filter((p) => p.source === "Manual").length,
+      requests: items.filter((p) => !inRecords(p)).length,
+      records: items.filter(inRecords).length,
     }),
     [items],
   );
@@ -206,9 +225,7 @@ function PartnersAdminPage() {
   const filtered = useMemo(
     () =>
       items
-        .filter((p) =>
-          tab === "requests" ? (p.source ?? "Public") === "Public" : p.source === "Manual",
-        )
+        .filter((p) => (tab === "requests" ? !inRecords(p) : inRecords(p)))
         .filter((p) => (statusFilter === "All" ? true : p.status === statusFilter))
         .filter((p) => (typeFilter === "All" ? true : p.type === typeFilter))
         .filter((p) =>
@@ -223,6 +240,7 @@ function PartnersAdminPage() {
     [items, statusFilter, typeFilter, q, tab],
   );
 
+
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -230,20 +248,19 @@ function PartnersAdminPage() {
           <h1 className="font-display text-3xl font-bold">Partners & Investors</h1>
           <p className="text-sm text-muted-foreground">
             {tab === "requests"
-              ? "Partnership and investment requests submitted from the public website."
-              : "Partner and investor records you manage manually."}
+              ? "Requests in progress — public submissions and admin-added records awaiting approval."
+              : "Approved partners and investors."}
           </p>
         </div>
-        {tab === "records" && (
-          <Button onClick={openAdd} className="font-bold uppercase">
-            <Plus className="size-4 mr-2" /> Add Record
-          </Button>
-        )}
+        <Button onClick={openAdd} className="font-bold uppercase">
+          <Plus className="size-4 mr-2" /> Add Partner / Investor
+        </Button>
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+      <Tabs value={tab} onValueChange={(v) => { setTab(v as typeof tab); setStatusFilter("All"); }}>
         <TabsList>
-          <TabsTrigger value="requests">Public Requests ({counts.requests})</TabsTrigger>
+          <TabsTrigger value="requests">Requests ({counts.requests})</TabsTrigger>
+
           <TabsTrigger value="records">Partners & Investors ({counts.records})</TabsTrigger>
         </TabsList>
       </Tabs>
@@ -265,13 +282,18 @@ function PartnersAdminPage() {
             {PARTNER_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
           </SelectContent>
         </Select>
-        <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
-          <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="All">All statuses</SelectItem>
-            {PARTNER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-          </SelectContent>
-        </Select>
+        {tab === "requests" && (
+          <Select value={statusFilter} onValueChange={(v) => setStatusFilter(v as typeof statusFilter)}>
+            <SelectTrigger className="w-48"><SelectValue /></SelectTrigger>
+            <SelectContent>
+              <SelectItem value="All">All statuses</SelectItem>
+              {PARTNER_STATUSES.filter((s) => s !== "Approved").map((s) => (
+                <SelectItem key={s} value={s}>{s}</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        )}
+
       </div>
 
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
@@ -478,14 +500,20 @@ function PartnersAdminPage() {
                 </SelectContent>
               </Select>
             </DField>
-            <DField label="Status">
-              <Select value={draft.status} onValueChange={(v) => setDraft({ ...draft, status: v as PartnerStatus })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {PARTNER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </DField>
+            {!editing && (
+              <DField label="Initial Status">
+                <Select value={draft.status} onValueChange={(v) => setDraft({ ...draft, status: v as PartnerStatus })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PARTNER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Approved records go straight to Partners &amp; Investors; anything else lands in Requests.
+                </p>
+              </DField>
+            )}
+
             <DField label="Passport Number"><Input value={draft.passportNumber} onChange={(e) => setDraft({ ...draft, passportNumber: e.target.value })} /></DField>
             <DField label="Website"><Input value={draft.website} onChange={(e) => setDraft({ ...draft, website: e.target.value })} placeholder="https://" /></DField>
             <DField label="Shop Location"><Input value={draft.shopLocation} onChange={(e) => setDraft({ ...draft, shopLocation: e.target.value })} /></DField>
