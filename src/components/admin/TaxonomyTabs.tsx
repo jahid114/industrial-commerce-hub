@@ -54,11 +54,10 @@ export function BrandsTab() {
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Brands we do business with.</p>
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by brand name or country…">
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-lg font-bold uppercase"><Plus className="size-4 mr-2" /> Add Brand</Button>
+            <Button size="sm" className="ml-auto rounded-lg h-9 font-bold uppercase"><Plus className="size-4 mr-1" /> Add Brand</Button>
           </DialogTrigger>
           <BrandDialog
             key={editing?.id ?? "new"}
@@ -68,9 +67,8 @@ export function BrandsTab() {
             onSave={(b) => { save(b); toast.success(editing ? "Brand updated" : "Brand created"); setEditing(null); setOpen(false); }}
           />
         </Dialog>
-      </div>
+      </TableSearchBar>
 
-      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by brand name or country…" />
 
       <div className="rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
