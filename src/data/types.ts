@@ -29,6 +29,7 @@ export interface Product {
   country: Country;
   price: number; // BDT — customer price
   agentPrice?: number; // BDT — agent-only price (admin/agent visible). Defaults to ~8% off customer price.
+  discountPct?: number; // Admin-configured discount % applied to the customer price.
   moq: number;
   deliveryDays: string;
   image: string;

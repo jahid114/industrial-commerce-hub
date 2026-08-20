@@ -23,6 +23,7 @@ export const Route = createFileRoute("/portal-customer/catalog/")({
 });
 
 import type { Country } from "@/data/types";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 
 const MAX_PRICE = 6_000_000;
 
@@ -49,11 +50,11 @@ function PortalCatalog() {
       if (selectedCategories.length && !selectedCategories.includes(p.categoryId)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brandId)) return false;
       if (selectedCountries.length && !selectedCountries.includes(p.country)) return false;
-      if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
+      if (getEffectivePrice(p) < priceRange[0] || getEffectivePrice(p) > priceRange[1]) return false;
       return true;
     });
-    if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
+    if (sort === "price-asc") list = [...list].sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b));
+    if (sort === "price-desc") list = [...list].sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a));
     if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;
   }, [allProducts, query, selectedCategories, selectedBrands, selectedCountries, priceRange, sort]);

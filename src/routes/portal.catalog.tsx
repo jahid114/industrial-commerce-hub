@@ -7,7 +7,7 @@ import { Button } from "@/components/ui/button";
 import { products } from "@/data/products";
 import { brands } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
-import { getAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
+import { getAgentPrice, useCurrentAgentCommission, getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
 import { toast } from "sonner";
 import { ProductQuickView } from "@/components/product/ProductQuickView";
@@ -82,7 +82,8 @@ function AgentCatalogPage() {
             <tbody className="divide-y divide-border">
               {list.map((p) => {
                 const ap = getAgentPrice(p, commissionPct);
-                const margin = p.price - ap;
+                const listPrice = getEffectivePrice(p);
+                const margin = listPrice - ap;
                 const inCart = cart.some((c) => c.productId === p.id);
                 return (
                   <tr key={p.id} className="hover:bg-secondary">
@@ -96,7 +97,7 @@ function AgentCatalogPage() {
                       </div>
                     </td>
                     <td className="px-4 py-3"><Badge variant="outline">{brands.find((b) => b.id === p.brandId)?.name}</Badge></td>
-                    <td className="px-4 py-3 text-right text-muted-foreground line-through">{formatBDT(p.price)}</td>
+                    <td className="px-4 py-3 text-right text-muted-foreground"><span className="line-through">{formatBDT(listPrice)}</span>{getDiscountPct(p) > 0 && <span className="ml-1 text-[10px] font-semibold text-destructive">-{getDiscountPct(p)}%</span>}</td>
                     <td className="px-4 py-3 text-right font-semibold text-primary">{formatBDT(ap)}</td>
                     <td className="px-4 py-3 text-right text-success font-semibold">+{formatBDT(margin)}</td>
                     <td className="px-4 py-3 text-right space-x-1 whitespace-nowrap">

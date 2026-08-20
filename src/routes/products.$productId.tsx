@@ -15,6 +15,7 @@ import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
 // Agent pricing is intentionally hidden from the public site.
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/products/$productId")({
@@ -52,7 +53,7 @@ export const Route = createFileRoute("/products/$productId")({
               offers: {
                 "@type": "Offer",
                 priceCurrency: "BDT",
-                price: loaderData.product.price,
+                price: getEffectivePrice(loaderData.product),
                 availability: loaderData.product.stock > 0 ? "https://schema.org/InStock" : "https://schema.org/OutOfStock",
               },
             }),
@@ -160,7 +161,15 @@ function ProductDetailPage() {
 
           <div className="my-6 border-y border-border py-5">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Starting from</div>
-            <div className="font-display text-4xl font-bold text-primary">{formatBDT(product.price)}<span className="ml-2 text-sm font-normal text-muted-foreground">/ unit</span></div>
+            <div className="flex flex-wrap items-baseline gap-3">
+              <div className="font-display text-4xl font-bold text-primary">{formatBDT(getEffectivePrice(product))}<span className="ml-2 text-sm font-normal text-muted-foreground">/ unit</span></div>
+              {getDiscountPct(product) > 0 && (
+                <>
+                  <span className="text-lg text-muted-foreground line-through">{formatBDT(product.price)}</span>
+                  <span className="rounded bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive">-{getDiscountPct(product)}% OFF</span>
+                </>
+              )}
+            </div>
           </div>
 
 

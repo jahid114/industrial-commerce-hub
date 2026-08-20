@@ -15,6 +15,7 @@ import { brands } from "@/data/brands";
 import { getPublicProducts } from "@/lib/products";
 import type { Country } from "@/data/types";
 import { Filter, X } from "lucide-react";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 
 const searchSchema = z.object({
   q: z.string().optional(),
@@ -63,11 +64,11 @@ function ProductsPage() {
       if (selectedCategories.length && !selectedCategories.includes(p.categoryId)) return false;
       if (selectedBrands.length && !selectedBrands.includes(p.brandId)) return false;
       if (selectedCountries.length && !selectedCountries.includes(p.country)) return false;
-      if (p.price < priceRange[0] || p.price > priceRange[1]) return false;
+      if (getEffectivePrice(p) < priceRange[0] || getEffectivePrice(p) > priceRange[1]) return false;
       return true;
     });
-    if (sort === "price-asc") list = [...list].sort((a, b) => a.price - b.price);
-    if (sort === "price-desc") list = [...list].sort((a, b) => b.price - a.price);
+    if (sort === "price-asc") list = [...list].sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b));
+    if (sort === "price-desc") list = [...list].sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a));
     if (sort === "name") list = [...list].sort((a, b) => a.name.localeCompare(b.name));
     return list;
   }, [publicProducts, query, selectedCategories, selectedBrands, selectedCountries, priceRange, sort]);
@@ -169,7 +170,7 @@ function ProductsPage() {
                       <div className="mt-1 text-xs text-muted-foreground line-clamp-1">{p.shortDescription}</div>
                       <div className="mt-auto flex items-center justify-between">
                         <span className="text-xs text-muted-foreground">MOQ {p.moq} · {p.deliveryDays}</span>
-                        <span className="font-display text-lg font-bold text-primary">৳{p.price.toLocaleString()}</span>
+                        <span className="font-display text-lg font-bold text-primary">৳{getEffectivePrice(p).toLocaleString()}</span>{getDiscountPct(p) > 0 && <span className="ml-2 text-xs text-muted-foreground line-through">৳{p.price.toLocaleString()}</span>}
                       </div>
                     </div>
                   </Link>

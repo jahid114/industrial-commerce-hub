@@ -12,6 +12,7 @@ import { brands } from "@/data/brands";
 import { useStore } from "@/lib/store";
 import { newRfqId } from "@/lib/format";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { nowIso } from "@/lib/quotation-workflow";
 import type { Quotation, QuotationItem } from "@/data/types";
 import { toast } from "sonner";
@@ -61,11 +62,11 @@ export function QuotationBuilder({ initialProductId, onSubmitted }: Props) {
   const totalUnits = lines.reduce((s, l) => s + (l.quantity || 0), 0);
   const estSubtotal = lines.reduce((s, l) => {
     const p = getProduct(l.productId);
-    return s + (p?.price ?? 0) * (l.quantity || 0);
+    return s + (p ? getEffectivePrice(p) : 0) * (l.quantity || 0);
   }, 0);
   const targetSubtotal = lines.reduce((s, l) => {
     const p = getProduct(l.productId);
-    const unit = l.targetPrice ?? p?.price ?? 0;
+    const unit = l.targetPrice ?? (p ? getEffectivePrice(p) : 0);
     return s + unit * (l.quantity || 0);
   }, 0);
 
@@ -145,7 +146,7 @@ export function QuotationBuilder({ initialProductId, onSubmitted }: Props) {
                             <span className="font-mono">{p.sku}</span>
                             {brand && <><span>·</span><Badge variant="outline" className="h-5">{brand.name}</Badge></>}
                             <span>·</span><span>{p.country}</span>
-                            <span>·</span><span>List: <strong className="text-foreground">{formatBDT(p.price)}</strong></span>
+                            <span>·</span><span>List: <strong className="text-foreground">{formatBDT(getEffectivePrice(p))}</strong>{getDiscountPct(p) > 0 && <span className="ml-1 line-through">{formatBDT(p.price)}</span>}</span>
                             <span>·</span><span>MOQ: {p.moq}</span>
                           </div>
                         </div>
@@ -255,7 +256,7 @@ export function QuotationBuilder({ initialProductId, onSubmitted }: Props) {
                   <div className="text-xs text-muted-foreground font-mono">{p.sku} · MOQ {p.moq}</div>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="font-semibold text-primary">{formatBDT(p.price)}</div>
+                  <div className="font-semibold text-primary">{formatBDT(getEffectivePrice(p))}{getDiscountPct(p) > 0 && <span className="ml-1 text-xs font-normal text-muted-foreground line-through">{formatBDT(p.price)}</span>}</div>
                 </div>
                 <Plus className="size-4 text-muted-foreground" />
               </button>

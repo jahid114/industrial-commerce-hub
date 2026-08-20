@@ -8,7 +8,7 @@ import { getCategory } from "@/data/categories";
 import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
-import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission } from "@/lib/pricing";
+import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission, getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export function ProductQuickView({ product, open, onOpenChange }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void }) {
@@ -59,7 +59,15 @@ export function ProductQuickView({ product, open, onOpenChange }: { product: Pro
 
             <div className="my-4 border-y border-border py-3">
               <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Starting from</div>
-              <div className="font-display text-2xl font-bold text-primary">{formatBDT(product.price)}<span className="ml-1 text-xs font-normal text-muted-foreground">/ unit</span></div>
+              <div className="flex flex-wrap items-baseline gap-2">
+                <div className="font-display text-2xl font-bold text-primary">{formatBDT(getEffectivePrice(product))}<span className="ml-1 text-xs font-normal text-muted-foreground">/ unit</span></div>
+                {getDiscountPct(product) > 0 && (
+                  <>
+                    <span className="text-sm text-muted-foreground line-through">{formatBDT(product.price)}</span>
+                    <span className="rounded bg-destructive/10 px-1.5 py-0.5 text-[10px] font-bold text-destructive">-{getDiscountPct(product)}% OFF</span>
+                  </>
+                )}
+              </div>
               {showAgent && (
                 <div className="mt-2 flex items-center gap-2 rounded-md border border-accent/30 bg-accent/5 px-3 py-1.5">
                   <span className="rounded bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-foreground">Agent</span>

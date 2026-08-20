@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal-customer/wishlist")({
@@ -32,7 +33,7 @@ function WishlistPage() {
                 <Link to="/portal-customer/catalog/$productId" params={{ productId: p.id }} className="font-semibold hover:text-primary">{p.name}</Link>
                 <div className="text-xs text-muted-foreground">{p.country} · SKU {p.sku}</div>
               </div>
-              <div className="font-display font-bold text-primary">{formatBDT(p.price)}</div>
+              <div className="font-display font-bold text-primary">{formatBDT(getEffectivePrice(p))}</div>
               <Button size="sm" onClick={() => { dispatch({ type: "ADD_TO_CART", productId: p.id, quantity: p.moq }); toast.success("Added to cart"); }}>Add to Cart</Button>
               <button onClick={() => dispatch({ type: "TOGGLE_WISHLIST", productId: p.id })} className="text-muted-foreground hover:text-destructive"><Trash2 className="size-4" /></button>
             </div>

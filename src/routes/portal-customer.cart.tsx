@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 
 export const Route = createFileRoute("/portal-customer/cart")({
   head: () => ({ meta: [{ title: "Cart — Portal" }] }),
@@ -13,7 +14,7 @@ export const Route = createFileRoute("/portal-customer/cart")({
 function CartPage() {
   const { cart, dispatch, cartSubtotal } = useStore();
   const items = cart.map((i) => ({ ...i, product: getProduct(i.productId)! })).filter((i) => i.product);
-  const subtotal = cartSubtotal((id) => getProduct(id)?.price ?? 0);
+  const subtotal = cartSubtotal((id) => { const p = getProduct(id); return p ? getEffectivePrice(p) : 0; });
   const vat = Math.round(subtotal * 0.05);
   const total = subtotal + vat;
 
@@ -49,8 +50,12 @@ function CartPage() {
                     <button onClick={() => dispatch({ type: "UPDATE_QTY", productId: product.id, quantity: quantity + 1 })} className="px-3 py-1 hover:bg-secondary">+</button>
                   </div>
                   <div className="text-right">
-                    <div className="font-display text-lg font-bold text-primary">{formatBDT(product.price * quantity)}</div>
-                    <div className="text-xs text-muted-foreground">{formatBDT(product.price)} × {quantity}</div>
+                    <div className="font-display text-lg font-bold text-primary">{formatBDT(getEffectivePrice(product) * quantity)}</div>
+                    <div className="text-xs text-muted-foreground">
+                      {getDiscountPct(product) > 0 && <span className="mr-1 line-through">{formatBDT(product.price)}</span>}
+                      {formatBDT(getEffectivePrice(product))} × {quantity}
+                      {getDiscountPct(product) > 0 && <span className="ml-1 font-semibold text-destructive">-{getDiscountPct(product)}%</span>}
+                    </div>
                   </div>
                 </div>
               </div>
