@@ -257,7 +257,7 @@ function PartnersAdminPage() {
         </Button>
       </div>
 
-      <Tabs value={tab} onValueChange={(v) => setTab(v as typeof tab)}>
+      <Tabs value={tab} onValueChange={(v) => { setTab(v as typeof tab); setStatusFilter("All"); }}>
         <TabsList>
           <TabsTrigger value="requests">Requests ({counts.requests})</TabsTrigger>
 
