@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBrandsAdmin, useCountriesAdmin, slugifyId, type BusinessCountry } from "@/lib/taxonomy-store";
+import { TableSearchBar, TablePagination, paginate } from "@/components/admin/TableToolbar";
 import type { Brand, Country } from "@/data/types";
 import { toast } from "sonner";
+
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
