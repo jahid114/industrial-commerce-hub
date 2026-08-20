@@ -172,17 +172,34 @@ function PartnersAdminPage() {
       return;
     }
     if (editing) {
-      persist(items.map((p) => (p.id === editing.id ? { ...p, ...draft } : p)));
-      toast.success("Request updated");
+      // Status is managed by the workflow, never edited directly here.
+      const { status: _ignored, ...rest } = draft;
+      const next = items.map((p) => (p.id === editing.id ? { ...p, ...rest } : p));
+      persist(next);
+      setActive((cur) => (cur && cur.id === editing.id ? { ...cur, ...rest } : cur));
+      toast.success("Record updated");
     } else {
+      const now = new Date().toISOString();
       const item: PartnerRequest = {
         ...draft,
         id: `PRT-${Date.now().toString(36).toUpperCase()}`,
         source: "Manual",
-        submittedAt: new Date().toISOString(),
+        submittedAt: now,
+        timeline: [
+          {
+            at: now,
+            by: "Admin",
+            type: "created",
+            message: `Record created by admin with status ${draft.status}`,
+          },
+        ],
       };
       persist([...items, item]);
-      toast.success("Request added");
+      toast.success(
+        draft.status === "Approved"
+          ? "Added to Partners & Investors"
+          : "Added to requests — approve it to list as a partner",
+      );
     }
     setFormOpen(false);
   };
@@ -195,10 +212,12 @@ function PartnersAdminPage() {
     toast.success("Request deleted");
   };
 
+  const inRecords = (p: PartnerRequest) => p.status === "Approved";
+
   const counts = useMemo(
     () => ({
-      requests: items.filter((p) => (p.source ?? "Public") === "Public").length,
-      records: items.filter((p) => p.source === "Manual").length,
+      requests: items.filter((p) => !inRecords(p)).length,
+      records: items.filter(inRecords).length,
     }),
     [items],
   );
@@ -206,9 +225,7 @@ function PartnersAdminPage() {
   const filtered = useMemo(
     () =>
       items
-        .filter((p) =>
-          tab === "requests" ? (p.source ?? "Public") === "Public" : p.source === "Manual",
-        )
+        .filter((p) => (tab === "requests" ? !inRecords(p) : inRecords(p)))
         .filter((p) => (statusFilter === "All" ? true : p.status === statusFilter))
         .filter((p) => (typeFilter === "All" ? true : p.type === typeFilter))
         .filter((p) =>
@@ -222,6 +239,7 @@ function PartnersAdminPage() {
         .sort((a, b) => (a.submittedAt < b.submittedAt ? 1 : -1)),
     [items, statusFilter, typeFilter, q, tab],
   );
+
 
   return (
     <div className="space-y-6">
