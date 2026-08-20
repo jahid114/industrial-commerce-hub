@@ -349,53 +349,53 @@ function SubcategoriesTab({
         </div>
       </div>
 
-      <div className="rounded-lg border border-border bg-card">
-        {selected ? (
-          <>
-            <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
-              <div>
-                <div className="font-semibold">{selected.name}</div>
-                <div className="text-xs text-muted-foreground">
-                  {selected.subcategories.length} sub-categories
+      <div className="space-y-3">
+        {selected && (
+          <TableSearchBar value={search} onChange={setSearch} placeholder="Search sub-categories…" />
+        )}
+        <div className="rounded-lg border border-border bg-card">
+          {selected ? (
+            <>
+              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
+                <div>
+                  <div className="font-semibold">{selected.name}</div>
+                  <div className="text-xs text-muted-foreground">
+                    {selected.subcategories.length} sub-categories
+                  </div>
                 </div>
+                <Button size="sm" onClick={openAdd} className="rounded-lg h-9 font-bold uppercase">
+                  <Plus className="size-4 mr-1" /> Add Sub-category
+                </Button>
               </div>
-              <Button size="sm" onClick={openAdd} className="rounded-lg h-9 font-bold uppercase">
-                <Plus className="size-4 mr-1" /> Add Sub-category
-              </Button>
-            </div>
 
-            <div className="border-b border-border px-4 py-2">
-              <Input
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder="Search sub-categories…"
-                className="border-0 shadow-none focus-visible:ring-0 px-0"
-              />
-            </div>
-
-            <ul className="divide-y divide-border">
-              {filteredSubs.map(({ s, i }) => (
-                <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
-                  <span className="flex-1 truncate text-sm">{s}</span>
-                  <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
-                    <Pencil className="size-3.5 mr-1" /> Edit
-                  </Button>
-                  <Button size="sm" variant="outline" onClick={() => setSubToDelete({ index: i, name: s })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
-                    <Trash2 className="size-3.5 mr-1" /> Delete
-                  </Button>
-                </li>
-              ))}
-              {filteredSubs.length === 0 && (
-                <li className="p-8 text-center text-sm text-muted-foreground">
-                  {selected.subcategories.length === 0 ? "No sub-categories yet. Click Add Sub-category to create one." : "No sub-categories match your search."}
-                </li>
-              )}
-            </ul>
-          </>
-        ) : (
-          <div className="p-10 text-center text-sm text-muted-foreground">Select a category to manage its sub-categories.</div>
+              <ul className="divide-y divide-border">
+                {pagedSubs.map(({ s, i }) => (
+                  <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
+                    <span className="flex-1 truncate text-sm">{s}</span>
+                    <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
+                      <Pencil className="size-3.5 mr-1" /> Edit
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setSubToDelete({ index: i, name: s })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
+                      <Trash2 className="size-3.5 mr-1" /> Delete
+                    </Button>
+                  </li>
+                ))}
+                {filteredSubs.length === 0 && (
+                  <li className="p-8 text-center text-sm text-muted-foreground">
+                    {selected.subcategories.length === 0 ? "No sub-categories yet. Click Add Sub-category to create one." : "No sub-categories match your search."}
+                  </li>
+                )}
+              </ul>
+            </>
+          ) : (
+            <div className="p-10 text-center text-sm text-muted-foreground">Select a category to manage its sub-categories.</div>
+          )}
+        </div>
+        {selected && (
+          <TablePagination total={filteredSubs.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
         )}
       </div>
+
 
       <Dialog open={dialogOpen} onOpenChange={(v) => { setDialogOpen(v); if (!v) { setEditIdx(null); setFormValue(""); } }}>
         <DialogContent className="max-w-md">
