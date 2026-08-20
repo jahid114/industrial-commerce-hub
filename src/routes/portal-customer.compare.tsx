@@ -5,6 +5,7 @@ import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
 import { getBrand } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/portal-customer/compare")({
@@ -50,7 +51,7 @@ function ComparePage() {
             </tr>
           </thead>
           <tbody>
-            <Row label="Price">{products.map((p) => <td key={p.id} className="border-b border-r border-border p-4 font-display text-lg font-bold text-primary">{formatBDT(p.price)}</td>)}</Row>
+            <Row label="Price">{products.map((p) => <td key={p.id} className="border-b border-r border-border p-4 font-display text-lg font-bold text-primary">{formatBDT(getEffectivePrice(p))}{getDiscountPct(p) > 0 && <span className="ml-1 text-xs font-normal text-muted-foreground line-through">{formatBDT(p.price)}</span>}</td>)}</Row>
             <Row label="MOQ">{products.map((p) => <td key={p.id} className="border-b border-r border-border p-4">{p.moq} units</td>)}</Row>
             <Row label="Country">{products.map((p) => <td key={p.id} className="border-b border-r border-border p-4">{p.country}</td>)}</Row>
             <Row label="Delivery">{products.map((p) => <td key={p.id} className="border-b border-r border-border p-4">{p.deliveryDays}</td>)}</Row>

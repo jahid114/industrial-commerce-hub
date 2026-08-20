@@ -8,6 +8,7 @@ import { getFeaturedProducts } from "@/data/products";
 import { getBrand } from "@/data/brands";
 import { brands } from "@/data/brands";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import heroPort from "@/assets/hero-port.jpg";
 
 export const Route = createFileRoute("/")({
@@ -230,7 +231,7 @@ function HomePage() {
                     </div>
                     <h3 className="mt-3 font-display text-base font-bold leading-tight line-clamp-2">{p.name}</h3>
                     <div className="mt-auto pt-6">
-                      <div className="font-display text-xl font-bold">{formatBDT(p.price)}</div>
+                      <div className="font-display text-xl font-bold">{formatBDT(getEffectivePrice(p))}{getDiscountPct(p) > 0 && <span className="ml-2 text-sm font-normal text-muted-foreground line-through">{formatBDT(p.price)}</span>}</div>
                       <div className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">/ unit · MOQ {p.moq}</div>
                       <div className="mt-4 inline-flex items-center gap-2 font-mono text-[11px] uppercase tracking-[0.2em] text-primary">
                         View Quote <ArrowRight className="size-3" />

@@ -6,6 +6,7 @@ import { PublicLayout } from "@/components/layout/PublicLayout";
 import { useStore } from "@/lib/store";
 import { getProduct } from "@/data/products";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/wishlist")({
@@ -59,7 +60,7 @@ function PublicWishlistPage() {
                     </Link>
                     <div className="text-xs text-muted-foreground">{p.country} · SKU {p.sku}</div>
                   </div>
-                  <div className="font-display font-bold text-primary">{formatBDT(p.price)}</div>
+                  <div className="font-display font-bold text-primary">{formatBDT(getEffectivePrice(p))}</div>
                   <Button
                     size="sm"
                     onClick={() => {

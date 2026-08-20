@@ -9,6 +9,7 @@ import { getBrand } from "@/data/brands";
 import { getCategory } from "@/data/categories";
 import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
+import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
 import { getAgentPrice, canSeeAgentPrice } from "@/lib/pricing";
 import { toast } from "sonner";
@@ -82,7 +83,15 @@ function PortalProductDetail() {
 
             <div className="my-6 border-y border-border py-5">
               <div className="text-xs uppercase tracking-wider text-muted-foreground">Your price</div>
-              <div className="font-display text-4xl font-bold text-primary">{formatBDT(product.price)}<span className="ml-2 text-sm font-normal text-muted-foreground">/ unit</span></div>
+              <div className="flex flex-wrap items-baseline gap-3">
+                <div className="font-display text-4xl font-bold text-primary">{formatBDT(getEffectivePrice(product))}<span className="ml-2 text-sm font-normal text-muted-foreground">/ unit</span></div>
+                {getDiscountPct(product) > 0 && (
+                  <>
+                    <span className="text-lg text-muted-foreground line-through">{formatBDT(product.price)}</span>
+                    <span className="rounded bg-destructive/10 px-2 py-0.5 text-xs font-bold text-destructive">-{getDiscountPct(product)}% OFF</span>
+                  </>
+                )}
+              </div>
               {showAgent && (
                 <div className="mt-3 flex items-center gap-2 rounded-md border border-accent/30 bg-accent/5 px-3 py-2">
                   <span className="rounded bg-accent px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-accent-foreground">Agent</span>

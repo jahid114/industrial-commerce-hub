@@ -38,7 +38,7 @@ function CheckoutPage() {
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
   const items = cart.map((i) => ({ ...i, product: getProduct(i.productId)! })).filter((i) => i.product);
-  const subtotal = cartSubtotal((id) => getProduct(id)?.price ?? 0);
+  const subtotal = cartSubtotal((id) => { const p = getProduct(id); return p ? getEffectivePrice(p) : 0; });
   const vat = Math.round(subtotal * 0.05);
   const total = subtotal + vat;
 
@@ -67,7 +67,7 @@ function CheckoutPage() {
       customerName: data.name,
       customerEmail: data.email,
       date: new Date().toISOString().slice(0, 10),
-      items: items.map((i) => ({ productId: i.product.id, name: i.product.name, quantity: i.quantity, unitPrice: i.product.price })),
+      items: items.map((i) => ({ productId: i.product.id, name: i.product.name, quantity: i.quantity, unitPrice: getEffectivePrice(i.product) })),
       total,
       status: "Pending",
       paymentMethod: data.paymentMethod,
@@ -146,9 +146,9 @@ function CheckoutPage() {
                   <img src={product.image} className="size-12 object-cover rounded" alt="" />
                   <div className="flex-1">
                     <div className="line-clamp-1 font-medium">{product.name}</div>
-                    <div className="text-xs text-muted-foreground">Qty {quantity} · {formatBDT(product.price)}</div>
+                    <div className="text-xs text-muted-foreground">Qty {quantity} · {formatBDT(getEffectivePrice(product))}{getDiscountPct(product) > 0 && <span className="ml-1 line-through">{formatBDT(product.price)}</span>}</div>
                   </div>
-                  <div className="font-semibold">{formatBDT(product.price * quantity)}</div>
+                  <div className="font-semibold">{formatBDT(getEffectivePrice(product) * quantity)}</div>
                 </div>
               ))}
             </div>
