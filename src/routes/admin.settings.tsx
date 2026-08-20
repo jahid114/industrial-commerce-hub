@@ -158,7 +158,7 @@ function CategoriesTab({
             <tr>
               <th className="px-4 py-3 text-left">Name</th>
               <th className="px-4 py-3 text-left">Slug</th>
-              <th className="px-4 py-3 text-left">Icon</th>
+              
               <th className="px-4 py-3 text-right">Sub-categories</th>
               <th className="px-4 py-3 text-right">Actions</th>
             </tr>
@@ -171,7 +171,7 @@ function CategoriesTab({
                   {c.description && <div className="text-xs text-muted-foreground">{c.description}</div>}
                 </td>
                 <td className="px-4 py-3 font-mono text-xs">{c.slug}</td>
-                <td className="px-4 py-3 text-xs">{c.icon}</td>
+                
                 <td className="px-4 py-3 text-right">{c.subcategories.length}</td>
                 <td className="px-4 py-3 text-right">
                   <div className="inline-flex items-center gap-2">
@@ -182,7 +182,7 @@ function CategoriesTab({
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={5} className="p-8 text-center text-sm text-muted-foreground">No categories match your search.</td></tr>
+              <tr><td colSpan={4} className="p-8 text-center text-sm text-muted-foreground">No categories match your search.</td></tr>
             )}
           </tbody>
         </table>
@@ -219,7 +219,7 @@ function CategoryDialog({
   existingIds: string[];
 }) {
   const [form, setForm] = useState<Category>(
-    editing ?? { id: "", name: "", slug: "", icon: "", subcategories: [], description: "" },
+    editing ?? { id: "", name: "", slug: "", subcategories: [], description: "" },
   );
 
   const submit = () => {
