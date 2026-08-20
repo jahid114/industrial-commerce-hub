@@ -122,6 +122,14 @@ export function addPartnerRequest(
     status: input.status ?? "New",
     source: input.source ?? "Public",
     submittedAt: new Date().toISOString(),
+    timeline: [
+      {
+        at: new Date().toISOString(),
+        by: "System",
+        type: "created",
+        message: "Request submitted from public website",
+      },
+    ],
   };
   writePartnerRequests([...readPartnerRequests(), item]);
   return item;
