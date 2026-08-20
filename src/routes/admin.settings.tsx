@@ -142,17 +142,15 @@ function CategoriesTab({
 
   return (
     <div className="space-y-3">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-muted-foreground">Top-level catalog categories.</p>
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by category name or slug…">
         <Dialog open={open} onOpenChange={(v) => { setOpen(v); if (!v) setEditing(null); }}>
           <DialogTrigger asChild>
-            <Button className="rounded-lg font-bold uppercase"><Plus className="size-4 mr-2" /> Add Category</Button>
+            <Button size="sm" className="ml-auto rounded-lg h-9 font-bold uppercase"><Plus className="size-4 mr-1" /> Add Category</Button>
           </DialogTrigger>
           <CategoryDialog editing={editing} onSave={saveCategory} existingIds={cats.map((c) => c.id)} />
         </Dialog>
-      </div>
+      </TableSearchBar>
 
-      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by category name or slug…" />
 
       <div className="rounded-lg border border-border bg-card">
         <table className="w-full text-sm">
@@ -359,24 +357,38 @@ function SubcategoriesTab({
       </TableSearchBar>
 
       <div className="rounded-lg border border-border bg-card">
-        <ul className="divide-y divide-border">
-          {pagedSubs.map((r) => (
-            <li key={`${r.catId}-${r.index}`} className="flex items-center gap-3 px-4 py-2.5">
-              <span className="flex-1 truncate text-sm">{r.sub}</span>
-              <Badge variant="secondary" className="rounded-md shrink-0">{r.catName}</Badge>
-              <Button size="sm" variant="outline" onClick={() => openEdit(r.catId, r.index, r.sub)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
-                <Pencil className="size-3.5 mr-1" /> Edit
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => setSubToDelete({ catId: r.catId, index: r.index, name: r.sub })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
-                <Trash2 className="size-3.5 mr-1" /> Delete
-              </Button>
-            </li>
-          ))}
-          {rows.length === 0 && (
-            <li className="p-8 text-center text-sm text-muted-foreground">No sub-categories found.</li>
-          )}
-        </ul>
+        <table className="w-full text-sm">
+          <thead className="text-xs uppercase text-muted-foreground border-b border-border">
+            <tr>
+              <th className="px-4 py-3 text-left">Sub-category</th>
+              <th className="px-4 py-3 text-left">Category</th>
+              <th className="px-4 py-3 text-right">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {pagedSubs.map((r) => (
+              <tr key={`${r.catId}-${r.index}`} className="border-b border-border last:border-0">
+                <td className="px-4 py-3 font-medium">{r.sub}</td>
+                <td className="px-4 py-3"><Badge variant="secondary" className="rounded-md">{r.catName}</Badge></td>
+                <td className="px-4 py-3 text-right">
+                  <div className="inline-flex items-center gap-2">
+                    <Button size="sm" variant="outline" onClick={() => openEdit(r.catId, r.index, r.sub)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
+                      <Pencil className="size-3.5 mr-1" /> Edit
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setSubToDelete({ catId: r.catId, index: r.index, name: r.sub })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
+                      <Trash2 className="size-3.5 mr-1" /> Delete
+                    </Button>
+                  </div>
+                </td>
+              </tr>
+            ))}
+            {rows.length === 0 && (
+              <tr><td colSpan={3} className="p-8 text-center text-sm text-muted-foreground">No sub-categories found.</td></tr>
+            )}
+          </tbody>
+        </table>
       </div>
+
 
       <TablePagination total={rows.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
 
