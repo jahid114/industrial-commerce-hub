@@ -20,6 +20,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { categories as seedCategories } from "@/data/categories";
 import type { Category } from "@/data/types";
 import { toast } from "sonner";
@@ -262,150 +263,137 @@ function SubcategoriesTab({
   cats: Category[];
   setCats: React.Dispatch<React.SetStateAction<Category[]>>;
 }) {
-  const [selectedId, setSelectedId] = useState<string>(cats[0]?.id ?? "");
+  const [filterId, setFilterId] = useState<string>("all");
   const [search, setSearch] = useState("");
   const [dialogOpen, setDialogOpen] = useState(false);
-  const [editIdx, setEditIdx] = useState<number | null>(null);
+  const [editing, setEditing] = useState<{ catId: string; index: number } | null>(null);
   const [formValue, setFormValue] = useState("");
-  const [subToDelete, setSubToDelete] = useState<{ index: number; name: string } | null>(null);
+  const [formCatId, setFormCatId] = useState<string>(cats[0]?.id ?? "");
+  const [subToDelete, setSubToDelete] = useState<{ catId: string; index: number; name: string } | null>(null);
 
   useEffect(() => {
-    if (!cats.some((c) => c.id === selectedId)) setSelectedId(cats[0]?.id ?? "");
-  }, [cats, selectedId]);
+    if (filterId !== "all" && !cats.some((c) => c.id === filterId)) setFilterId("all");
+  }, [cats, filterId]);
 
-  const selected = cats.find((c) => c.id === selectedId) ?? null;
-
-  const updateSubs = (subs: string[]) => {
-    if (!selected) return;
-    setCats((cs) => cs.map((c) => (c.id === selected.id ? { ...c, subcategories: subs } : c)));
+  const updateSubs = (catId: string, subs: string[]) => {
+    setCats((cs) => cs.map((c) => (c.id === catId ? { ...c, subcategories: subs } : c)));
   };
 
-  const openAdd = () => { setEditIdx(null); setFormValue(""); setDialogOpen(true); };
-  const openEdit = (i: number) => { setEditIdx(i); setFormValue(selected?.subcategories[i] ?? ""); setDialogOpen(true); };
+  const openAdd = () => {
+    setEditing(null);
+    setFormValue("");
+    setFormCatId(filterId !== "all" ? filterId : cats[0]?.id ?? "");
+    setDialogOpen(true);
+  };
+  const openEdit = (catId: string, index: number, name: string) => {
+    setEditing({ catId, index });
+    setFormValue(name);
+    setFormCatId(catId);
+    setDialogOpen(true);
+  };
 
   const submitForm = () => {
-    if (!selected) return;
     const v = formValue.trim();
     if (!v) { toast.error("Name is required"); return; }
-    const dup = selected.subcategories.some((s, i) => i !== editIdx && s.toLowerCase() === v.toLowerCase());
+    const target = cats.find((c) => c.id === formCatId);
+    if (!target) { toast.error("Select a category"); return; }
+    const dup = target.subcategories.some(
+      (sub, i) => sub.toLowerCase() === v.toLowerCase() && !(editing && editing.catId === formCatId && editing.index === i),
+    );
     if (dup) { toast.error("Sub-category already exists"); return; }
-    if (editIdx === null) {
-      updateSubs([...selected.subcategories, v]);
+
+    if (!editing) {
+      updateSubs(target.id, [...target.subcategories, v]);
       toast.success("Sub-category added");
-    } else {
-      updateSubs(selected.subcategories.map((s, i) => (i === editIdx ? v : s)));
+    } else if (editing.catId === formCatId) {
+      updateSubs(target.id, target.subcategories.map((sub, i) => (i === editing.index ? v : sub)));
       toast.success("Sub-category updated");
+    } else {
+      const from = cats.find((c) => c.id === editing.catId);
+      setCats((cs) => cs.map((c) => {
+        if (c.id === editing.catId) return { ...c, subcategories: c.subcategories.filter((_, i) => i !== editing.index) };
+        if (c.id === formCatId) return { ...c, subcategories: [...c.subcategories, v] };
+        return c;
+      }));
+      void from;
+      toast.success("Sub-category moved");
     }
     setDialogOpen(false);
-    setEditIdx(null);
+    setEditing(null);
     setFormValue("");
   };
 
-  const removeSub = (i: number) => {
-    if (!selected) return;
-    updateSubs(selected.subcategories.filter((_, idx) => idx !== i));
+  const removeSub = (catId: string, index: number) => {
+    const cat = cats.find((c) => c.id === catId);
+    if (!cat) return;
+    updateSubs(catId, cat.subcategories.filter((_, i) => i !== index));
     toast.success("Sub-category deleted");
   };
 
-  const filteredSubs = selected
-    ? selected.subcategories
-        .map((s, i) => ({ s, i }))
-        .filter(({ s }) => s.toLowerCase().includes(search.toLowerCase()))
-    : [];
+  const rows = useMemo(() => {
+    const q = search.toLowerCase().trim();
+    return cats
+      .filter((c) => filterId === "all" || c.id === filterId)
+      .flatMap((c) => c.subcategories.map((sub, i) => ({ catId: c.id, catName: c.name, sub, index: i })))
+      .filter((r) => !q || r.sub.toLowerCase().includes(q));
+  }, [cats, filterId, search]);
 
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
-  useEffect(() => { setPage(1); }, [search, pageSize, selectedId]);
-  const pagedSubs = paginate(filteredSubs, page, pageSize);
-
+  useEffect(() => { setPage(1); }, [search, pageSize, filterId]);
+  const pagedSubs = paginate(rows, page, pageSize);
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
-      <div className="rounded-lg border border-border bg-card overflow-hidden">
-        <div className="border-b border-border px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted-foreground">
-          Categories
-        </div>
-        <div className="max-h-[520px] overflow-auto">
-          {cats.map((c) => {
-            const active = c.id === selectedId;
-            return (
-              <button
-                key={c.id}
-                onClick={() => { setSelectedId(c.id); setSubToDelete(null); }}
-                className={`flex w-full items-center justify-between gap-2 px-3 py-2.5 text-left text-sm border-b border-border last:border-0 transition-colors ${
-                  active ? "bg-primary/10 text-foreground" : "hover:bg-muted/60"
-                }`}
-              >
-                <span className="truncate font-medium">{c.name}</span>
-                <Badge variant={active ? "default" : "secondary"} className="shrink-0 rounded-md">
-                  {c.subcategories.length}
-                </Badge>
-              </button>
-            );
-          })}
-          {cats.length === 0 && (
-            <div className="p-6 text-center text-sm text-muted-foreground">No categories.</div>
+    <div className="space-y-3">
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search sub-categories…">
+        <Select value={filterId} onValueChange={setFilterId}>
+          <SelectTrigger className="w-56"><SelectValue placeholder="All Categories" /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All Categories</SelectItem>
+            {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+          </SelectContent>
+        </Select>
+        <Button size="sm" onClick={openAdd} disabled={cats.length === 0} className="ml-auto rounded-lg h-9 font-bold uppercase">
+          <Plus className="size-4 mr-1" /> Add Sub-category
+        </Button>
+      </TableSearchBar>
+
+      <div className="rounded-lg border border-border bg-card">
+        <ul className="divide-y divide-border">
+          {pagedSubs.map((r) => (
+            <li key={`${r.catId}-${r.index}`} className="flex items-center gap-3 px-4 py-2.5">
+              <span className="flex-1 truncate text-sm">{r.sub}</span>
+              <Badge variant="secondary" className="rounded-md shrink-0">{r.catName}</Badge>
+              <Button size="sm" variant="outline" onClick={() => openEdit(r.catId, r.index, r.sub)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
+                <Pencil className="size-3.5 mr-1" /> Edit
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => setSubToDelete({ catId: r.catId, index: r.index, name: r.sub })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
+                <Trash2 className="size-3.5 mr-1" /> Delete
+              </Button>
+            </li>
+          ))}
+          {rows.length === 0 && (
+            <li className="p-8 text-center text-sm text-muted-foreground">No sub-categories found.</li>
           )}
-        </div>
+        </ul>
       </div>
 
-      <div className="space-y-3">
-        {selected && (
-          <TableSearchBar value={search} onChange={setSearch} placeholder="Search sub-categories…" />
-        )}
-        <div className="rounded-lg border border-border bg-card">
-          {selected ? (
-            <>
-              <div className="flex flex-wrap items-center justify-between gap-3 border-b border-border px-4 py-3">
-                <div>
-                  <div className="font-semibold">{selected.name}</div>
-                  <div className="text-xs text-muted-foreground">
-                    {selected.subcategories.length} sub-categories
-                  </div>
-                </div>
-                <Button size="sm" onClick={openAdd} className="rounded-lg h-9 font-bold uppercase">
-                  <Plus className="size-4 mr-1" /> Add Sub-category
-                </Button>
-              </div>
+      <TablePagination total={rows.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
 
-              <ul className="divide-y divide-border">
-                {pagedSubs.map(({ s, i }) => (
-                  <li key={`${s}-${i}`} className="flex items-center gap-3 px-4 py-2.5">
-                    <span className="flex-1 truncate text-sm">{s}</span>
-                    <Button size="sm" variant="outline" onClick={() => openEdit(i)} className="rounded-lg h-8 text-amber-600 hover:bg-amber-500/10 hover:text-amber-700">
-                      <Pencil className="size-3.5 mr-1" /> Edit
-                    </Button>
-                    <Button size="sm" variant="outline" onClick={() => setSubToDelete({ index: i, name: s })} className="rounded-lg h-8 text-destructive hover:bg-destructive/20 hover:text-destructive">
-                      <Trash2 className="size-3.5 mr-1" /> Delete
-                    </Button>
-                  </li>
-                ))}
-                {filteredSubs.length === 0 && (
-                  <li className="p-8 text-center text-sm text-muted-foreground">
-                    {selected.subcategories.length === 0 ? "No sub-categories yet. Click Add Sub-category to create one." : "No sub-categories match your search."}
-                  </li>
-                )}
-              </ul>
-            </>
-          ) : (
-            <div className="p-10 text-center text-sm text-muted-foreground">Select a category to manage its sub-categories.</div>
-          )}
-        </div>
-        {selected && (
-          <TablePagination total={filteredSubs.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
-        )}
-      </div>
-
-
-      <Dialog open={dialogOpen} onOpenChange={(v) => { setDialogOpen(v); if (!v) { setEditIdx(null); setFormValue(""); } }}>
+      <Dialog open={dialogOpen} onOpenChange={(v) => { setDialogOpen(v); if (!v) { setEditing(null); setFormValue(""); } }}>
         <DialogContent className="max-w-md">
           <DialogHeader>
-            <DialogTitle>{editIdx === null ? "Add Sub-category" : "Edit Sub-category"}</DialogTitle>
+            <DialogTitle>{editing === null ? "Add Sub-category" : "Edit Sub-category"}</DialogTitle>
           </DialogHeader>
           <div className="grid gap-3 px-1 py-1">
-            <div className="text-xs text-muted-foreground">
-              Under <span className="font-medium text-foreground">{selected?.name}</span>
-            </div>
+            <Field label="Category">
+              <Select value={formCatId} onValueChange={setFormCatId}>
+                <SelectTrigger><SelectValue placeholder="Select category" /></SelectTrigger>
+                <SelectContent>
+                  {cats.map((c) => <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </Field>
             <Field label="Name">
               <Input
                 value={formValue}
@@ -418,25 +406,26 @@ function SubcategoriesTab({
           </div>
           <DialogFooter>
             <Button onClick={submitForm} className="rounded-lg font-bold uppercase">
-              {editIdx === null ? "Create Sub-category" : "Save Changes"}
+              {editing === null ? "Create Sub-category" : "Save Changes"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       <AlertDialog open={!!subToDelete} onOpenChange={(v) => { if (!v) setSubToDelete(null); }}>
+
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Delete sub-category?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove <b>{subToDelete?.name}</b> from <b>{selected?.name}</b>. This action cannot be undone.
+              This will permanently remove <b>{subToDelete?.name}</b> from its category. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSubToDelete(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => { if (subToDelete) { removeSub(subToDelete.index); setSubToDelete(null); } }}
+              onClick={() => { if (subToDelete) { removeSub(subToDelete.catId, subToDelete.index); setSubToDelete(null); } }}
             >
               Delete
             </AlertDialogAction>
