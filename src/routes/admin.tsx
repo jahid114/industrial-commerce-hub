@@ -1,6 +1,6 @@
 import { Outlet, Link, createFileRoute, useNavigate, useRouterState } from "@tanstack/react-router";
 import { useEffect } from "react";
-import { LayoutDashboard, Package, Boxes, Building2, ShoppingBag, Users, FileText, BarChart3, LogOut, Menu, X, User, Settings, Shield, PanelLeftClose, PanelLeftOpen, Briefcase, Mail, Handshake } from "lucide-react";
+import { LayoutDashboard, Package, Boxes, Building2, ShoppingBag, Users, FileText, BarChart3, LogOut, Menu, X, User, Settings, Shield, UserCog, PanelLeftClose, PanelLeftOpen, Briefcase, Mail, Handshake } from "lucide-react";
 import { useState } from "react";
 import { Logo } from "@/components/Logo";
 import { Button } from "@/components/ui/button";
@@ -30,6 +30,7 @@ const navItems: ReadonlyArray<{ to: string; label: string; icon: typeof Package;
   { to: "/admin/messages", label: "Messages", icon: Mail },
   { to: "/admin/reports", label: "Reports", icon: BarChart3 },
 
+  { to: "/admin/users", label: "Admin Users", icon: UserCog },
   { to: "/admin/roles", label: "Roles & Permissions", icon: Shield },
   { to: "/admin/settings", label: "Settings", icon: Settings },
 ];
