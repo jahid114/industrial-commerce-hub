@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
 import { Plus, Pencil, Trash2, Tag, GitBranch, Award, Globe } from "lucide-react";
 import { BrandsTab, CountriesTab } from "@/components/admin/TaxonomyTabs";
+import { TableSearchBar, TablePagination, paginate } from "@/components/admin/TableToolbar";
+
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
