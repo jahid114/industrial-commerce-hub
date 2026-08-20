@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Plus, Pencil, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -16,8 +16,10 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useBrandsAdmin, useCountriesAdmin, slugifyId, type BusinessCountry } from "@/lib/taxonomy-store";
+import { TableSearchBar, TablePagination, paginate } from "@/components/admin/TableToolbar";
 import type { Brand, Country } from "@/data/types";
 import { toast } from "sonner";
+
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -37,13 +39,18 @@ export function BrandsTab() {
   const [editing, setEditing] = useState<Brand | null>(null);
   const [open, setOpen] = useState(false);
   const [toDelete, setToDelete] = useState<Brand | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(
     () => brands.filter((b) => `${b.name} ${b.country}`.toLowerCase().includes(search.toLowerCase())),
     [brands, search],
   );
+  useEffect(() => { setPage(1); }, [search, pageSize]);
+  const paged = paginate(filtered, page, pageSize);
 
   const countryNames = countries.map((c) => c.name);
+
 
   return (
     <div className="space-y-3">
@@ -63,10 +70,9 @@ export function BrandsTab() {
         </Dialog>
       </div>
 
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by brand name or country…" />
+
       <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border p-3">
-          <Input placeholder="Search brands…" value={search} onChange={(e) => setSearch(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" />
-        </div>
         <table className="w-full text-sm">
           <thead className="border-b border-border text-xs uppercase text-muted-foreground">
             <tr>
@@ -77,7 +83,7 @@ export function BrandsTab() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((b) => (
+            {paged.map((b) => (
               <tr key={b.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3">
                   <div className="font-medium">{b.name}</div>
@@ -99,6 +105,9 @@ export function BrandsTab() {
           </tbody>
         </table>
       </div>
+
+      <TablePagination total={filtered.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+
 
       <AlertDialog open={!!toDelete} onOpenChange={(v) => { if (!v) setToDelete(null); }}>
         <AlertDialogContent>
@@ -180,11 +189,16 @@ export function CountriesTab() {
   const [editing, setEditing] = useState<BusinessCountry | null>(null);
   const [open, setOpen] = useState(false);
   const [toDelete, setToDelete] = useState<BusinessCountry | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const filtered = useMemo(
     () => countries.filter((c) => `${c.name} ${c.code}`.toLowerCase().includes(search.toLowerCase())),
     [countries, search],
   );
+  useEffect(() => { setPage(1); }, [search, pageSize]);
+  const paged = paginate(filtered, page, pageSize);
+
 
   return (
     <div className="space-y-3">
@@ -203,10 +217,9 @@ export function CountriesTab() {
         </Dialog>
       </div>
 
+      <TableSearchBar value={search} onChange={setSearch} placeholder="Search by country name or code…" />
+
       <div className="rounded-lg border border-border bg-card">
-        <div className="border-b border-border p-3">
-          <Input placeholder="Search countries…" value={search} onChange={(e) => setSearch(e.target.value)} className="border-0 shadow-none focus-visible:ring-0" />
-        </div>
         <table className="w-full text-sm">
           <thead className="border-b border-border text-xs uppercase text-muted-foreground">
             <tr>
@@ -217,7 +230,7 @@ export function CountriesTab() {
             </tr>
           </thead>
           <tbody>
-            {filtered.map((c) => (
+            {paged.map((c) => (
               <tr key={c.id} className="border-b border-border last:border-0">
                 <td className="px-4 py-3 font-medium">{c.name}</td>
                 <td className="px-4 py-3 font-mono text-xs">{c.code}</td>
@@ -236,6 +249,9 @@ export function CountriesTab() {
           </tbody>
         </table>
       </div>
+
+      <TablePagination total={filtered.length} page={page} pageSize={pageSize} onPageChange={setPage} onPageSizeChange={setPageSize} />
+
 
       <AlertDialog open={!!toDelete} onOpenChange={(v) => { if (!v) setToDelete(null); }}>
         <AlertDialogContent>
