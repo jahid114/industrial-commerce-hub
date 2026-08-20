@@ -418,14 +418,14 @@ function SubcategoriesTab({
           <AlertDialogHeader>
             <AlertDialogTitle>Delete sub-category?</AlertDialogTitle>
             <AlertDialogDescription>
-              This will permanently remove <b>{subToDelete?.name}</b> from <b>{selected?.name}</b>. This action cannot be undone.
+              This will permanently remove <b>{subToDelete?.name}</b> from its category. This action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel onClick={() => setSubToDelete(null)}>Cancel</AlertDialogCancel>
             <AlertDialogAction
               className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
-              onClick={() => { if (subToDelete) { removeSub(subToDelete.index); setSubToDelete(null); } }}
+              onClick={() => { if (subToDelete) { removeSub(subToDelete.catId, subToDelete.index); setSubToDelete(null); } }}
             >
               Delete
             </AlertDialogAction>
