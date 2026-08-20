@@ -313,6 +313,12 @@ function SubcategoriesTab({
         .filter(({ s }) => s.toLowerCase().includes(search.toLowerCase()))
     : [];
 
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  useEffect(() => { setPage(1); }, [search, pageSize, selectedId]);
+  const pagedSubs = paginate(filteredSubs, page, pageSize);
+
+
   return (
     <div className="grid gap-4 lg:grid-cols-[280px_1fr]">
       <div className="rounded-lg border border-border bg-card overflow-hidden">
