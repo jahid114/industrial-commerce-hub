@@ -495,14 +495,20 @@ function PartnersAdminPage() {
                 </SelectContent>
               </Select>
             </DField>
-            <DField label="Status">
-              <Select value={draft.status} onValueChange={(v) => setDraft({ ...draft, status: v as PartnerStatus })}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {PARTNER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
-                </SelectContent>
-              </Select>
-            </DField>
+            {!editing && (
+              <DField label="Initial Status">
+                <Select value={draft.status} onValueChange={(v) => setDraft({ ...draft, status: v as PartnerStatus })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    {PARTNER_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}
+                  </SelectContent>
+                </Select>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Approved records go straight to Partners &amp; Investors; anything else lands in Requests.
+                </p>
+              </DField>
+            )}
+
             <DField label="Passport Number"><Input value={draft.passportNumber} onChange={(e) => setDraft({ ...draft, passportNumber: e.target.value })} /></DField>
             <DField label="Website"><Input value={draft.website} onChange={(e) => setDraft({ ...draft, website: e.target.value })} placeholder="https://" /></DField>
             <DField label="Shop Location"><Input value={draft.shopLocation} onChange={(e) => setDraft({ ...draft, shopLocation: e.target.value })} /></DField>
