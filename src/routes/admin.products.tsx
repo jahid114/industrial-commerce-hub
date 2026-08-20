@@ -45,7 +45,14 @@ function AdminProductsPage() {
   const [productToDelete, setProductToDelete] = useState<Product | null>(null);
   const [viewing, setViewing] = useState<Product | null>(null);
 
-  const filtered = products.filter((p) => `${p.name} ${p.sku}`.toLowerCase().includes(search.toLowerCase()));
+  const filtered = products.filter((p) => {
+    const s = search.toLowerCase().trim();
+    const matchesQ = !s || `${p.name} ${p.sku}`.toLowerCase().includes(s);
+    const matchesCategory = categoryFilter === "all" || p.categoryId === categoryFilter;
+    const matchesBrand = brandFilter === "all" || p.brandId === brandFilter;
+    const matchesCountry = countryFilter === "all" || p.country === countryFilter;
+    return matchesQ && matchesCategory && matchesBrand && matchesCountry;
+  });
 
   const save = (data: Product) => {
     if (editing) {
