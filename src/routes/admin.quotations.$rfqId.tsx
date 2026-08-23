@@ -217,10 +217,6 @@ function AdminQuotationDetail() {
               <Ban className="mr-1 size-4" /> Reject
             </Button>
           )}
-          <Select value={q.status} onValueChange={(v) => setStatus(v as QuotationStatus)}>
-            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-            <SelectContent>{ALL_QUOTATION_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-          </Select>
         </div>
       </div>
 
