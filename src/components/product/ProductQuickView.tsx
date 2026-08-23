@@ -11,7 +11,7 @@ import { useStore } from "@/lib/store";
 import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission, getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
-export function ProductQuickView({ product, open, onOpenChange }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void }) {
+export function ProductQuickView({ product, open, onOpenChange, hideAddToCart = false }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void; hideAddToCart?: boolean }) {
   const { dispatch, user } = useStore();
   const commissionPct = useCurrentAgentCommission();
   const showAgent = canSeeAgentPrice(user?.role);
