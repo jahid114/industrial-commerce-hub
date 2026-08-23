@@ -11,7 +11,7 @@ import { useStore } from "@/lib/store";
 import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission, getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
-export function ProductQuickView({ product, open, onOpenChange }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void }) {
+export function ProductQuickView({ product, open, onOpenChange, hideAddToCart = false }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void; hideAddToCart?: boolean }) {
   const { dispatch, user } = useStore();
   const commissionPct = useCurrentAgentCommission();
   const showAgent = canSeeAgentPrice(user?.role);
@@ -107,15 +107,17 @@ export function ProductQuickView({ product, open, onOpenChange }: { product: Pro
               </dl>
             </div>
 
-            <div className="mt-6">
-              <Button
-                size="sm"
-                className="w-full"
-                onClick={() => { dispatch({ type: "ADD_TO_CART", productId: product.id, quantity: product.moq }); toast.success("Added to cart"); onOpenChange(false); }}
-              >
-                <ShoppingCart className="size-4 mr-2" /> Add to Cart
-              </Button>
-            </div>
+            {!hideAddToCart && (
+              <div className="mt-6">
+                <Button
+                  size="sm"
+                  className="w-full"
+                  onClick={() => { dispatch({ type: "ADD_TO_CART", productId: product.id, quantity: product.moq }); toast.success("Added to cart"); onOpenChange(false); }}
+                >
+                  <ShoppingCart className="size-4 mr-2" /> Add to Cart
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
