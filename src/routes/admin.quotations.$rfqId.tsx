@@ -23,7 +23,6 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -45,9 +44,7 @@ import {
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate, newOrderId } from "@/lib/format";
 import {
-  ALL_QUOTATION_STATUSES,
   QSTAGE_INFO,
-  QUOTATION_STAGES,
   QUOTATION_STATUS_COLOR,
   appendQuotationEvent,
   computeQuotedTotal,
@@ -56,7 +53,7 @@ import {
   nowIso,
   quotationStageIndex,
 } from "@/lib/quotation-workflow";
-import type { Order, Quotation, QuotationEvent, QuotationItem, QuotationStatus } from "@/data/types";
+import type { Order, Quotation, QuotationEvent, QuotationItem } from "@/data/types";
 import { toast } from "sonner";
 
 export const Route = createFileRoute("/admin/quotations/$rfqId")({
@@ -121,11 +118,6 @@ function AdminQuotationDetail() {
     }
     patchQ({ status: nextAction.next }, { at: nowIso(), by: actor, type: "status", message: `Status advanced to ${nextAction.next}` });
     toast.success(`Moved to ${nextAction.next}`);
-  };
-
-  const setStatus = (s: QuotationStatus) => {
-    patchQ({ status: s }, { at: nowIso(), by: actor, type: "status", message: `Status changed to ${s}` });
-    toast.success(`Status: ${s}`);
   };
 
   const sendQuote = () => {
@@ -225,10 +217,6 @@ function AdminQuotationDetail() {
               <Ban className="mr-1 size-4" /> Reject
             </Button>
           )}
-          <Select value={q.status} onValueChange={(v) => setStatus(v as QuotationStatus)}>
-            <SelectTrigger className="w-40"><SelectValue /></SelectTrigger>
-            <SelectContent>{ALL_QUOTATION_STATUSES.map((s) => <SelectItem key={s} value={s}>{s}</SelectItem>)}</SelectContent>
-          </Select>
         </div>
       </div>
 
