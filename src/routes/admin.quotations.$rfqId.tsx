@@ -120,11 +120,6 @@ function AdminQuotationDetail() {
     toast.success(`Moved to ${nextAction.next}`);
   };
 
-  const setStatus = (s: QuotationStatus) => {
-    patchQ({ status: s }, { at: nowIso(), by: actor, type: "status", message: `Status changed to ${s}` });
-    toast.success(`Status: ${s}`);
-  };
-
   const sendQuote = () => {
     patchQ(
       { status: "Quoted", items, quotedTotal, validUntil: validUntil || undefined, paymentTerms: paymentTerms || undefined, deliveryTerms: deliveryTerms || undefined },
