@@ -26,6 +26,7 @@ function QuotationPage() {
   const navigate = useNavigate();
   const { isAuthenticated, isAdmin, isAgent, isPartner } = useStore();
   const [submitted, setSubmitted] = useState<Quotation | null>(null);
+  const [newAccountEmail, setNewAccountEmail] = useState<string | undefined>(undefined);
 
   // Logged-in customers should use their portal version
   useEffect(() => {
@@ -47,9 +48,9 @@ function QuotationPage() {
       </div>
       <div className="container mx-auto px-4 py-10">
         {submitted ? (
-          <QuotationSuccess rfq={submitted} browseHref="/products" listHref="/auth/login" />
+          <QuotationSuccess rfq={submitted} browseHref="/products" listHref="/auth/login" newAccountEmail={newAccountEmail} />
         ) : (
-          <QuotationBuilder initialProductId={search.productId} onSubmitted={setSubmitted} />
+          <QuotationBuilder initialProductId={search.productId} registerGuest onSubmitted={(rfq, email) => { setNewAccountEmail(email); setSubmitted(rfq); }} />
         )}
       </div>
     </PublicLayout>
