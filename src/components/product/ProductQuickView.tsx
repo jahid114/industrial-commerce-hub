@@ -107,15 +107,17 @@ export function ProductQuickView({ product, open, onOpenChange, hideAddToCart = 
               </dl>
             </div>
 
-            <div className="mt-6">
-              <Button
-                size="sm"
-                className="w-full"
-                onClick={() => { dispatch({ type: "ADD_TO_CART", productId: product.id, quantity: product.moq }); toast.success("Added to cart"); onOpenChange(false); }}
-              >
-                <ShoppingCart className="size-4 mr-2" /> Add to Cart
-              </Button>
-            </div>
+            {!hideAddToCart && (
+              <div className="mt-6">
+                <Button
+                  size="sm"
+                  className="w-full"
+                  onClick={() => { dispatch({ type: "ADD_TO_CART", productId: product.id, quantity: product.moq }); toast.success("Added to cart"); onOpenChange(false); }}
+                >
+                  <ShoppingCart className="size-4 mr-2" /> Add to Cart
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </DialogContent>
