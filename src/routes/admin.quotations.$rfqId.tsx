@@ -66,6 +66,8 @@ export const Route = createFileRoute("/admin/quotations/$rfqId")({
 function AdminQuotationDetail() {
   const { rfqId } = Route.useParams();
   const { quotations, dispatch, user } = useStore();
+  const { users: adminUsers } = useRbac();
+  const adminOptions = adminUsers.filter((u) => u.status === "Active");
   const navigate = useNavigate();
   const q = quotations.find((x) => x.id === rfqId);
   if (!q) throw notFound();
