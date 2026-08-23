@@ -15,7 +15,7 @@ export interface RegisteredCustomer {
   suspendReason?: string;
   notes?: string;
   /** Set when the account was auto-created from a guest checkout. */
-  source?: "Guest Checkout" | "Registration";
+  source?: "Guest Checkout" | "Guest RFQ" | "Registration";
   /** Demo-only: temporary password issued for auto-created accounts (their email). */
   tempPassword?: string;
   mustResetPassword?: boolean;
@@ -79,7 +79,7 @@ interface Ctx extends State {
   remove: (id: string) => void;
   suspend: (id: string, reason: string) => void;
   /** Finds a customer by email, or auto-registers one (guest checkout). */
-  ensureCustomer: (c: { name: string; email: string; phone?: string; company?: string; address?: string; city?: string }) => { customer: RegisteredCustomer; created: boolean };
+  ensureCustomer: (c: { name: string; email: string; phone?: string; company?: string; address?: string; city?: string; source?: RegisteredCustomer["source"]; notes?: string }) => { customer: RegisteredCustomer; created: boolean };
   reinstate: (id: string) => void;
 }
 
@@ -112,16 +112,17 @@ export function CustomersProvider({ children }: { children: ReactNode }) {
     const email = c.email.trim().toLowerCase();
     const existing = stateRef.current.customers.find((x) => x.email.trim().toLowerCase() === email);
     if (existing) return { customer: existing, created: false };
+    const { source, notes, ...rest } = c;
     const customer: RegisteredCustomer = {
-      ...c,
+      ...rest,
       email,
       id: `CUST-${Math.floor(1000 + Math.random() * 9000)}`,
       registeredAt: new Date().toISOString(),
       status: "Active",
-      source: "Guest Checkout",
+      source: source ?? "Guest Checkout",
       tempPassword: email,
       mustResetPassword: true,
-      notes: "Auto-created from a guest checkout order.",
+      notes: notes ?? "Auto-created from a guest checkout order.",
     };
     dispatch({ type: "ADD", c: customer });
     return { customer, created: true };

@@ -10,6 +10,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { products, getProduct } from "@/data/products";
 import { brands } from "@/data/brands";
 import { useStore } from "@/lib/store";
+import { useCustomers } from "@/lib/customers-store";
 import { newRfqId } from "@/lib/format";
 import { formatBDT } from "@/lib/format";
 import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
@@ -26,11 +27,14 @@ interface DraftLine {
 
 interface Props {
   initialProductId?: string;
-  onSubmitted: (rfq: Quotation) => void;
+  /** Auto-register the submitter as a customer account (public/guest RFQ flow). */
+  registerGuest?: boolean;
+  onSubmitted: (rfq: Quotation, createdAccountEmail?: string) => void;
 }
 
-export function QuotationBuilder({ initialProductId, onSubmitted }: Props) {
+export function QuotationBuilder({ initialProductId, registerGuest, onSubmitted }: Props) {
   const { dispatch, user } = useStore();
+  const { ensureCustomer } = useCustomers();
 
   const [name, setName] = useState(user?.name ?? "");
   const [email, setEmail] = useState(user?.email ?? "");
@@ -105,7 +109,21 @@ export function QuotationBuilder({ initialProductId, onSubmitted }: Props) {
       ],
     };
     dispatch({ type: "ADD_QUOTATION", quotation: rfq });
-    onSubmitted(rfq);
+
+    // Guest RFQ: register the requester so the quotation is traceable to an account.
+    let createdAccountEmail: string | undefined;
+    if (registerGuest) {
+      const { created } = ensureCustomer({
+        name: name.trim(),
+        email: email.trim(),
+        phone: phone.trim(),
+        company: company.trim() || undefined,
+        source: "Guest RFQ",
+        notes: "Auto-created from a public quotation request.",
+      });
+      if (created) createdAccountEmail = email.trim().toLowerCase();
+    }
+    onSubmitted(rfq, createdAccountEmail);
   };
 
   return (
@@ -277,7 +295,7 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   );
 }
 
-export function QuotationSuccess({ rfq, browseHref, listHref }: { rfq: Quotation; browseHref: string; listHref: string }) {
+export function QuotationSuccess({ rfq, browseHref, listHref, newAccountEmail }: { rfq: Quotation; browseHref: string; listHref: string; newAccountEmail?: string }) {
   return (
     <div className="mx-auto max-w-xl py-16 text-center">
       <div className="mx-auto flex size-20 items-center justify-center rounded-full bg-accent/20">
@@ -287,6 +305,16 @@ export function QuotationSuccess({ rfq, browseHref, listHref }: { rfq: Quotation
       <p className="mt-2 text-muted-foreground">Reference: <strong>{rfq.id}</strong></p>
       <p className="mt-1 text-sm text-muted-foreground">{rfq.items.length} product{rfq.items.length !== 1 ? "s" : ""} included</p>
       <p className="mt-4 text-sm text-muted-foreground">Our procurement team will review your request and respond with detailed pricing within 24 hours.</p>
+      {newAccountEmail && (
+        <div className="mt-6 rounded-lg border border-primary/30 bg-primary/5 p-5 text-left">
+          <h2 className="font-display text-lg font-bold">We created an account for you</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            So you can track this quotation, we registered <strong>{newAccountEmail}</strong>. Your temporary password is your
+            email address — please sign in and change it.
+          </p>
+          <Button asChild size="sm" className="mt-3 font-bold"><Link to="/auth/login">Sign in now</Link></Button>
+        </div>
+      )}
       <div className="mt-6 flex flex-wrap justify-center gap-3">
         <Button asChild><Link to={browseHref as never}>Browse More</Link></Button>
         <Button variant="outline" asChild><Link to={listHref as never}>My Quotations</Link></Button>
