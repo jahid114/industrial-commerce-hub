@@ -41,6 +41,8 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useRbac } from "@/lib/rbac-store";
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate, newOrderId } from "@/lib/format";
 import {
@@ -64,6 +66,8 @@ export const Route = createFileRoute("/admin/quotations/$rfqId")({
 function AdminQuotationDetail() {
   const { rfqId } = Route.useParams();
   const { quotations, dispatch, user } = useStore();
+  const { users: adminUsers } = useRbac();
+  const adminOptions = adminUsers.filter((u) => u.status === "Active");
   const navigate = useNavigate();
   const q = quotations.find((x) => x.id === rfqId);
   if (!q) throw notFound();
@@ -329,7 +333,22 @@ function AdminQuotationDetail() {
             </div>
             <div className="grid gap-4 p-4 md:grid-cols-2">
               <TermField label="Valid until" value={validUntil} editing={editTerms} onChange={setValidUntil} type="date" placeholder="—" />
-              <TermField label="Assigned to" value={assignedTo} editing={editTerms} onChange={setAssignedTo} placeholder="Sales rep" />
+              <div>
+                <Label className="mb-1 block text-xs font-semibold uppercase text-muted-foreground">Assigned to</Label>
+                {editTerms ? (
+                  <Select value={assignedTo || "__none"} onValueChange={(v) => setAssignedTo(v === "__none" ? "" : v)}>
+                    <SelectTrigger><SelectValue placeholder="Select admin user" /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="__none">Unassigned</SelectItem>
+                      {adminOptions.map((u) => (
+                        <SelectItem key={u.id} value={u.name}>{u.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                ) : (
+                  <div className="text-sm">{assignedTo || <span className="text-muted-foreground">Unassigned</span>}</div>
+                )}
+              </div>
               <TermField label="Payment terms" value={paymentTerms} editing={editTerms} onChange={setPaymentTerms} placeholder="e.g. 50% advance" />
               <TermField label="Delivery terms" value={deliveryTerms} editing={editTerms} onChange={setDeliveryTerms} placeholder="e.g. CFR Chittagong" />
             </div>
