@@ -108,6 +108,7 @@ export interface PartnerRequest {
   amount?: string;
   message?: string;
   files?: string[];
+  documents?: PartnerDocument[];
   status: PartnerStatus;
   internalNotes?: string;
   timeline?: PartnerEvent[];
