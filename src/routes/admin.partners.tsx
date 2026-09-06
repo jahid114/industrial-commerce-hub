@@ -43,7 +43,6 @@ import {
   partnerStageIndex,
   readPartnerRequests,
   writePartnerRequests,
-  type PartnerRequest,
   PARTNER_DOC_TYPES,
   type PartnerDocument,
   type PartnerRequest,
