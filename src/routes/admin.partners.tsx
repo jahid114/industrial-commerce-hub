@@ -669,6 +669,83 @@ function PartnersAdminPage() {
         </DialogContent>
       </Dialog>
 
+      {/* Document add / edit */}
+      <Dialog open={docOpen} onOpenChange={setDocOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{docEditingId ? "Edit Document" : "Add Document"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <DField label="Document Name *">
+              <Input value={docDraft.name} onChange={(e) => setDocDraft({ ...docDraft, name: e.target.value })} placeholder="e.g. Trade License 2026" />
+            </DField>
+            <DField label="Type">
+              <Select value={docDraft.type} onValueChange={(v) => setDocDraft({ ...docDraft, type: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PARTNER_DOC_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </DField>
+            <DField label="Reference / Number">
+              <Input value={docDraft.reference} onChange={(e) => setDocDraft({ ...docDraft, reference: e.target.value })} />
+            </DField>
+            <DField label="Document Link">
+              <Input value={docDraft.url} onChange={(e) => setDocDraft({ ...docDraft, url: e.target.value })} placeholder="https://" />
+            </DField>
+            <DField label="Notes">
+              <Textarea rows={2} value={docDraft.notes} onChange={(e) => setDocDraft({ ...docDraft, notes: e.target.value })} />
+            </DField>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDocOpen(false)}>Cancel</Button>
+            <Button onClick={saveDoc} className="font-bold uppercase">{docEditingId ? "Save Document" : "Add Document"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Document view */}
+      <Dialog open={!!docView} onOpenChange={(o) => !o && setDocView(null)}>
+        <DialogContent className="max-w-lg">
+          {docView && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{docView.name}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Type" value={docView.type} />
+                <Field label="Reference" value={docView.reference || "—"} />
+                <Field label="Added" value={formatDate(docView.addedAt)} />
+              </div>
+              {docView.notes && <Block label="Notes">{docView.notes}</Block>}
+              {docView.url && (
+                <a
+                  href={docView.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+                >
+                  <ExternalLink className="size-4" /> Open document
+                </a>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!docDeleteId} onOpenChange={(o) => !o && setDocDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this document?</AlertDialogTitle>
+            <AlertDialogDescription>The document record will be removed from this partner.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDocDelete}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent>
           <AlertDialogHeader>
