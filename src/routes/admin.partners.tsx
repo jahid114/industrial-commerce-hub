@@ -44,6 +44,9 @@ import {
   readPartnerRequests,
   writePartnerRequests,
   type PartnerRequest,
+  PARTNER_DOC_TYPES,
+  type PartnerDocument,
+  type PartnerRequest,
   type PartnerStatus,
   type PartnerType,
 } from "@/lib/partner-requests";
