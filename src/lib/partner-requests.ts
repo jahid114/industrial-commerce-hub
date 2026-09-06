@@ -71,6 +71,25 @@ export interface PartnerEvent {
   message: string;
 }
 
+export interface PartnerDocument {
+  id: string;
+  name: string;
+  type: string;
+  reference?: string;
+  url?: string;
+  notes?: string;
+  addedAt: string;
+}
+
+export const PARTNER_DOC_TYPES = [
+  "Trade License",
+  "NID / Passport",
+  "Agreement",
+  "Bank Statement",
+  "Tax Certificate",
+  "Other",
+];
+
 export interface PartnerRequest {
   id: string;
   source?: PartnerSource;
@@ -89,6 +108,7 @@ export interface PartnerRequest {
   amount?: string;
   message?: string;
   files?: string[];
+  documents?: PartnerDocument[];
   status: PartnerStatus;
   internalNotes?: string;
   timeline?: PartnerEvent[];

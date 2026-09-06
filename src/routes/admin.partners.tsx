@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useMemo, useState } from "react";
-import { Eye, Search, Inbox, Plus, Pencil, Trash2, Check, Circle, Ban, Clock } from "lucide-react";
+import { Eye, Search, Inbox, Plus, Pencil, Trash2, Check, Circle, Ban, Clock, FileText, ExternalLink } from "lucide-react";
+import { TablePagination, paginate } from "@/components/admin/TableToolbar";
 import { toast } from "sonner";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -42,6 +43,8 @@ import {
   partnerStageIndex,
   readPartnerRequests,
   writePartnerRequests,
+  PARTNER_DOC_TYPES,
+  type PartnerDocument,
   type PartnerRequest,
   type PartnerStatus,
   type PartnerType,
@@ -109,6 +112,15 @@ function PartnersAdminPage() {
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [tab, setTab] = useState<"requests" | "records">("requests");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [docOpen, setDocOpen] = useState(false);
+  const [docEditingId, setDocEditingId] = useState<string | null>(null);
+  const [docDraft, setDocDraft] = useState<Omit<PartnerDocument, "id" | "addedAt">>({
+    name: "", type: "Trade License", reference: "", url: "", notes: "",
+  });
+  const [docDeleteId, setDocDeleteId] = useState<string | null>(null);
+  const [docView, setDocView] = useState<PartnerDocument | null>(null);
 
   useEffect(() => {
     setItems(readPartnerRequests());
@@ -139,6 +151,69 @@ function PartnersAdminPage() {
     persist(items.map((p) => (p.id === id ? apply(p) : p)));
     setActive((cur) => (cur && cur.id === id ? apply(cur) : cur));
     toast.success(`Marked as ${status}`);
+  };
+
+  const applyDocs = (id: string, docs: PartnerDocument[], note: string) => {
+    const apply = (p: PartnerRequest): PartnerRequest => ({
+      ...p,
+      documents: docs,
+      timeline: [
+        ...(p.timeline ?? []),
+        { at: new Date().toISOString(), by: "Admin", type: "note" as const, message: note },
+      ],
+    });
+    persist(items.map((p) => (p.id === id ? apply(p) : p)));
+    setActive((cur) => (cur && cur.id === id ? apply(cur) : cur));
+  };
+
+  const openDocAdd = () => {
+    setDocEditingId(null);
+    setDocDraft({ name: "", type: "Trade License", reference: "", url: "", notes: "" });
+    setDocOpen(true);
+  };
+
+  const openDocEdit = (d: PartnerDocument) => {
+    setDocEditingId(d.id);
+    setDocDraft({ name: d.name, type: d.type, reference: d.reference ?? "", url: d.url ?? "", notes: d.notes ?? "" });
+    setDocOpen(true);
+  };
+
+  const saveDoc = () => {
+    if (!active) return;
+    if (!docDraft.name.trim()) {
+      toast.error("Document name is required");
+      return;
+    }
+    const docs = active.documents ?? [];
+    if (docEditingId) {
+      applyDocs(
+        active.id,
+        docs.map((d) => (d.id === docEditingId ? { ...d, ...docDraft } : d)),
+        `Document updated: ${docDraft.name}`,
+      );
+      toast.success("Document updated");
+    } else {
+      const doc: PartnerDocument = {
+        ...docDraft,
+        id: `DOC-${Date.now().toString(36).toUpperCase()}`,
+        addedAt: new Date().toISOString(),
+      };
+      applyDocs(active.id, [...docs, doc], `Document added: ${doc.name}`);
+      toast.success("Document added");
+    }
+    setDocOpen(false);
+  };
+
+  const confirmDocDelete = () => {
+    if (!active || !docDeleteId) return;
+    const doc = (active.documents ?? []).find((d) => d.id === docDeleteId);
+    applyDocs(
+      active.id,
+      (active.documents ?? []).filter((d) => d.id !== docDeleteId),
+      `Document removed: ${doc?.name ?? docDeleteId}`,
+    );
+    setDocDeleteId(null);
+    toast.success("Document removed");
   };
 
   const openAdd = () => {
@@ -240,6 +315,11 @@ function PartnersAdminPage() {
     [items, statusFilter, typeFilter, q, tab],
   );
 
+  useEffect(() => {
+    setPage(1);
+  }, [q, statusFilter, typeFilter, tab, pageSize]);
+
+  const pageItems = paginate(filtered, page, pageSize);
 
   return (
     <div className="space-y-6">
@@ -311,7 +391,7 @@ function PartnersAdminPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.map((p) => (
+            {pageItems.map((p) => (
               <tr key={p.id} className="hover:bg-secondary/50">
                 <td className="px-4 py-3 font-mono text-xs">{p.id}</td>
                 <td className="px-4 py-3">
@@ -352,6 +432,14 @@ function PartnersAdminPage() {
         </table>
       </div>
 
+      <TablePagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
+
       {/* View dialog */}
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
@@ -383,6 +471,50 @@ function PartnersAdminPage() {
                   <Block label="Attachments">{active.files.join(", ")}</Block>
                 )}
                 {active.internalNotes && <Block label="Internal Notes">{active.internalNotes}</Block>}
+
+                {/* Documents */}
+                <div className="rounded-lg border border-border p-4">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <FileText className="size-4" /> Documents ({active.documents?.length ?? 0})
+                    </div>
+                    <Button size="sm" variant="outline" onClick={openDocAdd}>
+                      <Plus className="size-3.5 mr-1" /> Add Document
+                    </Button>
+                  </div>
+                  {active.documents && active.documents.length > 0 ? (
+                    <ul className="divide-y divide-border">
+                      {active.documents.map((d) => (
+                        <li key={d.id} className="flex flex-wrap items-center gap-2 py-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-medium">{d.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {d.type}
+                              {d.reference ? ` · ${d.reference}` : ""} · {formatDate(d.addedAt)}
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline" onClick={() => setDocView(d)}>
+                            <Eye className="size-3.5 mr-1" /> View
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => openDocEdit(d)}>
+                            <Pencil className="size-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive"
+                            onClick={() => setDocDeleteId(d.id)}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No documents attached yet.</p>
+                  )}
+                </div>
+
                 {active.status !== "Approved" && (
                   <>
                     {/* Stage stepper */}
@@ -536,6 +668,83 @@ function PartnersAdminPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Document add / edit */}
+      <Dialog open={docOpen} onOpenChange={setDocOpen}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>{docEditingId ? "Edit Document" : "Add Document"}</DialogTitle>
+          </DialogHeader>
+          <div className="grid gap-3">
+            <DField label="Document Name *">
+              <Input value={docDraft.name} onChange={(e) => setDocDraft({ ...docDraft, name: e.target.value })} placeholder="e.g. Trade License 2026" />
+            </DField>
+            <DField label="Type">
+              <Select value={docDraft.type} onValueChange={(v) => setDocDraft({ ...docDraft, type: v })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {PARTNER_DOC_TYPES.map((t) => <SelectItem key={t} value={t}>{t}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </DField>
+            <DField label="Reference / Number">
+              <Input value={docDraft.reference} onChange={(e) => setDocDraft({ ...docDraft, reference: e.target.value })} />
+            </DField>
+            <DField label="Document Link">
+              <Input value={docDraft.url} onChange={(e) => setDocDraft({ ...docDraft, url: e.target.value })} placeholder="https://" />
+            </DField>
+            <DField label="Notes">
+              <Textarea rows={2} value={docDraft.notes} onChange={(e) => setDocDraft({ ...docDraft, notes: e.target.value })} />
+            </DField>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setDocOpen(false)}>Cancel</Button>
+            <Button onClick={saveDoc} className="font-bold uppercase">{docEditingId ? "Save Document" : "Add Document"}</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Document view */}
+      <Dialog open={!!docView} onOpenChange={(o) => !o && setDocView(null)}>
+        <DialogContent className="max-w-lg">
+          {docView && (
+            <>
+              <DialogHeader>
+                <DialogTitle>{docView.name}</DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Field label="Type" value={docView.type} />
+                <Field label="Reference" value={docView.reference || "—"} />
+                <Field label="Added" value={formatDate(docView.addedAt)} />
+              </div>
+              {docView.notes && <Block label="Notes">{docView.notes}</Block>}
+              {docView.url && (
+                <a
+                  href={docView.url}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="inline-flex items-center gap-1.5 text-sm font-semibold text-primary hover:underline"
+                >
+                  <ExternalLink className="size-4" /> Open document
+                </a>
+              )}
+            </>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      <AlertDialog open={!!docDeleteId} onOpenChange={(o) => !o && setDocDeleteId(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this document?</AlertDialogTitle>
+            <AlertDialogDescription>The document record will be removed from this partner.</AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDocDelete}>Remove</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
 
       <AlertDialog open={!!deleteId} onOpenChange={(o) => !o && setDeleteId(null)}>
         <AlertDialogContent>
