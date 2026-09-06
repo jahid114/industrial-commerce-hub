@@ -471,6 +471,50 @@ function PartnersAdminPage() {
                   <Block label="Attachments">{active.files.join(", ")}</Block>
                 )}
                 {active.internalNotes && <Block label="Internal Notes">{active.internalNotes}</Block>}
+
+                {/* Documents */}
+                <div className="rounded-lg border border-border p-4">
+                  <div className="mb-3 flex items-center justify-between gap-2">
+                    <div className="flex items-center gap-2 text-sm font-semibold">
+                      <FileText className="size-4" /> Documents ({active.documents?.length ?? 0})
+                    </div>
+                    <Button size="sm" variant="outline" onClick={openDocAdd}>
+                      <Plus className="size-3.5 mr-1" /> Add Document
+                    </Button>
+                  </div>
+                  {active.documents && active.documents.length > 0 ? (
+                    <ul className="divide-y divide-border">
+                      {active.documents.map((d) => (
+                        <li key={d.id} className="flex flex-wrap items-center gap-2 py-2">
+                          <div className="min-w-0 flex-1">
+                            <div className="truncate text-sm font-medium">{d.name}</div>
+                            <div className="text-xs text-muted-foreground">
+                              {d.type}
+                              {d.reference ? ` · ${d.reference}` : ""} · {formatDate(d.addedAt)}
+                            </div>
+                          </div>
+                          <Button size="sm" variant="outline" onClick={() => setDocView(d)}>
+                            <Eye className="size-3.5 mr-1" /> View
+                          </Button>
+                          <Button size="sm" variant="outline" onClick={() => openDocEdit(d)}>
+                            <Pencil className="size-3.5" />
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            className="text-destructive"
+                            onClick={() => setDocDeleteId(d.id)}
+                          >
+                            <Trash2 className="size-3.5" />
+                          </Button>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">No documents attached yet.</p>
+                  )}
+                </div>
+
                 {active.status !== "Approved" && (
                   <>
                     {/* Stage stepper */}
