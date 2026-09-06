@@ -391,7 +391,7 @@ function PartnersAdminPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.map((p) => (
+            {pageItems.map((p) => (
               <tr key={p.id} className="hover:bg-secondary/50">
                 <td className="px-4 py-3 font-mono text-xs">{p.id}</td>
                 <td className="px-4 py-3">
