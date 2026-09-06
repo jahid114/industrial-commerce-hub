@@ -432,6 +432,14 @@ function PartnersAdminPage() {
         </table>
       </div>
 
+      <TablePagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
+
       {/* View dialog */}
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
         <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
