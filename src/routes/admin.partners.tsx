@@ -315,6 +315,11 @@ function PartnersAdminPage() {
     [items, statusFilter, typeFilter, q, tab],
   );
 
+  useEffect(() => {
+    setPage(1);
+  }, [q, statusFilter, typeFilter, tab, pageSize]);
+
+  const pageItems = paginate(filtered, page, pageSize);
 
   return (
     <div className="space-y-6">
