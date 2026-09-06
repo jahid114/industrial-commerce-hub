@@ -112,6 +112,15 @@ function PartnersAdminPage() {
   const [draft, setDraft] = useState<Draft>(emptyDraft);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [tab, setTab] = useState<"requests" | "records">("requests");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
+  const [docOpen, setDocOpen] = useState(false);
+  const [docEditingId, setDocEditingId] = useState<string | null>(null);
+  const [docDraft, setDocDraft] = useState<Omit<PartnerDocument, "id" | "addedAt">>({
+    name: "", type: "Trade License", reference: "", url: "", notes: "",
+  });
+  const [docDeleteId, setDocDeleteId] = useState<string | null>(null);
+  const [docView, setDocView] = useState<PartnerDocument | null>(null);
 
   useEffect(() => {
     setItems(readPartnerRequests());
