@@ -153,6 +153,69 @@ function PartnersAdminPage() {
     toast.success(`Marked as ${status}`);
   };
 
+  const applyDocs = (id: string, docs: PartnerDocument[], note: string) => {
+    const apply = (p: PartnerRequest): PartnerRequest => ({
+      ...p,
+      documents: docs,
+      timeline: [
+        ...(p.timeline ?? []),
+        { at: new Date().toISOString(), by: "Admin", type: "note" as const, message: note },
+      ],
+    });
+    persist(items.map((p) => (p.id === id ? apply(p) : p)));
+    setActive((cur) => (cur && cur.id === id ? apply(cur) : cur));
+  };
+
+  const openDocAdd = () => {
+    setDocEditingId(null);
+    setDocDraft({ name: "", type: "Trade License", reference: "", url: "", notes: "" });
+    setDocOpen(true);
+  };
+
+  const openDocEdit = (d: PartnerDocument) => {
+    setDocEditingId(d.id);
+    setDocDraft({ name: d.name, type: d.type, reference: d.reference ?? "", url: d.url ?? "", notes: d.notes ?? "" });
+    setDocOpen(true);
+  };
+
+  const saveDoc = () => {
+    if (!active) return;
+    if (!docDraft.name.trim()) {
+      toast.error("Document name is required");
+      return;
+    }
+    const docs = active.documents ?? [];
+    if (docEditingId) {
+      applyDocs(
+        active.id,
+        docs.map((d) => (d.id === docEditingId ? { ...d, ...docDraft } : d)),
+        `Document updated: ${docDraft.name}`,
+      );
+      toast.success("Document updated");
+    } else {
+      const doc: PartnerDocument = {
+        ...docDraft,
+        id: `DOC-${Date.now().toString(36).toUpperCase()}`,
+        addedAt: new Date().toISOString(),
+      };
+      applyDocs(active.id, [...docs, doc], `Document added: ${doc.name}`);
+      toast.success("Document added");
+    }
+    setDocOpen(false);
+  };
+
+  const confirmDocDelete = () => {
+    if (!active || !docDeleteId) return;
+    const doc = (active.documents ?? []).find((d) => d.id === docDeleteId);
+    applyDocs(
+      active.id,
+      (active.documents ?? []).filter((d) => d.id !== docDeleteId),
+      `Document removed: ${doc?.name ?? docDeleteId}`,
+    );
+    setDocDeleteId(null);
+    toast.success("Document removed");
+  };
+
   const openAdd = () => {
     setEditing(null);
     setDraft(emptyDraft);
