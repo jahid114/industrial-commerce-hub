@@ -238,6 +238,14 @@ function JobsPage() {
         </table>
       </div>
 
+      <TablePagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
+
       <JobDialog job={editing} onClose={() => setEditing(null)} onSave={save} />
 
       <Dialog open={!!removing} onOpenChange={(o) => !o && setRemoving(null)}>
