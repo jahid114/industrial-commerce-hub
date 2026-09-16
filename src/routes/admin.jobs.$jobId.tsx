@@ -17,6 +17,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { TablePagination, TableSearchBar, paginate } from "@/components/admin/TableToolbar";
 import { formatDate } from "@/lib/format";
 import {
   readApplications,
