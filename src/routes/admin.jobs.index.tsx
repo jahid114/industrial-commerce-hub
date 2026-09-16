@@ -159,6 +159,19 @@ function JobsPage() {
         </div>
       </div>
 
+      <TableSearchBar value={q} onChange={setQ} placeholder="Search title, location, type">
+        <Select value={visFilter} onValueChange={(v) => setVisFilter(v as typeof visFilter)}>
+          <SelectTrigger className="w-44">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All jobs</SelectItem>
+            <SelectItem value="Visible">Visible on site</SelectItem>
+            <SelectItem value="Hidden">Hidden</SelectItem>
+          </SelectContent>
+        </Select>
+      </TableSearchBar>
+
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-spec text-xs uppercase text-muted-foreground">
