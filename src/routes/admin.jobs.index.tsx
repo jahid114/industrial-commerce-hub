@@ -185,7 +185,7 @@ function JobsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {jobs.map((j) => (
+            {pageItems.map((j) => (
               <tr key={j.id} className="hover:bg-secondary/50">
                 <td className="px-4 py-3">
                   <Link
