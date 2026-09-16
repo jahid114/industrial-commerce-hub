@@ -59,6 +59,10 @@ function JobsPage() {
   const [applications, setApplications] = useState(() => [] as ReturnType<typeof readApplications>);
   const [editing, setEditing] = useState<JobPosting | null>(null);
   const [removing, setRemoving] = useState<JobPosting | null>(null);
+  const [q, setQ] = useState("");
+  const [visFilter, setVisFilter] = useState<"All" | "Visible" | "Hidden">("All");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     setJobs(readJobs());
