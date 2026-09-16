@@ -137,17 +137,9 @@ function JobDetailPage() {
         </div>
       )}
 
-      <div className="flex flex-wrap items-center gap-3">
-        <h2 className="font-display text-xl font-bold">Applications ({items.length})</h2>
-        <div className="relative flex-1 min-w-56">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search name, email, phone, city"
-            className="pl-9"
-          />
-        </div>
+      <h2 className="font-display text-xl font-bold">Applications ({items.length})</h2>
+
+      <TableSearchBar value={q} onChange={setQ} placeholder="Search name, email, phone, city">
         <Select value={filter} onValueChange={(v) => setFilter(v as typeof filter)}>
           <SelectTrigger className="w-44">
             <SelectValue />
@@ -164,7 +156,7 @@ function JobDetailPage() {
         <Button variant="outline" onClick={exportCsv} disabled={filtered.length === 0}>
           <Download className="size-4 mr-1.5" /> Download CSV
         </Button>
-      </div>
+      </TableSearchBar>
 
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
         <table className="w-full text-sm">
@@ -179,7 +171,7 @@ function JobDetailPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {filtered.map((a) => (
+            {pageItems.map((a) => (
               <tr key={a.id} className="hover:bg-secondary/50">
                 <td className="px-4 py-3 font-mono text-xs">{a.id}</td>
                 <td className="px-4 py-3">
@@ -213,6 +205,14 @@ function JobDetailPage() {
           </tbody>
         </table>
       </div>
+
+      <TablePagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
 
       <Dialog open={!!active} onOpenChange={(o) => !o && setActive(null)}>
         <DialogContent className="max-w-2xl">
