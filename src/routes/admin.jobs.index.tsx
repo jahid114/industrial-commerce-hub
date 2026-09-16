@@ -83,6 +83,22 @@ function JobsPage() {
     return map;
   }, [applications]);
 
+  useEffect(() => {
+    setPage(1);
+  }, [q, visFilter, pageSize]);
+
+  const filtered = jobs
+    .filter((j) =>
+      visFilter === "All" ? true : visFilter === "Visible" ? j.published : !j.published,
+    )
+    .filter((j) =>
+      q
+        ? [j.title, j.location, j.type, j.slug].join(" ").toLowerCase().includes(q.toLowerCase())
+        : true,
+    );
+
+  const pageItems = paginate(filtered, page, pageSize);
+
   const save = (job: JobPosting) => {
     if (!job.title.trim()) {
       toast.error("Job title is required");
