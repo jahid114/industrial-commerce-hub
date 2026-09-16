@@ -14,6 +14,14 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { TablePagination, TableSearchBar, paginate } from "@/components/admin/TableToolbar";
 import { formatDate } from "@/lib/format";
 import { readApplications } from "@/lib/inbox";
 import {
@@ -51,6 +59,10 @@ function JobsPage() {
   const [applications, setApplications] = useState(() => [] as ReturnType<typeof readApplications>);
   const [editing, setEditing] = useState<JobPosting | null>(null);
   const [removing, setRemoving] = useState<JobPosting | null>(null);
+  const [q, setQ] = useState("");
+  const [visFilter, setVisFilter] = useState<"All" | "Visible" | "Hidden">("All");
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     setJobs(readJobs());
@@ -70,6 +82,22 @@ function JobsPage() {
     }
     return map;
   }, [applications]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, visFilter, pageSize]);
+
+  const filtered = jobs
+    .filter((j) =>
+      visFilter === "All" ? true : visFilter === "Visible" ? j.published : !j.published,
+    )
+    .filter((j) =>
+      q
+        ? [j.title, j.location, j.type, j.slug].join(" ").toLowerCase().includes(q.toLowerCase())
+        : true,
+    );
+
+  const pageItems = paginate(filtered, page, pageSize);
 
   const save = (job: JobPosting) => {
     if (!job.title.trim()) {
@@ -131,6 +159,19 @@ function JobsPage() {
         </div>
       </div>
 
+      <TableSearchBar value={q} onChange={setQ} placeholder="Search title, location, type">
+        <Select value={visFilter} onValueChange={(v) => setVisFilter(v as typeof visFilter)}>
+          <SelectTrigger className="w-44">
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="All">All jobs</SelectItem>
+            <SelectItem value="Visible">Visible on site</SelectItem>
+            <SelectItem value="Hidden">Hidden</SelectItem>
+          </SelectContent>
+        </Select>
+      </TableSearchBar>
+
       <div className="rounded-lg border border-border bg-card overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-spec text-xs uppercase text-muted-foreground">
@@ -144,7 +185,7 @@ function JobsPage() {
             </tr>
           </thead>
           <tbody className="divide-y divide-border">
-            {jobs.map((j) => (
+            {pageItems.map((j) => (
               <tr key={j.id} className="hover:bg-secondary/50">
                 <td className="px-4 py-3">
                   <Link
@@ -185,7 +226,7 @@ function JobsPage() {
                 </td>
               </tr>
             ))}
-            {jobs.length === 0 && (
+            {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-14 text-center text-muted-foreground">
                   <Briefcase className="mx-auto mb-3 size-8 opacity-40" />
@@ -196,6 +237,14 @@ function JobsPage() {
           </tbody>
         </table>
       </div>
+
+      <TablePagination
+        total={filtered.length}
+        page={page}
+        pageSize={pageSize}
+        onPageChange={setPage}
+        onPageSizeChange={setPageSize}
+      />
 
       <JobDialog job={editing} onClose={() => setEditing(null)} onSave={save} />
 
