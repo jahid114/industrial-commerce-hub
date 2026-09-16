@@ -226,7 +226,7 @@ function JobsPage() {
                 </td>
               </tr>
             ))}
-            {jobs.length === 0 && (
+            {filtered.length === 0 && (
               <tr>
                 <td colSpan={6} className="px-4 py-14 text-center text-muted-foreground">
                   <Briefcase className="mx-auto mb-3 size-8 opacity-40" />
