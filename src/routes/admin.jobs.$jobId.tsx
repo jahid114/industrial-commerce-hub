@@ -48,6 +48,8 @@ function JobDetailPage() {
   const [q, setQ] = useState("");
   const [filter, setFilter] = useState<"All" | ApplicationStatus>("All");
   const [active, setActive] = useState<CareerApplication | null>(null);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   useEffect(() => {
     const found = readJobs().find((j) => j.id === jobId) ?? null;
@@ -73,6 +75,12 @@ function JobDetailPage() {
         : true,
     )
     .sort((a, b) => (a.submittedAt < b.submittedAt ? 1 : -1));
+
+  useEffect(() => {
+    setPage(1);
+  }, [q, filter, pageSize]);
+
+  const pageItems = paginate(filtered, page, pageSize);
 
   const exportCsv = () => {
     const rows = filtered.map((a) => ({
