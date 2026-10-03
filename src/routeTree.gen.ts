@@ -9,143 +9,78 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as AboutRouteImport } from './routes/about'
-import { Route as AccountRouteImport } from './routes/account'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as AgentsRouteImport } from './routes/agents'
-import { Route as CartRouteImport } from './routes/cart'
-import { Route as CheckoutRouteImport } from './routes/checkout'
-import { Route as CompareRouteImport } from './routes/compare'
-import { Route as ContactRouteImport } from './routes/contact'
-import { Route as IndustriesRouteImport } from './routes/industries'
-import { Route as PartnersRouteImport } from './routes/partners'
-import { Route as PortalRouteImport } from './routes/portal'
-import { Route as PortalCustomerRouteImport } from './routes/portal-customer'
-import { Route as QuotationRouteImport } from './routes/quotation'
-import { Route as SuppliersRouteImport } from './routes/suppliers'
 import { Route as WishlistRouteImport } from './routes/wishlist'
-import { Route as AdminIndexRouteImport } from './routes/admin.index'
-import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
-import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
-import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
-import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
-import { Route as AdminPartnersRouteImport } from './routes/admin.partners'
-import { Route as AdminProductsRouteImport } from './routes/admin.products'
-import { Route as AdminReportsRouteImport } from './routes/admin.reports'
-import { Route as AdminRolesRouteImport } from './routes/admin.roles'
-import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
-import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
-import { Route as AdminUsersRouteImport } from './routes/admin.users'
-import { Route as AuthLoginRouteImport } from './routes/auth.login'
-import { Route as AuthRegisterRouteImport } from './routes/auth.register'
-import { Route as CareersIndexRouteImport } from './routes/careers.index'
-import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
-import { Route as CareersFieldAgentRouteImport } from './routes/careers.field-agent'
-import { Route as PortalCustomerIndexRouteImport } from './routes/portal-customer.index'
-import { Route as PortalCustomerCartRouteImport } from './routes/portal-customer.cart'
-import { Route as PortalCustomerCheckoutRouteImport } from './routes/portal-customer.checkout'
-import { Route as PortalCustomerCompareRouteImport } from './routes/portal-customer.compare'
-import { Route as PortalCustomerOrdersRouteImport } from './routes/portal-customer.orders'
-import { Route as PortalCustomerProfileRouteImport } from './routes/portal-customer.profile'
-import { Route as PortalCustomerQuotationRouteImport } from './routes/portal-customer.quotation'
-import { Route as PortalCustomerQuotationsRouteImport } from './routes/portal-customer.quotations'
-import { Route as PortalCustomerWishlistRouteImport } from './routes/portal-customer.wishlist'
-import { Route as PortalIndexRouteImport } from './routes/portal.index'
-import { Route as PortalCatalogRouteImport } from './routes/portal.catalog'
-import { Route as PortalCommissionsRouteImport } from './routes/portal.commissions'
-import { Route as PortalDocumentsRouteImport } from './routes/portal.documents'
-import { Route as PortalInquiriesRouteImport } from './routes/portal.inquiries'
-import { Route as PortalKpisRouteImport } from './routes/portal.kpis'
-import { Route as PortalLeadsRouteImport } from './routes/portal.leads'
-import { Route as PortalOrdersRouteImport } from './routes/portal.orders'
-import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
-import { Route as PortfolioCorporateProfileRouteImport } from './routes/portfolio.corporate-profile'
-import { Route as PortfolioMarketPotentialRouteImport } from './routes/portfolio.market-potential'
-import { Route as PortfolioStrategicVision2033RouteImport } from './routes/portfolio.strategic-vision-2033'
+import { Route as SuppliersRouteImport } from './routes/suppliers'
+import { Route as QuotationRouteImport } from './routes/quotation'
+import { Route as PortalCustomerRouteImport } from './routes/portal-customer'
+import { Route as PortalRouteImport } from './routes/portal'
+import { Route as PartnersRouteImport } from './routes/partners'
+import { Route as IndustriesRouteImport } from './routes/industries'
+import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CompareRouteImport } from './routes/compare'
+import { Route as CheckoutRouteImport } from './routes/checkout'
+import { Route as CartRouteImport } from './routes/cart'
+import { Route as AgentsRouteImport } from './routes/agents'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AccountRouteImport } from './routes/account'
+import { Route as AboutRouteImport } from './routes/about'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ProductsIndexRouteImport } from './routes/products.index'
+import { Route as PortfolioIndexRouteImport } from './routes/portfolio.index'
+import { Route as PortalIndexRouteImport } from './routes/portal.index'
+import { Route as PortalCustomerIndexRouteImport } from './routes/portal-customer.index'
+import { Route as CareersIndexRouteImport } from './routes/careers.index'
+import { Route as AdminIndexRouteImport } from './routes/admin.index'
 import { Route as ProductsProductIdRouteImport } from './routes/products.$productId'
-import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
-import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
-import { Route as AdminJobsIndexRouteImport } from './routes/admin.jobs.index'
-import { Route as AdminJobsJobIdRouteImport } from './routes/admin.jobs.$jobId'
-import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
-import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
-import { Route as AdminQuotationsIndexRouteImport } from './routes/admin.quotations.index'
-import { Route as AdminQuotationsRfqIdRouteImport } from './routes/admin.quotations.$rfqId'
-import { Route as PortalCustomerCatalogIndexRouteImport } from './routes/portal-customer.catalog.index'
-import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
+import { Route as PortfolioStrategicVision2033RouteImport } from './routes/portfolio.strategic-vision-2033'
+import { Route as PortfolioMarketPotentialRouteImport } from './routes/portfolio.market-potential'
+import { Route as PortfolioCorporateProfileRouteImport } from './routes/portfolio.corporate-profile'
+import { Route as PortalOrdersRouteImport } from './routes/portal.orders'
+import { Route as PortalLeadsRouteImport } from './routes/portal.leads'
+import { Route as PortalKpisRouteImport } from './routes/portal.kpis'
+import { Route as PortalInquiriesRouteImport } from './routes/portal.inquiries'
+import { Route as PortalDocumentsRouteImport } from './routes/portal.documents'
+import { Route as PortalCommissionsRouteImport } from './routes/portal.commissions'
+import { Route as PortalCatalogRouteImport } from './routes/portal.catalog'
+import { Route as PortalCustomerWishlistRouteImport } from './routes/portal-customer.wishlist'
+import { Route as PortalCustomerQuotationsRouteImport } from './routes/portal-customer.quotations'
+import { Route as PortalCustomerQuotationRouteImport } from './routes/portal-customer.quotation'
+import { Route as PortalCustomerProfileRouteImport } from './routes/portal-customer.profile'
+import { Route as PortalCustomerOrdersRouteImport } from './routes/portal-customer.orders'
+import { Route as PortalCustomerCompareRouteImport } from './routes/portal-customer.compare'
+import { Route as PortalCustomerCheckoutRouteImport } from './routes/portal-customer.checkout'
+import { Route as PortalCustomerCartRouteImport } from './routes/portal-customer.cart'
+import { Route as CareersFieldAgentRouteImport } from './routes/careers.field-agent'
+import { Route as CareersSlugRouteImport } from './routes/careers.$slug'
+import { Route as AuthRegisterRouteImport } from './routes/auth.register'
+import { Route as AuthLoginRouteImport } from './routes/auth.login'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
+import { Route as AdminSuppliersRouteImport } from './routes/admin.suppliers'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
+import { Route as AdminRolesRouteImport } from './routes/admin.roles'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
+import { Route as AdminProductsRouteImport } from './routes/admin.products'
+import { Route as AdminPartnersRouteImport } from './routes/admin.partners'
+import { Route as AdminMessagesRouteImport } from './routes/admin.messages'
+import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
+import { Route as AdminCustomersRouteImport } from './routes/admin.customers'
+import { Route as AdminAgentsRouteImport } from './routes/admin.agents'
 import { Route as PortalCustomerOrdersIndexRouteImport } from './routes/portal-customer.orders.index'
+import { Route as PortalCustomerCatalogIndexRouteImport } from './routes/portal-customer.catalog.index'
+import { Route as AdminQuotationsIndexRouteImport } from './routes/admin.quotations.index'
+import { Route as AdminOrdersIndexRouteImport } from './routes/admin.orders.index'
+import { Route as AdminJobsIndexRouteImport } from './routes/admin.jobs.index'
+import { Route as AdminCustomersIndexRouteImport } from './routes/admin.customers.index'
 import { Route as PortalCustomerOrdersOrderIdRouteImport } from './routes/portal-customer.orders.$orderId'
+import { Route as PortalCustomerCatalogProductIdRouteImport } from './routes/portal-customer.catalog.$productId'
+import { Route as AdminQuotationsRfqIdRouteImport } from './routes/admin.quotations.$rfqId'
+import { Route as AdminOrdersOrderIdRouteImport } from './routes/admin.orders.$orderId'
+import { Route as AdminJobsJobIdRouteImport } from './routes/admin.jobs.$jobId'
+import { Route as AdminCustomersStatisticsRouteImport } from './routes/admin.customers.statistics'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AboutRoute = AboutRouteImport.update({
-  id: '/about',
-  path: '/about',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AccountRoute = AccountRouteImport.update({
-  id: '/account',
-  path: '/account',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AgentsRoute = AgentsRouteImport.update({
-  id: '/agents',
-  path: '/agents',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CartRoute = CartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CheckoutRoute = CheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CompareRoute = CompareRouteImport.update({
-  id: '/compare',
-  path: '/compare',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ContactRoute = ContactRouteImport.update({
-  id: '/contact',
-  path: '/contact',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const IndustriesRoute = IndustriesRouteImport.update({
-  id: '/industries',
-  path: '/industries',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PartnersRoute = PartnersRouteImport.update({
-  id: '/partners',
-  path: '/partners',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalRoute = PortalRouteImport.update({
-  id: '/portal',
-  path: '/portal',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalCustomerRoute = PortalCustomerRouteImport.update({
-  id: '/portal-customer',
-  path: '/portal-customer',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const QuotationRoute = QuotationRouteImport.update({
-  id: '/quotation',
-  path: '/quotation',
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
   getParentRoute: () => rootRouteImport,
 } as any)
 const SuppliersRoute = SuppliersRouteImport.update({
@@ -153,9 +88,99 @@ const SuppliersRoute = SuppliersRouteImport.update({
   path: '/suppliers',
   getParentRoute: () => rootRouteImport,
 } as any)
-const WishlistRoute = WishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
+const QuotationRoute = QuotationRouteImport.update({
+  id: '/quotation',
+  path: '/quotation',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalCustomerRoute = PortalCustomerRouteImport.update({
+  id: '/portal-customer',
+  path: '/portal-customer',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalRoute = PortalRouteImport.update({
+  id: '/portal',
+  path: '/portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndustriesRoute = IndustriesRouteImport.update({
+  id: '/industries',
+  path: '/industries',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ContactRoute = ContactRouteImport.update({
+  id: '/contact',
+  path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompareRoute = CompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CheckoutRoute = CheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CartRoute = CartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgentsRoute = AgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AccountRoute = AccountRouteImport.update({
+  id: '/account',
+  path: '/account',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AboutRoute = AboutRouteImport.update({
+  id: '/about',
+  path: '/about',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProductsIndexRoute = ProductsIndexRouteImport.update({
+  id: '/products/',
+  path: '/products/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
+  id: '/portfolio/',
+  path: '/portfolio/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCustomerIndexRoute = PortalCustomerIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const CareersIndexRoute = CareersIndexRouteImport.update({
+  id: '/careers/',
+  path: '/careers/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminIndexRoute = AdminIndexRouteImport.update({
@@ -163,181 +188,15 @@ const AdminIndexRoute = AdminIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminAgentsRoute = AdminAgentsRouteImport.update({
-  id: '/agents',
-  path: '/agents',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminCustomersRoute = AdminCustomersRouteImport.update({
-  id: '/customers',
-  path: '/customers',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminInventoryRoute = AdminInventoryRouteImport.update({
-  id: '/inventory',
-  path: '/inventory',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminMessagesRoute = AdminMessagesRouteImport.update({
-  id: '/messages',
-  path: '/messages',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminPartnersRoute = AdminPartnersRouteImport.update({
-  id: '/partners',
-  path: '/partners',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminProductsRoute = AdminProductsRouteImport.update({
-  id: '/products',
-  path: '/products',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminReportsRoute = AdminReportsRouteImport.update({
-  id: '/reports',
-  path: '/reports',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminRolesRoute = AdminRolesRouteImport.update({
-  id: '/roles',
-  path: '/roles',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSettingsRoute = AdminSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminSuppliersRoute = AdminSuppliersRouteImport.update({
-  id: '/suppliers',
-  path: '/suppliers',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
-} as any)
-const AuthLoginRoute = AuthLoginRouteImport.update({
-  id: '/auth/login',
-  path: '/auth/login',
+const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
+  id: '/products/$productId',
+  path: '/products/$productId',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthRegisterRoute = AuthRegisterRouteImport.update({
-  id: '/auth/register',
-  path: '/auth/register',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersIndexRoute = CareersIndexRouteImport.update({
-  id: '/careers/',
-  path: '/careers/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersSlugRoute = CareersSlugRouteImport.update({
-  id: '/careers/$slug',
-  path: '/careers/$slug',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CareersFieldAgentRoute = CareersFieldAgentRouteImport.update({
-  id: '/careers/field-agent',
-  path: '/careers/field-agent',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortalCustomerIndexRoute = PortalCustomerIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerCartRoute = PortalCustomerCartRouteImport.update({
-  id: '/cart',
-  path: '/cart',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerCheckoutRoute = PortalCustomerCheckoutRouteImport.update({
-  id: '/checkout',
-  path: '/checkout',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerCompareRoute = PortalCustomerCompareRouteImport.update({
-  id: '/compare',
-  path: '/compare',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerOrdersRoute = PortalCustomerOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerProfileRoute = PortalCustomerProfileRouteImport.update({
-  id: '/profile',
-  path: '/profile',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerQuotationRoute = PortalCustomerQuotationRouteImport.update({
-  id: '/quotation',
-  path: '/quotation',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalCustomerQuotationsRoute =
-  PortalCustomerQuotationsRouteImport.update({
-    id: '/quotations',
-    path: '/quotations',
-    getParentRoute: () => PortalCustomerRoute,
-  } as any)
-const PortalCustomerWishlistRoute = PortalCustomerWishlistRouteImport.update({
-  id: '/wishlist',
-  path: '/wishlist',
-  getParentRoute: () => PortalCustomerRoute,
-} as any)
-const PortalIndexRoute = PortalIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalCatalogRoute = PortalCatalogRouteImport.update({
-  id: '/catalog',
-  path: '/catalog',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalCommissionsRoute = PortalCommissionsRouteImport.update({
-  id: '/commissions',
-  path: '/commissions',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalDocumentsRoute = PortalDocumentsRouteImport.update({
-  id: '/documents',
-  path: '/documents',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalInquiriesRoute = PortalInquiriesRouteImport.update({
-  id: '/inquiries',
-  path: '/inquiries',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalKpisRoute = PortalKpisRouteImport.update({
-  id: '/kpis',
-  path: '/kpis',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalLeadsRoute = PortalLeadsRouteImport.update({
-  id: '/leads',
-  path: '/leads',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortalOrdersRoute = PortalOrdersRouteImport.update({
-  id: '/orders',
-  path: '/orders',
-  getParentRoute: () => PortalRoute,
-} as any)
-const PortfolioIndexRoute = PortfolioIndexRouteImport.update({
-  id: '/portfolio/',
-  path: '/portfolio/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const PortfolioCorporateProfileRoute =
-  PortfolioCorporateProfileRouteImport.update({
-    id: '/portfolio/corporate-profile',
-    path: '/portfolio/corporate-profile',
+const PortfolioStrategicVision2033Route =
+  PortfolioStrategicVision2033RouteImport.update({
+    id: '/portfolio/strategic-vision-2033',
+    path: '/portfolio/strategic-vision-2033',
     getParentRoute: () => rootRouteImport,
   } as any)
 const PortfolioMarketPotentialRoute =
@@ -346,41 +205,178 @@ const PortfolioMarketPotentialRoute =
     path: '/portfolio/market-potential',
     getParentRoute: () => rootRouteImport,
   } as any)
-const PortfolioStrategicVision2033Route =
-  PortfolioStrategicVision2033RouteImport.update({
-    id: '/portfolio/strategic-vision-2033',
-    path: '/portfolio/strategic-vision-2033',
+const PortfolioCorporateProfileRoute =
+  PortfolioCorporateProfileRouteImport.update({
+    id: '/portfolio/corporate-profile',
+    path: '/portfolio/corporate-profile',
     getParentRoute: () => rootRouteImport,
   } as any)
-const ProductsIndexRoute = ProductsIndexRouteImport.update({
-  id: '/products/',
-  path: '/products/',
-  getParentRoute: () => rootRouteImport,
+const PortalOrdersRoute = PortalOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => PortalRoute,
 } as any)
-const ProductsProductIdRoute = ProductsProductIdRouteImport.update({
-  id: '/products/$productId',
-  path: '/products/$productId',
-  getParentRoute: () => rootRouteImport,
+const PortalLeadsRoute = PortalLeadsRouteImport.update({
+  id: '/leads',
+  path: '/leads',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => AdminCustomersRoute,
+const PortalKpisRoute = PortalKpisRouteImport.update({
+  id: '/kpis',
+  path: '/kpis',
+  getParentRoute: () => PortalRoute,
 } as any)
-const AdminCustomersStatisticsRoute =
-  AdminCustomersStatisticsRouteImport.update({
-    id: '/statistics',
-    path: '/statistics',
-    getParentRoute: () => AdminCustomersRoute,
+const PortalInquiriesRoute = PortalInquiriesRouteImport.update({
+  id: '/inquiries',
+  path: '/inquiries',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalDocumentsRoute = PortalDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCommissionsRoute = PortalCommissionsRouteImport.update({
+  id: '/commissions',
+  path: '/commissions',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCatalogRoute = PortalCatalogRouteImport.update({
+  id: '/catalog',
+  path: '/catalog',
+  getParentRoute: () => PortalRoute,
+} as any)
+const PortalCustomerWishlistRoute = PortalCustomerWishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const PortalCustomerQuotationsRoute =
+  PortalCustomerQuotationsRouteImport.update({
+    id: '/quotations',
+    path: '/quotations',
+    getParentRoute: () => PortalCustomerRoute,
   } as any)
-const AdminJobsIndexRoute = AdminJobsIndexRouteImport.update({
-  id: '/jobs/',
-  path: '/jobs/',
+const PortalCustomerQuotationRoute = PortalCustomerQuotationRouteImport.update({
+  id: '/quotation',
+  path: '/quotation',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const PortalCustomerProfileRoute = PortalCustomerProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const PortalCustomerOrdersRoute = PortalCustomerOrdersRouteImport.update({
+  id: '/orders',
+  path: '/orders',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const PortalCustomerCompareRoute = PortalCustomerCompareRouteImport.update({
+  id: '/compare',
+  path: '/compare',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const PortalCustomerCheckoutRoute = PortalCustomerCheckoutRouteImport.update({
+  id: '/checkout',
+  path: '/checkout',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const PortalCustomerCartRoute = PortalCustomerCartRouteImport.update({
+  id: '/cart',
+  path: '/cart',
+  getParentRoute: () => PortalCustomerRoute,
+} as any)
+const CareersFieldAgentRoute = CareersFieldAgentRouteImport.update({
+  id: '/careers/field-agent',
+  path: '/careers/field-agent',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CareersSlugRoute = CareersSlugRouteImport.update({
+  id: '/careers/$slug',
+  path: '/careers/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRegisterRoute = AuthRegisterRouteImport.update({
+  id: '/auth/register',
+  path: '/auth/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthLoginRoute = AuthLoginRouteImport.update({
+  id: '/auth/login',
+  path: '/auth/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/users',
+  path: '/users',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminJobsJobIdRoute = AdminJobsJobIdRouteImport.update({
-  id: '/jobs/$jobId',
-  path: '/jobs/$jobId',
+const AdminSuppliersRoute = AdminSuppliersRouteImport.update({
+  id: '/suppliers',
+  path: '/suppliers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminRolesRoute = AdminRolesRouteImport.update({
+  id: '/roles',
+  path: '/roles',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/reports',
+  path: '/reports',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminProductsRoute = AdminProductsRouteImport.update({
+  id: '/products',
+  path: '/products',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminPartnersRoute = AdminPartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminMessagesRoute = AdminMessagesRouteImport.update({
+  id: '/messages',
+  path: '/messages',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/inventory',
+  path: '/inventory',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCustomersRoute = AdminCustomersRouteImport.update({
+  id: '/customers',
+  path: '/customers',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminAgentsRoute = AdminAgentsRouteImport.update({
+  id: '/agents',
+  path: '/agents',
+  getParentRoute: () => AdminRoute,
+} as any)
+const PortalCustomerOrdersIndexRoute =
+  PortalCustomerOrdersIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => PortalCustomerOrdersRoute,
+  } as any)
+const PortalCustomerCatalogIndexRoute =
+  PortalCustomerCatalogIndexRouteImport.update({
+    id: '/catalog/',
+    path: '/catalog/',
+    getParentRoute: () => PortalCustomerRoute,
+  } as any)
+const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
+  id: '/quotations/',
+  path: '/quotations/',
   getParentRoute: () => AdminRoute,
 } as any)
 const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
@@ -388,26 +384,21 @@ const AdminOrdersIndexRoute = AdminOrdersIndexRouteImport.update({
   path: '/orders/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
-  id: '/orders/$orderId',
-  path: '/orders/$orderId',
+const AdminJobsIndexRoute = AdminJobsIndexRouteImport.update({
+  id: '/jobs/',
+  path: '/jobs/',
   getParentRoute: () => AdminRoute,
 } as any)
-const AdminQuotationsIndexRoute = AdminQuotationsIndexRouteImport.update({
-  id: '/quotations/',
-  path: '/quotations/',
-  getParentRoute: () => AdminRoute,
+const AdminCustomersIndexRoute = AdminCustomersIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AdminCustomersRoute,
 } as any)
-const AdminQuotationsRfqIdRoute = AdminQuotationsRfqIdRouteImport.update({
-  id: '/quotations/$rfqId',
-  path: '/quotations/$rfqId',
-  getParentRoute: () => AdminRoute,
-} as any)
-const PortalCustomerCatalogIndexRoute =
-  PortalCustomerCatalogIndexRouteImport.update({
-    id: '/catalog/',
-    path: '/catalog/',
-    getParentRoute: () => PortalCustomerRoute,
+const PortalCustomerOrdersOrderIdRoute =
+  PortalCustomerOrdersOrderIdRouteImport.update({
+    id: '/$orderId',
+    path: '/$orderId',
+    getParentRoute: () => PortalCustomerOrdersRoute,
   } as any)
 const PortalCustomerCatalogProductIdRoute =
   PortalCustomerCatalogProductIdRouteImport.update({
@@ -415,17 +406,26 @@ const PortalCustomerCatalogProductIdRoute =
     path: '/catalog/$productId',
     getParentRoute: () => PortalCustomerRoute,
   } as any)
-const PortalCustomerOrdersIndexRoute =
-  PortalCustomerOrdersIndexRouteImport.update({
-    id: '/',
-    path: '/',
-    getParentRoute: () => PortalCustomerOrdersRoute,
-  } as any)
-const PortalCustomerOrdersOrderIdRoute =
-  PortalCustomerOrdersOrderIdRouteImport.update({
-    id: '/$orderId',
-    path: '/$orderId',
-    getParentRoute: () => PortalCustomerOrdersRoute,
+const AdminQuotationsRfqIdRoute = AdminQuotationsRfqIdRouteImport.update({
+  id: '/quotations/$rfqId',
+  path: '/quotations/$rfqId',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminOrdersOrderIdRoute = AdminOrdersOrderIdRouteImport.update({
+  id: '/orders/$orderId',
+  path: '/orders/$orderId',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminJobsJobIdRoute = AdminJobsJobIdRouteImport.update({
+  id: '/jobs/$jobId',
+  path: '/jobs/$jobId',
+  getParentRoute: () => AdminRoute,
+} as any)
+const AdminCustomersStatisticsRoute =
+  AdminCustomersStatisticsRouteImport.update({
+    id: '/statistics',
+    path: '/statistics',
+    getParentRoute: () => AdminCustomersRoute,
   } as any)
 
 export interface FileRoutesByFullPath {
@@ -874,102 +874,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/about': {
-      id: '/about'
-      path: '/about'
-      fullPath: '/about'
-      preLoaderRoute: typeof AboutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/account': {
-      id: '/account'
-      path: '/account'
-      fullPath: '/account'
-      preLoaderRoute: typeof AccountRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/agents': {
-      id: '/agents'
-      path: '/agents'
-      fullPath: '/agents'
-      preLoaderRoute: typeof AgentsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/cart': {
-      id: '/cart'
-      path: '/cart'
-      fullPath: '/cart'
-      preLoaderRoute: typeof CartRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/checkout': {
-      id: '/checkout'
-      path: '/checkout'
-      fullPath: '/checkout'
-      preLoaderRoute: typeof CheckoutRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/compare': {
-      id: '/compare'
-      path: '/compare'
-      fullPath: '/compare'
-      preLoaderRoute: typeof CompareRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/contact': {
-      id: '/contact'
-      path: '/contact'
-      fullPath: '/contact'
-      preLoaderRoute: typeof ContactRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/industries': {
-      id: '/industries'
-      path: '/industries'
-      fullPath: '/industries'
-      preLoaderRoute: typeof IndustriesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/partners': {
-      id: '/partners'
-      path: '/partners'
-      fullPath: '/partners'
-      preLoaderRoute: typeof PartnersRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal': {
-      id: '/portal'
-      path: '/portal'
-      fullPath: '/portal'
-      preLoaderRoute: typeof PortalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal-customer': {
-      id: '/portal-customer'
-      path: '/portal-customer'
-      fullPath: '/portal-customer'
-      preLoaderRoute: typeof PortalCustomerRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/quotation': {
-      id: '/quotation'
-      path: '/quotation'
-      fullPath: '/quotation'
-      preLoaderRoute: typeof QuotationRouteImport
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/suppliers': {
@@ -979,277 +888,102 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SuppliersRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/wishlist': {
-      id: '/wishlist'
-      path: '/wishlist'
-      fullPath: '/wishlist'
-      preLoaderRoute: typeof WishlistRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin/': {
-      id: '/admin/'
-      path: '/'
-      fullPath: '/admin/'
-      preLoaderRoute: typeof AdminIndexRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/agents': {
-      id: '/admin/agents'
-      path: '/agents'
-      fullPath: '/admin/agents'
-      preLoaderRoute: typeof AdminAgentsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/customers': {
-      id: '/admin/customers'
-      path: '/customers'
-      fullPath: '/admin/customers'
-      preLoaderRoute: typeof AdminCustomersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/inventory': {
-      id: '/admin/inventory'
-      path: '/inventory'
-      fullPath: '/admin/inventory'
-      preLoaderRoute: typeof AdminInventoryRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/messages': {
-      id: '/admin/messages'
-      path: '/messages'
-      fullPath: '/admin/messages'
-      preLoaderRoute: typeof AdminMessagesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/partners': {
-      id: '/admin/partners'
-      path: '/partners'
-      fullPath: '/admin/partners'
-      preLoaderRoute: typeof AdminPartnersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/products': {
-      id: '/admin/products'
-      path: '/products'
-      fullPath: '/admin/products'
-      preLoaderRoute: typeof AdminProductsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/reports': {
-      id: '/admin/reports'
-      path: '/reports'
-      fullPath: '/admin/reports'
-      preLoaderRoute: typeof AdminReportsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/roles': {
-      id: '/admin/roles'
-      path: '/roles'
-      fullPath: '/admin/roles'
-      preLoaderRoute: typeof AdminRolesRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/settings': {
-      id: '/admin/settings'
-      path: '/settings'
-      fullPath: '/admin/settings'
-      preLoaderRoute: typeof AdminSettingsRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/suppliers': {
-      id: '/admin/suppliers'
-      path: '/suppliers'
-      fullPath: '/admin/suppliers'
-      preLoaderRoute: typeof AdminSuppliersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/admin/users': {
-      id: '/admin/users'
-      path: '/users'
-      fullPath: '/admin/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/auth/login': {
-      id: '/auth/login'
-      path: '/auth/login'
-      fullPath: '/auth/login'
-      preLoaderRoute: typeof AuthLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth/register': {
-      id: '/auth/register'
-      path: '/auth/register'
-      fullPath: '/auth/register'
-      preLoaderRoute: typeof AuthRegisterRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers/': {
-      id: '/careers/'
-      path: '/careers'
-      fullPath: '/careers/'
-      preLoaderRoute: typeof CareersIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers/$slug': {
-      id: '/careers/$slug'
-      path: '/careers/$slug'
-      fullPath: '/careers/$slug'
-      preLoaderRoute: typeof CareersSlugRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/careers/field-agent': {
-      id: '/careers/field-agent'
-      path: '/careers/field-agent'
-      fullPath: '/careers/field-agent'
-      preLoaderRoute: typeof CareersFieldAgentRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portal-customer/': {
-      id: '/portal-customer/'
-      path: '/'
-      fullPath: '/portal-customer/'
-      preLoaderRoute: typeof PortalCustomerIndexRouteImport
-      parentRoute: typeof PortalCustomerRoute
-    }
-    '/portal-customer/cart': {
-      id: '/portal-customer/cart'
-      path: '/cart'
-      fullPath: '/portal-customer/cart'
-      preLoaderRoute: typeof PortalCustomerCartRouteImport
-      parentRoute: typeof PortalCustomerRoute
-    }
-    '/portal-customer/checkout': {
-      id: '/portal-customer/checkout'
-      path: '/checkout'
-      fullPath: '/portal-customer/checkout'
-      preLoaderRoute: typeof PortalCustomerCheckoutRouteImport
-      parentRoute: typeof PortalCustomerRoute
-    }
-    '/portal-customer/compare': {
-      id: '/portal-customer/compare'
-      path: '/compare'
-      fullPath: '/portal-customer/compare'
-      preLoaderRoute: typeof PortalCustomerCompareRouteImport
-      parentRoute: typeof PortalCustomerRoute
-    }
-    '/portal-customer/orders': {
-      id: '/portal-customer/orders'
-      path: '/orders'
-      fullPath: '/portal-customer/orders'
-      preLoaderRoute: typeof PortalCustomerOrdersRouteImport
-      parentRoute: typeof PortalCustomerRoute
-    }
-    '/portal-customer/profile': {
-      id: '/portal-customer/profile'
-      path: '/profile'
-      fullPath: '/portal-customer/profile'
-      preLoaderRoute: typeof PortalCustomerProfileRouteImport
-      parentRoute: typeof PortalCustomerRoute
-    }
-    '/portal-customer/quotation': {
-      id: '/portal-customer/quotation'
+    '/quotation': {
+      id: '/quotation'
       path: '/quotation'
-      fullPath: '/portal-customer/quotation'
-      preLoaderRoute: typeof PortalCustomerQuotationRouteImport
-      parentRoute: typeof PortalCustomerRoute
+      fullPath: '/quotation'
+      preLoaderRoute: typeof QuotationRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal-customer/quotations': {
-      id: '/portal-customer/quotations'
-      path: '/quotations'
-      fullPath: '/portal-customer/quotations'
-      preLoaderRoute: typeof PortalCustomerQuotationsRouteImport
-      parentRoute: typeof PortalCustomerRoute
+    '/portal-customer': {
+      id: '/portal-customer'
+      path: '/portal-customer'
+      fullPath: '/portal-customer'
+      preLoaderRoute: typeof PortalCustomerRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal-customer/wishlist': {
-      id: '/portal-customer/wishlist'
-      path: '/wishlist'
-      fullPath: '/portal-customer/wishlist'
-      preLoaderRoute: typeof PortalCustomerWishlistRouteImport
-      parentRoute: typeof PortalCustomerRoute
+    '/portal': {
+      id: '/portal'
+      path: '/portal'
+      fullPath: '/portal'
+      preLoaderRoute: typeof PortalRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/portal/': {
-      id: '/portal/'
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/industries': {
+      id: '/industries'
+      path: '/industries'
+      fullPath: '/industries'
+      preLoaderRoute: typeof IndustriesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/contact': {
+      id: '/contact'
+      path: '/contact'
+      fullPath: '/contact'
+      preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/compare': {
+      id: '/compare'
+      path: '/compare'
+      fullPath: '/compare'
+      preLoaderRoute: typeof CompareRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/checkout': {
+      id: '/checkout'
+      path: '/checkout'
+      fullPath: '/checkout'
+      preLoaderRoute: typeof CheckoutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cart': {
+      id: '/cart'
+      path: '/cart'
+      fullPath: '/cart'
+      preLoaderRoute: typeof CartRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agents': {
+      id: '/agents'
+      path: '/agents'
+      fullPath: '/agents'
+      preLoaderRoute: typeof AgentsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/account': {
+      id: '/account'
+      path: '/account'
+      fullPath: '/account'
+      preLoaderRoute: typeof AccountRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/about': {
+      id: '/about'
+      path: '/about'
+      fullPath: '/about'
+      preLoaderRoute: typeof AboutRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
       path: '/'
-      fullPath: '/portal/'
-      preLoaderRoute: typeof PortalIndexRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/catalog': {
-      id: '/portal/catalog'
-      path: '/catalog'
-      fullPath: '/portal/catalog'
-      preLoaderRoute: typeof PortalCatalogRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/commissions': {
-      id: '/portal/commissions'
-      path: '/commissions'
-      fullPath: '/portal/commissions'
-      preLoaderRoute: typeof PortalCommissionsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/documents': {
-      id: '/portal/documents'
-      path: '/documents'
-      fullPath: '/portal/documents'
-      preLoaderRoute: typeof PortalDocumentsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/inquiries': {
-      id: '/portal/inquiries'
-      path: '/inquiries'
-      fullPath: '/portal/inquiries'
-      preLoaderRoute: typeof PortalInquiriesRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/kpis': {
-      id: '/portal/kpis'
-      path: '/kpis'
-      fullPath: '/portal/kpis'
-      preLoaderRoute: typeof PortalKpisRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/leads': {
-      id: '/portal/leads'
-      path: '/leads'
-      fullPath: '/portal/leads'
-      preLoaderRoute: typeof PortalLeadsRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portal/orders': {
-      id: '/portal/orders'
-      path: '/orders'
-      fullPath: '/portal/orders'
-      preLoaderRoute: typeof PortalOrdersRouteImport
-      parentRoute: typeof PortalRoute
-    }
-    '/portfolio/': {
-      id: '/portfolio/'
-      path: '/portfolio'
-      fullPath: '/portfolio/'
-      preLoaderRoute: typeof PortfolioIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/corporate-profile': {
-      id: '/portfolio/corporate-profile'
-      path: '/portfolio/corporate-profile'
-      fullPath: '/portfolio/corporate-profile'
-      preLoaderRoute: typeof PortfolioCorporateProfileRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/market-potential': {
-      id: '/portfolio/market-potential'
-      path: '/portfolio/market-potential'
-      fullPath: '/portfolio/market-potential'
-      preLoaderRoute: typeof PortfolioMarketPotentialRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/portfolio/strategic-vision-2033': {
-      id: '/portfolio/strategic-vision-2033'
-      path: '/portfolio/strategic-vision-2033'
-      fullPath: '/portfolio/strategic-vision-2033'
-      preLoaderRoute: typeof PortfolioStrategicVision2033RouteImport
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/products/': {
@@ -1259,6 +993,41 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portfolio/': {
+      id: '/portfolio/'
+      path: '/portfolio'
+      fullPath: '/portfolio/'
+      preLoaderRoute: typeof PortfolioIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/': {
+      id: '/portal/'
+      path: '/'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal-customer/': {
+      id: '/portal-customer/'
+      path: '/'
+      fullPath: '/portal-customer/'
+      preLoaderRoute: typeof PortalCustomerIndexRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/careers/': {
+      id: '/careers/'
+      path: '/careers'
+      fullPath: '/careers/'
+      preLoaderRoute: typeof CareersIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/': {
+      id: '/admin/'
+      path: '/'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AdminIndexRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/products/$productId': {
       id: '/products/$productId'
       path: '/products/$productId'
@@ -1266,32 +1035,256 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProductsProductIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/admin/customers/': {
-      id: '/admin/customers/'
-      path: '/'
-      fullPath: '/admin/customers/'
-      preLoaderRoute: typeof AdminCustomersIndexRouteImport
-      parentRoute: typeof AdminCustomersRoute
+    '/portfolio/strategic-vision-2033': {
+      id: '/portfolio/strategic-vision-2033'
+      path: '/portfolio/strategic-vision-2033'
+      fullPath: '/portfolio/strategic-vision-2033'
+      preLoaderRoute: typeof PortfolioStrategicVision2033RouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/customers/statistics': {
-      id: '/admin/customers/statistics'
-      path: '/statistics'
-      fullPath: '/admin/customers/statistics'
-      preLoaderRoute: typeof AdminCustomersStatisticsRouteImport
-      parentRoute: typeof AdminCustomersRoute
+    '/portfolio/market-potential': {
+      id: '/portfolio/market-potential'
+      path: '/portfolio/market-potential'
+      fullPath: '/portfolio/market-potential'
+      preLoaderRoute: typeof PortfolioMarketPotentialRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/admin/jobs/': {
-      id: '/admin/jobs/'
-      path: '/jobs'
-      fullPath: '/admin/jobs/'
-      preLoaderRoute: typeof AdminJobsIndexRouteImport
+    '/portfolio/corporate-profile': {
+      id: '/portfolio/corporate-profile'
+      path: '/portfolio/corporate-profile'
+      fullPath: '/portfolio/corporate-profile'
+      preLoaderRoute: typeof PortfolioCorporateProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/orders': {
+      id: '/portal/orders'
+      path: '/orders'
+      fullPath: '/portal/orders'
+      preLoaderRoute: typeof PortalOrdersRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/leads': {
+      id: '/portal/leads'
+      path: '/leads'
+      fullPath: '/portal/leads'
+      preLoaderRoute: typeof PortalLeadsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/kpis': {
+      id: '/portal/kpis'
+      path: '/kpis'
+      fullPath: '/portal/kpis'
+      preLoaderRoute: typeof PortalKpisRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/inquiries': {
+      id: '/portal/inquiries'
+      path: '/inquiries'
+      fullPath: '/portal/inquiries'
+      preLoaderRoute: typeof PortalInquiriesRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/documents': {
+      id: '/portal/documents'
+      path: '/documents'
+      fullPath: '/portal/documents'
+      preLoaderRoute: typeof PortalDocumentsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/commissions': {
+      id: '/portal/commissions'
+      path: '/commissions'
+      fullPath: '/portal/commissions'
+      preLoaderRoute: typeof PortalCommissionsRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal/catalog': {
+      id: '/portal/catalog'
+      path: '/catalog'
+      fullPath: '/portal/catalog'
+      preLoaderRoute: typeof PortalCatalogRouteImport
+      parentRoute: typeof PortalRoute
+    }
+    '/portal-customer/wishlist': {
+      id: '/portal-customer/wishlist'
+      path: '/wishlist'
+      fullPath: '/portal-customer/wishlist'
+      preLoaderRoute: typeof PortalCustomerWishlistRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/quotations': {
+      id: '/portal-customer/quotations'
+      path: '/quotations'
+      fullPath: '/portal-customer/quotations'
+      preLoaderRoute: typeof PortalCustomerQuotationsRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/quotation': {
+      id: '/portal-customer/quotation'
+      path: '/quotation'
+      fullPath: '/portal-customer/quotation'
+      preLoaderRoute: typeof PortalCustomerQuotationRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/profile': {
+      id: '/portal-customer/profile'
+      path: '/profile'
+      fullPath: '/portal-customer/profile'
+      preLoaderRoute: typeof PortalCustomerProfileRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/orders': {
+      id: '/portal-customer/orders'
+      path: '/orders'
+      fullPath: '/portal-customer/orders'
+      preLoaderRoute: typeof PortalCustomerOrdersRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/compare': {
+      id: '/portal-customer/compare'
+      path: '/compare'
+      fullPath: '/portal-customer/compare'
+      preLoaderRoute: typeof PortalCustomerCompareRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/checkout': {
+      id: '/portal-customer/checkout'
+      path: '/checkout'
+      fullPath: '/portal-customer/checkout'
+      preLoaderRoute: typeof PortalCustomerCheckoutRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/portal-customer/cart': {
+      id: '/portal-customer/cart'
+      path: '/cart'
+      fullPath: '/portal-customer/cart'
+      preLoaderRoute: typeof PortalCustomerCartRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/careers/field-agent': {
+      id: '/careers/field-agent'
+      path: '/careers/field-agent'
+      fullPath: '/careers/field-agent'
+      preLoaderRoute: typeof CareersFieldAgentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/careers/$slug': {
+      id: '/careers/$slug'
+      path: '/careers/$slug'
+      fullPath: '/careers/$slug'
+      preLoaderRoute: typeof CareersSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/register': {
+      id: '/auth/register'
+      path: '/auth/register'
+      fullPath: '/auth/register'
+      preLoaderRoute: typeof AuthRegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth/login': {
+      id: '/auth/login'
+      path: '/auth/login'
+      fullPath: '/auth/login'
+      preLoaderRoute: typeof AuthLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/jobs/$jobId': {
-      id: '/admin/jobs/$jobId'
-      path: '/jobs/$jobId'
-      fullPath: '/admin/jobs/$jobId'
-      preLoaderRoute: typeof AdminJobsJobIdRouteImport
+    '/admin/suppliers': {
+      id: '/admin/suppliers'
+      path: '/suppliers'
+      fullPath: '/admin/suppliers'
+      preLoaderRoute: typeof AdminSuppliersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/roles': {
+      id: '/admin/roles'
+      path: '/roles'
+      fullPath: '/admin/roles'
+      preLoaderRoute: typeof AdminRolesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/products': {
+      id: '/admin/products'
+      path: '/products'
+      fullPath: '/admin/products'
+      preLoaderRoute: typeof AdminProductsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/partners': {
+      id: '/admin/partners'
+      path: '/partners'
+      fullPath: '/admin/partners'
+      preLoaderRoute: typeof AdminPartnersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/messages': {
+      id: '/admin/messages'
+      path: '/messages'
+      fullPath: '/admin/messages'
+      preLoaderRoute: typeof AdminMessagesRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/customers': {
+      id: '/admin/customers'
+      path: '/customers'
+      fullPath: '/admin/customers'
+      preLoaderRoute: typeof AdminCustomersRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/agents': {
+      id: '/admin/agents'
+      path: '/agents'
+      fullPath: '/admin/agents'
+      preLoaderRoute: typeof AdminAgentsRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/portal-customer/orders/': {
+      id: '/portal-customer/orders/'
+      path: '/'
+      fullPath: '/portal-customer/orders/'
+      preLoaderRoute: typeof PortalCustomerOrdersIndexRouteImport
+      parentRoute: typeof PortalCustomerOrdersRoute
+    }
+    '/portal-customer/catalog/': {
+      id: '/portal-customer/catalog/'
+      path: '/catalog'
+      fullPath: '/portal-customer/catalog/'
+      preLoaderRoute: typeof PortalCustomerCatalogIndexRouteImport
+      parentRoute: typeof PortalCustomerRoute
+    }
+    '/admin/quotations/': {
+      id: '/admin/quotations/'
+      path: '/quotations'
+      fullPath: '/admin/quotations/'
+      preLoaderRoute: typeof AdminQuotationsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
     '/admin/orders/': {
@@ -1301,33 +1294,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminOrdersIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/orders/$orderId': {
-      id: '/admin/orders/$orderId'
-      path: '/orders/$orderId'
-      fullPath: '/admin/orders/$orderId'
-      preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
+    '/admin/jobs/': {
+      id: '/admin/jobs/'
+      path: '/jobs'
+      fullPath: '/admin/jobs/'
+      preLoaderRoute: typeof AdminJobsIndexRouteImport
       parentRoute: typeof AdminRoute
     }
-    '/admin/quotations/': {
-      id: '/admin/quotations/'
-      path: '/quotations'
-      fullPath: '/admin/quotations/'
-      preLoaderRoute: typeof AdminQuotationsIndexRouteImport
-      parentRoute: typeof AdminRoute
+    '/admin/customers/': {
+      id: '/admin/customers/'
+      path: '/'
+      fullPath: '/admin/customers/'
+      preLoaderRoute: typeof AdminCustomersIndexRouteImport
+      parentRoute: typeof AdminCustomersRoute
     }
-    '/admin/quotations/$rfqId': {
-      id: '/admin/quotations/$rfqId'
-      path: '/quotations/$rfqId'
-      fullPath: '/admin/quotations/$rfqId'
-      preLoaderRoute: typeof AdminQuotationsRfqIdRouteImport
-      parentRoute: typeof AdminRoute
-    }
-    '/portal-customer/catalog/': {
-      id: '/portal-customer/catalog/'
-      path: '/catalog'
-      fullPath: '/portal-customer/catalog/'
-      preLoaderRoute: typeof PortalCustomerCatalogIndexRouteImport
-      parentRoute: typeof PortalCustomerRoute
+    '/portal-customer/orders/$orderId': {
+      id: '/portal-customer/orders/$orderId'
+      path: '/$orderId'
+      fullPath: '/portal-customer/orders/$orderId'
+      preLoaderRoute: typeof PortalCustomerOrdersOrderIdRouteImport
+      parentRoute: typeof PortalCustomerOrdersRoute
     }
     '/portal-customer/catalog/$productId': {
       id: '/portal-customer/catalog/$productId'
@@ -1336,19 +1322,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalCustomerCatalogProductIdRouteImport
       parentRoute: typeof PortalCustomerRoute
     }
-    '/portal-customer/orders/': {
-      id: '/portal-customer/orders/'
-      path: '/'
-      fullPath: '/portal-customer/orders/'
-      preLoaderRoute: typeof PortalCustomerOrdersIndexRouteImport
-      parentRoute: typeof PortalCustomerOrdersRoute
+    '/admin/quotations/$rfqId': {
+      id: '/admin/quotations/$rfqId'
+      path: '/quotations/$rfqId'
+      fullPath: '/admin/quotations/$rfqId'
+      preLoaderRoute: typeof AdminQuotationsRfqIdRouteImport
+      parentRoute: typeof AdminRoute
     }
-    '/portal-customer/orders/$orderId': {
-      id: '/portal-customer/orders/$orderId'
-      path: '/$orderId'
-      fullPath: '/portal-customer/orders/$orderId'
-      preLoaderRoute: typeof PortalCustomerOrdersOrderIdRouteImport
-      parentRoute: typeof PortalCustomerOrdersRoute
+    '/admin/orders/$orderId': {
+      id: '/admin/orders/$orderId'
+      path: '/orders/$orderId'
+      fullPath: '/admin/orders/$orderId'
+      preLoaderRoute: typeof AdminOrdersOrderIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/jobs/$jobId': {
+      id: '/admin/jobs/$jobId'
+      path: '/jobs/$jobId'
+      fullPath: '/admin/jobs/$jobId'
+      preLoaderRoute: typeof AdminJobsJobIdRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/admin/customers/statistics': {
+      id: '/admin/customers/statistics'
+      path: '/statistics'
+      fullPath: '/admin/customers/statistics'
+      preLoaderRoute: typeof AdminCustomersStatisticsRouteImport
+      parentRoute: typeof AdminCustomersRoute
     }
   }
 }
