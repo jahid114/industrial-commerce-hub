@@ -1,5 +1,7 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { useCustomerAddresses } from "@/lib/customer-addresses";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -56,6 +58,23 @@ function CheckoutPage() {
       notes: "",
     },
   });
+
+  const { addresses, ready } = useCustomerAddresses(user?.email);
+  const [selectedAddrId, setSelectedAddrId] = useState<string>("");
+  const pickAddress = (id: string) => {
+    const a = addresses.find((x) => x.id === id);
+    if (!a) return;
+    setSelectedAddrId(id);
+    form.setValue("address", a.line1, { shouldValidate: true });
+    form.setValue("city", a.city, { shouldValidate: true });
+  };
+  useEffect(() => {
+    if (!ready || selectedAddrId || addresses.length === 0) return;
+    const def = addresses.find((a) => a.isDefault) ?? addresses[0];
+    pickAddress(def.id);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ready, addresses]);
+
 
   if (items.length === 0 && !placedOrder) {
     navigate({ to: "/portal-customer/cart" });
@@ -115,6 +134,21 @@ function CheckoutPage() {
       <form onSubmit={form.handleSubmit(onSubmit)} className="grid gap-6 lg:grid-cols-[1fr_400px]">
         <div className="space-y-6">
           <Section title="Contact & Shipping">
+            {addresses.length > 0 && (
+              <div className="mb-4">
+                <Label className="mb-1.5 inline-block text-sm">Saved address</Label>
+                <Select value={selectedAddrId} onValueChange={pickAddress}>
+                  <SelectTrigger><SelectValue placeholder="Choose a saved address" /></SelectTrigger>
+                  <SelectContent>
+                    {addresses.map((a) => (
+                      <SelectItem key={a.id} value={a.id}>
+                        {a.label ? `${a.label} — ` : ""}{a.line1}, {a.city}{a.isDefault ? " (Default)" : ""}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            )}
             <div className="grid grid-cols-2 gap-4">
               <Field label="Full name" error={form.formState.errors.name?.message}><Input {...form.register("name")} /></Field>
               <Field label="Email" error={form.formState.errors.email?.message}><Input type="email" {...form.register("email")} /></Field>

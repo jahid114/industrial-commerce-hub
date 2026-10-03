@@ -73,7 +73,7 @@ export const Route = createFileRoute("/products/$productId")({
     <PublicLayout>
       <div className="container mx-auto px-4 py-24 text-center">
         <h1 className="font-display text-2xl font-bold">Failed to load product</h1>
-        <p className="mt-2 text-muted-foreground">{error.message}</p>
+        <p className="mt-2 text-muted-foreground">{(error as Error).message}</p>
         <Button onClick={reset} className="mt-6">Try again</Button>
       </div>
     </PublicLayout>
