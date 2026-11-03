@@ -6,46 +6,43 @@ import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, D
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { addOrderRequest, hasRequest, useOrderRequests, type OrderRequestType } from "@/lib/order-requests";
+import {
+  addRefundRequest, useRefundRequests, validateRefundAccount, REFUND_STATUS_COLOR,
+  type RefundAccount, type RefundMethod,
+} from "@/lib/refund-requests";
+import { Input } from "@/components/ui/input";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
+import { cancelOrder } from "@/lib/order-actions";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 import {
   STAGE_INFO,
+  ORDER_STATUS_COLOR,
+  PAYMENT_STATUS_COLOR,
   currentStageIndex,
   derivePaymentStatus,
   computeSubtotal,
   computeTax,
 } from "@/lib/order-workflow";
-import type { Order, OrderStatus, PaymentStatus, OrderEvent } from "@/data/types";
+import type { Order, OrderEvent } from "@/data/types";
 
 export const Route = createFileRoute("/portal-customer/orders/$orderId")({
   head: () => ({ meta: [{ title: "Order Detail — Portal" }] }),
   component: OrderDetail,
 });
 
-const statusColor: Record<OrderStatus, string> = {
-  Pending: "bg-muted text-muted-foreground",
-  Confirmed: "bg-accent/20 text-accent-foreground",
-  Processing: "bg-blue-100 text-blue-800",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
-  Cancelled: "bg-destructive/10 text-destructive",
-  "On Hold": "bg-amber-100 text-amber-800",
-};
-
-const paymentColor: Record<PaymentStatus, string> = {
-  Unpaid: "bg-destructive/10 text-destructive",
-  Partial: "bg-amber-100 text-amber-800",
-  Paid: "bg-success/20 text-success",
-  Refunded: "bg-muted text-muted-foreground",
-};
+const statusColor = ORDER_STATUS_COLOR;
+const paymentColor = PAYMENT_STATUS_COLOR;
 
 function OrderDetail() {
   const { orderId } = Route.useParams();
   const { orders, user, dispatch } = useStore();
+  const inv = useInventory();
   const order = orders.find((o) => o.id === orderId);
   const requests = useOrderRequests(user?.email);
   const [dialog, setDialog] = useState<OrderRequestType | null>(null);
@@ -53,9 +50,34 @@ function OrderDetail() {
   if (!order) throw notFound();
 
   const cancelled = order.status === "Cancelled";
-  const canCancel = !cancelled && order.status !== "Delivered" && order.status !== "Shipped";
+  const activeCancellation = requests.find((r) => r.orderId === order.id && r.type === "cancellation" && r.status === "Requested");
+  const canCancel = !cancelled && order.status !== "Delivered" && order.status !== "Shipped" && !activeCancellation;
   const returnRequested = hasRequest(requests, order.id, "return");
   const canReturn = order.status === "Delivered" && !returnRequested;
+
+  const refunds = useRefundRequests(user?.email).filter((r) => r.orderId === order.id);
+  const liveRefund = refunds.find((r) => r.status !== "Rejected");
+  const returnCompleted = requests.some((r) => r.orderId === order.id && r.type === "return" && r.status === "Completed");
+  const payStatus = derivePaymentStatus(order);
+  const canRefund = (cancelled || returnCompleted) && (payStatus === "Paid" || payStatus === "Partial") && !liveRefund;
+  const [refundOpen, setRefundOpen] = useState(false);
+  const [acct, setAcct] = useState<RefundAccount>({ method: "bKash" });
+  const setField = (k: keyof RefundAccount, v: string) => setAcct((a) => ({ ...a, [k]: v }));
+
+  const submitRefund = () => {
+    const err = validateRefundAccount(acct);
+    if (err) return toast.error(err);
+    addRefundRequest({
+      orderId: order.id,
+      customerEmail: order.customerEmail,
+      amount: order.paidAmount ?? order.total,
+      account: acct,
+    });
+    const event: OrderEvent = { at: new Date().toISOString(), by: order.customerName || "Customer", type: "payment", message: `Refund requested via ${acct.method}` };
+    dispatch({ type: "UPDATE_ORDER", id: order.id, patch: { timeline: [...(order.timeline ?? []), event] } });
+    toast.success("Refund request submitted");
+    setRefundOpen(false);
+  };
 
   const submit = () => {
     const text = reason.trim();
@@ -67,29 +89,47 @@ function OrderDetail() {
       toast.error("Reason must be under 500 characters.");
       return;
     }
-    addOrderRequest({
-      orderId: order.id,
-      customerEmail: order.customerEmail,
-      type: dialog === "return" ? "return" : "cancellation",
-      reason: text,
-      orderTotal: order.total,
-      orderDate: order.date,
-    });
-    const event: OrderEvent = {
-      at: new Date().toISOString(),
-      by: order.customerName || "Customer",
-      type: "status",
-      message: dialog === "return" ? `Return requested: ${text}` : `Order cancelled by customer: ${text}`,
-    };
-    dispatch({
-      type: "UPDATE_ORDER",
-      id: order.id,
-      patch:
-        dialog === "return"
-          ? { timeline: [...(order.timeline ?? []), event] }
-          : { status: "Cancelled", timeline: [...(order.timeline ?? []), event] },
-    });
-    toast.success(dialog === "return" ? "Return request submitted" : "Order cancelled");
+    const actor = order.customerName || "Customer";
+
+    if (dialog === "return") {
+      addOrderRequest({
+        orderId: order.id,
+        customerEmail: order.customerEmail,
+        type: "return",
+        reason: text,
+        orderTotal: order.total,
+        orderDate: order.date,
+      });
+      const event: OrderEvent = { at: new Date().toISOString(), by: actor, type: "status", message: `Return requested: ${text}` };
+      dispatch({ type: "UPDATE_ORDER", id: order.id, patch: { timeline: [...(order.timeline ?? []), event] } });
+      toast.success("Return request submitted");
+    } else if (order.status === "Pending") {
+      // No fulfillment work has started yet — instant self-cancel, still logged as a completed request.
+      const { patch } = cancelOrder(order, { actor, reason: text });
+      dispatch({ type: "UPDATE_ORDER", id: order.id, patch });
+      inv.releaseReservation(order, actor);
+      addOrderRequest({
+        orderId: order.id,
+        customerEmail: order.customerEmail,
+        type: "cancellation",
+        reason: text,
+        orderTotal: order.total,
+        orderDate: order.date,
+        status: "Completed",
+        timeline: [{ at: new Date().toISOString(), by: actor, type: "status", message: "Self-cancelled while order was Pending (no approval required)" }],
+      });
+      toast.success("Order cancelled");
+    } else {
+      addOrderRequest({
+        orderId: order.id,
+        customerEmail: order.customerEmail,
+        type: "cancellation",
+        reason: text,
+        orderTotal: order.total,
+        orderDate: order.date,
+      });
+      toast.success("Cancellation requested — awaiting review");
+    }
     setDialog(null);
     setReason("");
   };
@@ -111,10 +151,65 @@ function OrderDetail() {
               <Undo2 className="size-4 mr-2" /> Request Return
             </Button>
           )}
+          {canRefund && (
+            <Button variant="outline" onClick={() => { setAcct({ method: "bKash" }); setRefundOpen(true); }}>
+              <CreditCard className="size-4 mr-2" /> Request Refund
+            </Button>
+          )}
+          {refunds[0] && (
+            <Badge className={`self-center ${REFUND_STATUS_COLOR[refunds[0].status]}`}>Refund {refunds[0].status.toLowerCase()}</Badge>
+          )}
+          {activeCancellation && <Badge className="self-center bg-amber-100 text-amber-800">Cancellation requested</Badge>}
           {returnRequested && <Badge className="self-center bg-amber-100 text-amber-800">Return requested</Badge>}
           <Button onClick={() => generateInvoice(order)}><Download className="size-4 mr-2" /> Download Invoice</Button>
         </div>
       </div>
+
+      <Dialog open={refundOpen} onOpenChange={setRefundOpen}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Request a refund</DialogTitle>
+            <DialogDescription>
+              Refund of {formatBDT(order.paidAmount ?? order.total)}. Tell us where to send it.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-3">
+            <div className="space-y-1.5">
+              <Label>Receive method</Label>
+              <Select value={acct.method} onValueChange={(v) => setAcct({ method: v as RefundMethod })}>
+                <SelectTrigger><SelectValue /></SelectTrigger>
+                <SelectContent>
+                  {(["Bank", "bKash", "Nagad"] as const).map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}
+                </SelectContent>
+              </Select>
+            </div>
+            {acct.method === "Bank" ? (
+              <>
+                {([
+                  ["bankName", "Bank name"],
+                  ["branchName", "Branch name"],
+                  ["routingNumber", "Routing number"],
+                  ["accountNumber", "Account number"],
+                ] as const).map(([k, label]) => (
+                  <div key={k} className="space-y-1.5">
+                    <Label>{label}</Label>
+                    <Input value={acct[k] ?? ""} maxLength={60} onChange={(e) => setField(k, e.target.value)} />
+                  </div>
+                ))}
+              </>
+            ) : (
+              <div className="space-y-1.5">
+                <Label>{acct.method} phone number</Label>
+                <Input value={acct.phone ?? ""} maxLength={14} placeholder="01XXXXXXXXX" onChange={(e) => setField("phone", e.target.value)} />
+              </div>
+            )}
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRefundOpen(false)}>Back</Button>
+            <Button onClick={submitRefund}>Submit request</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       <Dialog open={dialog !== null} onOpenChange={(o) => !o && setDialog(null)}>
         <DialogContent>
@@ -123,7 +218,9 @@ function OrderDetail() {
             <DialogDescription>
               {dialog === "return"
                 ? "Tell us why you want to return this order. Our team will review your request."
-                : "Please tell us why you are cancelling. This cannot be undone."}
+                : order.status === "Pending"
+                  ? "This order hasn't been confirmed yet, so it will be cancelled immediately."
+                  : "Please tell us why you are cancelling. An admin will review this before the order is cancelled."}
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-2">
@@ -168,6 +265,13 @@ function OrderDetail() {
           <div className="text-sm">{order.shippingAddress}</div>
         </div>
       </div>
+
+      {refunds[0]?.status === "Rejected" && (
+        <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
+          <span className="font-semibold">Refund {refunds[0].id} was rejected.</span>
+          {refunds[0].rejectionReason && <> Reason: {refunds[0].rejectionReason}</>}
+        </div>
+      )}
 
       <ProcessTimeline order={order} />
 

@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
 import { getProduct } from "@/data/products";
 import { formatBDT, newOrderId } from "@/lib/format";
 import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
@@ -37,6 +38,7 @@ export const Route = createFileRoute("/portal-customer/checkout")({
 
 function CheckoutPage() {
   const { cart, cartSubtotal, dispatch, user } = useStore();
+  const inv = useInventory();
   const navigate = useNavigate();
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
 
@@ -94,6 +96,7 @@ function CheckoutPage() {
       shippingAddress: `${data.address}, ${data.city}`,
     };
     dispatch({ type: "ADD_ORDER", order });
+    inv.reserveForOrder(order, data.name);
     dispatch({ type: "CLEAR_CART" });
     setPlacedOrder(order);
   };

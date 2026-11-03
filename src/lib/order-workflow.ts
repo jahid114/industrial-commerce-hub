@@ -20,10 +20,28 @@ export const ALL_ORDER_STATUSES: OrderStatus[] = [
 
 export const PAYMENT_STATUSES: PaymentStatus[] = ["Unpaid", "Partial", "Paid", "Refunded"];
 
+export const ORDER_STATUS_COLOR: Record<OrderStatus, string> = {
+  Pending: "bg-muted text-muted-foreground",
+  Confirmed: "bg-accent/20 text-accent-foreground",
+  Processing: "bg-blue-100 text-blue-800",
+  Shipped: "bg-primary text-primary-foreground",
+  Delivered: "bg-success/20 text-success",
+  Cancelled: "bg-destructive/10 text-destructive",
+  "On Hold": "bg-amber-100 text-amber-800",
+};
+
+export const PAYMENT_STATUS_COLOR: Record<PaymentStatus, string> = {
+  Unpaid: "bg-destructive/10 text-destructive",
+  Partial: "bg-amber-100 text-amber-800",
+  Paid: "bg-success/20 text-success",
+  Refunded: "bg-muted text-muted-foreground",
+};
+
 // Derive sensible defaults from legacy orders that only store `status`.
 export function derivePaymentStatus(order: Order): PaymentStatus {
   if (order.paymentStatus) return order.paymentStatus;
-  if (order.status === "Cancelled") return "Refunded";
+  // Cancelled legacy orders: Refunded is only set by a completed refund request, so fall back to the method.
+  if (order.status === "Cancelled") return order.paymentMethod === "COD" ? "Unpaid" : "Paid";
   if (order.status === "Delivered") return "Paid";
   if (order.status === "Shipped") return "Paid";
   if (order.status === "Processing" || order.status === "Confirmed")

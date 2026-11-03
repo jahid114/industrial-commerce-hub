@@ -106,6 +106,10 @@ export interface Order {
   status: OrderStatus;
   paymentStatus?: PaymentStatus;
   paymentMethod: "COD" | "Bank Transfer" | "bKash" | "Nagad";
+  paidAmount?: number;
+  transactionNo?: string;
+  /** Proof of payment as a data URL (shortcut: stored inline, move to file storage with a backend). */
+  paymentProof?: { name: string; dataUrl: string };
   shippingAddress: string;
   billingAddress?: string;
   agentId?: string;
@@ -115,6 +119,8 @@ export interface Order {
   estimatedDelivery?: string;
   internalNotes?: string;
   timeline?: OrderEvent[];
+  /** Status to restore to when resumed from On Hold. Set by holdOrder(), consumed by resumeOrder(). */
+  previousStatus?: OrderStatus;
 }
 
 

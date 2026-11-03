@@ -11,6 +11,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { PublicLayout } from "@/components/layout/PublicLayout";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
 import { useCustomers } from "@/lib/customers-store";
 import { getProduct } from "@/data/products";
 import { formatBDT, newOrderId } from "@/lib/format";
@@ -49,6 +50,7 @@ function CheckoutPage() {
     }
   }, [isAuthenticated, isAdmin, isAgent, isPartner, navigate]);
   const { ensureCustomer } = useCustomers();
+  const inv = useInventory();
   const [placedOrder, setPlacedOrder] = useState<Order | null>(null);
   const [newAccount, setNewAccount] = useState<{ email: string } | null>(null);
 
@@ -99,6 +101,7 @@ function CheckoutPage() {
     });
     if (created) setNewAccount({ email: data.email.trim().toLowerCase() });
     dispatch({ type: "ADD_ORDER", order });
+    inv.reserveForOrder(order, data.name);
     dispatch({ type: "CLEAR_CART" });
     setPlacedOrder(order);
   };

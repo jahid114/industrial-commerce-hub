@@ -1,24 +1,35 @@
-import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { products as seedProducts } from "@/data/products";
-import { orders as seedOrders } from "@/data/orders";
+import { useStore } from "@/lib/store";
+import type { Order } from "@/data/types";
 
 export type StockBucket = "good" | "returned" | "damaged" | "incoming";
 
+/** Closed vocabulary of states a unit of stock can be in. */
+export type StockState = "Incoming" | "Good" | "Reserved" | "Sold" | "Returned" | "Damaged" | "WrittenOff";
+
 export type MovementType =
-  | "Adjustment"
-  | "Return"
-  | "Damage"
-  | "Restock"
-  | "Write-off"
-  | "Incoming"
-  | "Sale";
+  | "Restock" // Incoming -> Good      (PO received / manual add-stock)
+  | "Reserve" // Good -> Reserved      (order placed)
+  | "Release" // Reserved -> Good      (order cancelled)
+  | "Fulfill" // Reserved -> Sold      (order delivered)
+  | "ReturnReceived" // Sold -> Returned      (physical return logged)
+  | "ReturnRestock" // Returned -> Good      (resolved: resellable)
+  | "ReturnDamage" // Returned -> Damaged   (resolved: damaged)
+  | "ReturnScrap" // Returned -> WrittenOff (resolved: unsellable)
+  | "DamageLogged" // Good -> Damaged       (standalone damage report)
+  | "WriteOff" // Damaged -> WrittenOff
+  | "Adjustment"; // Good -> Good (± correction; qty can be negative — the one exception)
 
 export interface InventoryRecord {
   productId: string;
-  good: number;
-  returned: number;
-  damaged: number;
-  incoming: number;
+  good: number; // physical on-hand; reservations are an overlay, not a subtraction
+  reserved: number; // stored (not derived) — committed to open (non-terminal) orders
+  sold: number; // lifetime units delivered, net of any that came back as a return
+  returned: number; // physically back, pending inspection
+  damaged: number; // identified unsellable, pending write-off
+  incoming: number; // on order from supplier
+  writtenOff: number; // lifetime scrapped count
   reorderLevel: number;
 }
 
@@ -27,10 +38,10 @@ export interface Movement {
   date: string; // ISO
   productId: string;
   type: MovementType;
-  deltaGood: number;
-  deltaReturned: number;
-  deltaDamaged: number;
-  deltaIncoming: number;
+  fromState: StockState;
+  toState: StockState;
+  quantity: number; // unsigned, except Adjustment
+  reference?: string; // order id / return request id / PO reference
   note?: string;
   user: string;
 }
@@ -78,15 +89,12 @@ export interface DamagedEntry {
   status: DamagedStatus;
 }
 
-// Reserved derived from open orders
-function reservedFromOrders(productId: string): number {
-  let qty = 0;
-  for (const o of seedOrders) {
-    if (o.status === "Delivered" || o.status === "Cancelled") continue;
-    for (const it of o.items) if (it.productId === productId) qty += it.quantity;
-  }
-  return qty;
-}
+const BUCKET_STATE: Record<StockBucket, StockState> = {
+  good: "Good",
+  returned: "Returned",
+  damaged: "Damaged",
+  incoming: "Incoming",
+};
 
 function suggestReorderLevel(stock: number): number {
   return Math.max(2, Math.round(stock * 0.2));
@@ -94,6 +102,20 @@ function suggestReorderLevel(stock: number): number {
 
 function uid(prefix: string) {
   return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 7)}`;
+}
+
+function emptyRecord(productId: string): InventoryRecord {
+  return {
+    productId,
+    good: 0,
+    reserved: 0,
+    sold: 0,
+    returned: 0,
+    damaged: 0,
+    incoming: 0,
+    writtenOff: 0,
+    reorderLevel: 2,
+  };
 }
 
 interface InventoryState {
@@ -114,6 +136,13 @@ interface InventoryContextValue extends InventoryState {
     note?: string;
     user?: string;
   }) => void;
+  /** Order placed -> reserve stock for each line item. Safe to call once per order. */
+  reserveForOrder: (order: Order, user?: string) => void;
+  /** Order cancelled -> release the reservation back to available stock. Safe to call once per order. */
+  releaseReservation: (order: Order, user?: string) => void;
+  /** Order delivered -> convert the reservation into a sold unit (physically leaves the warehouse). */
+  fulfillOrder: (order: Order, user?: string) => void;
+  /** Physical return received back at the warehouse. Returns the created ReturnEntry id. */
   logReturn: (input: {
     productId: string;
     quantity: number;
@@ -122,7 +151,7 @@ interface InventoryContextValue extends InventoryState {
     orderId?: string;
     note?: string;
     user?: string;
-  }) => void;
+  }) => string;
   resolveReturn: (id: string, action: "restock" | "damage" | "scrap", user?: string) => void;
   logDamaged: (input: {
     productId: string;
@@ -138,15 +167,14 @@ interface InventoryContextValue extends InventoryState {
 
 const InventoryContext = createContext<InventoryContextValue | null>(null);
 
+const STORAGE_KEY = "megahaus-inventory-v1";
+
 function buildInitial(): InventoryState {
   const records: Record<string, InventoryRecord> = {};
   for (const p of seedProducts) {
     records[p.id] = {
-      productId: p.id,
+      ...emptyRecord(p.id),
       good: p.stock,
-      returned: 0,
-      damaged: 0,
-      incoming: 0,
       reorderLevel: suggestReorderLevel(p.stock),
     };
   }
@@ -155,19 +183,8 @@ function buildInitial(): InventoryState {
 
 export function InventoryProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<InventoryState>(() => buildInitial());
-
-  const ensureRecord = useCallback((productId: string) => {
-    setState((s) => {
-      if (s.records[productId]) return s;
-      return {
-        ...s,
-        records: {
-          ...s.records,
-          [productId]: { productId, good: 0, returned: 0, damaged: 0, incoming: 0, reorderLevel: 2 },
-        },
-      };
-    });
-  }, []);
+  const { orders, hydrated: storeHydrated } = useStore();
+  const bootstrapped = useRef(false);
 
   const applyDelta = useCallback(
     (
@@ -176,9 +193,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       mv: Omit<Movement, "id" | "date" | "productId">,
     ) => {
       setState((s) => {
-        const existing =
-          s.records[productId] ??
-          { productId, good: 0, returned: 0, damaged: 0, incoming: 0, reorderLevel: 2 };
+        const existing = s.records[productId] ?? emptyRecord(productId);
         const next: InventoryRecord = {
           ...existing,
           good: Math.max(0, existing.good + (patch.good ?? 0)),
@@ -186,12 +201,7 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
           damaged: Math.max(0, existing.damaged + (patch.damaged ?? 0)),
           incoming: Math.max(0, existing.incoming + (patch.incoming ?? 0)),
         };
-        const movement: Movement = {
-          id: uid("mv"),
-          date: new Date().toISOString(),
-          productId,
-          ...mv,
-        };
+        const movement: Movement = { id: uid("mv"), date: new Date().toISOString(), productId, ...mv };
         return {
           ...s,
           records: { ...s.records, [productId]: next },
@@ -205,13 +215,11 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const adjust: InventoryContextValue["adjust"] = useCallback(
     ({ productId, bucket, delta, note, user = "Admin" }) => {
       if (!delta) return;
-      const patch: Partial<InventoryRecord> = { [bucket]: delta } as Partial<InventoryRecord>;
-      applyDelta(productId, patch, {
+      applyDelta(productId, { [bucket]: delta } as Partial<InventoryRecord>, {
         type: "Adjustment",
-        deltaGood: bucket === "good" ? delta : 0,
-        deltaReturned: bucket === "returned" ? delta : 0,
-        deltaDamaged: bucket === "damaged" ? delta : 0,
-        deltaIncoming: bucket === "incoming" ? delta : 0,
+        fromState: BUCKET_STATE[bucket],
+        toState: BUCKET_STATE[bucket],
+        quantity: delta,
         note,
         user,
       });
@@ -219,32 +227,139 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     [applyDelta],
   );
 
+  const hasMovement = useCallback(
+    (s: InventoryState, reference: string, type: MovementType) =>
+      s.movements.some((m) => m.reference === reference && m.type === type),
+    [],
+  );
+
+  const reserveForOrder: InventoryContextValue["reserveForOrder"] = useCallback((order, user = "System") => {
+    setState((s) => {
+      if (hasMovement(s, order.id, "Reserve")) return s;
+      let records = s.records;
+      const newMovements: Movement[] = [];
+      for (const item of order.items) {
+        const existing = records[item.productId] ?? emptyRecord(item.productId);
+        records = { ...records, [item.productId]: { ...existing, reserved: existing.reserved + item.quantity } };
+        newMovements.push({
+          id: uid("mv"),
+          date: new Date().toISOString(),
+          productId: item.productId,
+          type: "Reserve",
+          fromState: "Good",
+          toState: "Reserved",
+          quantity: item.quantity,
+          reference: order.id,
+          note: `Reserved for order ${order.id}`,
+          user,
+        });
+      }
+      return { ...s, records, movements: [...newMovements, ...s.movements] };
+    });
+  }, [hasMovement]);
+
+  const releaseReservation: InventoryContextValue["releaseReservation"] = useCallback((order, user = "System") => {
+    setState((s) => {
+      if (hasMovement(s, order.id, "Release")) return s;
+      let records = s.records;
+      const newMovements: Movement[] = [];
+      for (const item of order.items) {
+        const existing = records[item.productId] ?? emptyRecord(item.productId);
+        records = { ...records, [item.productId]: { ...existing, reserved: Math.max(0, existing.reserved - item.quantity) } };
+        newMovements.push({
+          id: uid("mv"),
+          date: new Date().toISOString(),
+          productId: item.productId,
+          type: "Release",
+          fromState: "Reserved",
+          toState: "Good",
+          quantity: item.quantity,
+          reference: order.id,
+          note: `Reservation released (order ${order.id} cancelled)`,
+          user,
+        });
+      }
+      return { ...s, records, movements: [...newMovements, ...s.movements] };
+    });
+  }, [hasMovement]);
+
+  const fulfillOrder: InventoryContextValue["fulfillOrder"] = useCallback((order, user = "System") => {
+    setState((s) => {
+      if (hasMovement(s, order.id, "Fulfill")) return s;
+      let records = s.records;
+      const newMovements: Movement[] = [];
+      for (const item of order.items) {
+        const existing = records[item.productId] ?? emptyRecord(item.productId);
+        records = {
+          ...records,
+          [item.productId]: {
+            ...existing,
+            good: Math.max(0, existing.good - item.quantity),
+            reserved: Math.max(0, existing.reserved - item.quantity),
+            sold: existing.sold + item.quantity,
+          },
+        };
+        newMovements.push({
+          id: uid("mv"),
+          date: new Date().toISOString(),
+          productId: item.productId,
+          type: "Fulfill",
+          fromState: "Good",
+          toState: "Sold",
+          quantity: item.quantity,
+          reference: order.id,
+          note: `Delivered (order ${order.id})`,
+          user,
+        });
+      }
+      return { ...s, records, movements: [...newMovements, ...s.movements] };
+    });
+  }, [hasMovement]);
+
   const logReturn: InventoryContextValue["logReturn"] = useCallback(
     ({ productId, quantity, reason, condition, orderId, note, user = "Admin" }) => {
-      if (quantity <= 0) return;
-      const entry: ReturnEntry = {
-        id: uid("ret"),
-        date: new Date().toISOString(),
-        productId,
-        quantity,
-        reason,
-        condition,
-        orderId,
-        note,
-        status: "Pending",
-      };
-      setState((s) => ({ ...s, returns: [entry, ...s.returns] }));
-      applyDelta(productId, { returned: quantity }, {
-        type: "Return",
-        deltaGood: 0,
-        deltaReturned: quantity,
-        deltaDamaged: 0,
-        deltaIncoming: 0,
-        note: `Return: ${reason}${orderId ? ` (order ${orderId})` : ""}`,
-        user,
+      if (quantity <= 0) return "";
+      const id = uid("ret");
+      setState((s) => {
+        const entry: ReturnEntry = {
+          id,
+          date: new Date().toISOString(),
+          productId,
+          quantity,
+          reason,
+          condition,
+          orderId,
+          note,
+          status: "Pending",
+        };
+        const existing = s.records[productId] ?? emptyRecord(productId);
+        const nextRec: InventoryRecord = {
+          ...existing,
+          sold: Math.max(0, existing.sold - quantity),
+          returned: existing.returned + quantity,
+        };
+        const movement: Movement = {
+          id: uid("mv"),
+          date: new Date().toISOString(),
+          productId,
+          type: "ReturnReceived",
+          fromState: "Sold",
+          toState: "Returned",
+          quantity,
+          reference: orderId,
+          note: `Return received: ${reason}${orderId ? ` (order ${orderId})` : ""}${note ? ` — ${note}` : ""}`,
+          user,
+        };
+        return {
+          ...s,
+          returns: [entry, ...s.returns],
+          records: { ...s.records, [productId]: nextRec },
+          movements: [movement, ...s.movements],
+        };
       });
+      return id;
     },
-    [applyDelta],
+    [],
   );
 
   const resolveReturn: InventoryContextValue["resolveReturn"] = useCallback(
@@ -256,32 +371,30 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
         if (action === "restock") nextStatus = "Restocked";
         if (action === "damage") nextStatus = "Damaged";
         const returns = prev.returns.map((r) => (r.id === id ? { ...r, status: nextStatus } : r));
-        const existing =
-          prev.records[entry.productId] ??
-          { productId: entry.productId, good: 0, returned: 0, damaged: 0, incoming: 0, reorderLevel: 2 };
+        const existing = prev.records[entry.productId] ?? emptyRecord(entry.productId);
         const q = entry.quantity;
         const nextRec: InventoryRecord = {
           ...existing,
           returned: Math.max(0, existing.returned - q),
           good: action === "restock" ? existing.good + q : existing.good,
           damaged: action === "damage" ? existing.damaged + q : existing.damaged,
+          writtenOff: action === "scrap" ? existing.writtenOff + q : existing.writtenOff,
         };
         const movement: Movement = {
           id: uid("mv"),
           date: new Date().toISOString(),
           productId: entry.productId,
-          type:
-            action === "restock" ? "Restock" : action === "damage" ? "Damage" : "Write-off",
-          deltaGood: action === "restock" ? q : 0,
-          deltaReturned: -q,
-          deltaDamaged: action === "damage" ? q : 0,
-          deltaIncoming: 0,
+          type: action === "restock" ? "ReturnRestock" : action === "damage" ? "ReturnDamage" : "ReturnScrap",
+          fromState: "Returned",
+          toState: action === "restock" ? "Good" : action === "damage" ? "Damaged" : "WrittenOff",
+          quantity: q,
+          reference: entry.orderId,
           note:
             action === "restock"
               ? "Restocked from return"
               : action === "damage"
                 ? "Return marked damaged"
-                : "Return scrapped",
+                : "Return scrapped (written off)",
           user,
         };
         if (action === "damage") {
@@ -317,28 +430,43 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   const logDamaged: InventoryContextValue["logDamaged"] = useCallback(
     ({ productId, quantity, reason, note, user = "Admin" }) => {
       if (quantity <= 0) return;
-      const entry: DamagedEntry = {
-        id: uid("dmg"),
-        date: new Date().toISOString(),
-        productId,
-        quantity,
-        reason,
-        note,
-        loggedBy: user,
-        status: "Open",
-      };
-      setState((s) => ({ ...s, damaged: [entry, ...s.damaged] }));
-      applyDelta(productId, { good: -quantity, damaged: quantity }, {
-        type: "Damage",
-        deltaGood: -quantity,
-        deltaReturned: 0,
-        deltaDamaged: quantity,
-        deltaIncoming: 0,
-        note: `Damaged: ${reason}`,
-        user,
+      setState((s) => {
+        const entry: DamagedEntry = {
+          id: uid("dmg"),
+          date: new Date().toISOString(),
+          productId,
+          quantity,
+          reason,
+          note,
+          loggedBy: user,
+          status: "Open",
+        };
+        const existing = s.records[productId] ?? emptyRecord(productId);
+        const nextRec: InventoryRecord = {
+          ...existing,
+          good: Math.max(0, existing.good - quantity),
+          damaged: existing.damaged + quantity,
+        };
+        const movement: Movement = {
+          id: uid("mv"),
+          date: new Date().toISOString(),
+          productId,
+          type: "DamageLogged",
+          fromState: "Good",
+          toState: "Damaged",
+          quantity,
+          note: `Damaged: ${reason}`,
+          user,
+        };
+        return {
+          ...s,
+          damaged: [entry, ...s.damaged],
+          records: { ...s.records, [productId]: nextRec },
+          movements: [movement, ...s.movements],
+        };
       });
     },
-    [applyDelta],
+    [],
   );
 
   const writeOffDamaged: InventoryContextValue["writeOffDamaged"] = useCallback(
@@ -346,29 +474,28 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       setState((prev) => {
         const entry = prev.damaged.find((d) => d.id === id);
         if (!entry || entry.status !== "Open") return prev;
-        const damaged = prev.damaged.map((d) =>
-          d.id === id ? { ...d, status: "Written off" as const } : d,
-        );
-        const existing = prev.records[entry.productId];
-        const nextRec = existing
-          ? { ...existing, damaged: Math.max(0, existing.damaged - entry.quantity) }
-          : existing;
+        const damaged = prev.damaged.map((d) => (d.id === id ? { ...d, status: "Written off" as const } : d));
+        const existing = prev.records[entry.productId] ?? emptyRecord(entry.productId);
+        const nextRec: InventoryRecord = {
+          ...existing,
+          damaged: Math.max(0, existing.damaged - entry.quantity),
+          writtenOff: existing.writtenOff + entry.quantity,
+        };
         const movement: Movement = {
           id: uid("mv"),
           date: new Date().toISOString(),
           productId: entry.productId,
-          type: "Write-off",
-          deltaGood: 0,
-          deltaReturned: 0,
-          deltaDamaged: -entry.quantity,
-          deltaIncoming: 0,
+          type: "WriteOff",
+          fromState: "Damaged",
+          toState: "WrittenOff",
+          quantity: entry.quantity,
           note: `Wrote off damaged stock (${entry.reason})`,
           user,
         };
         return {
           ...prev,
           damaged,
-          records: nextRec ? { ...prev.records, [entry.productId]: nextRec } : prev.records,
+          records: { ...prev.records, [entry.productId]: nextRec },
           movements: [movement, ...prev.movements],
         };
       });
@@ -387,31 +514,60 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     });
   }, []);
 
-  const registerProduct: InventoryContextValue["registerProduct"] = useCallback(
-    (productId, initialGood) => {
-      setState((s) => {
-        if (s.records[productId]) return s;
-        return {
-          ...s,
-          records: {
-            ...s.records,
-            [productId]: {
-              productId,
-              good: initialGood,
-              returned: 0,
-              damaged: 0,
-              incoming: 0,
-              reorderLevel: suggestReorderLevel(initialGood),
-            },
+  const registerProduct: InventoryContextValue["registerProduct"] = useCallback((productId, initialGood) => {
+    setState((s) => {
+      if (s.records[productId]) return s;
+      return {
+        ...s,
+        records: {
+          ...s.records,
+          [productId]: {
+            ...emptyRecord(productId),
+            good: initialGood,
+            reorderLevel: suggestReorderLevel(initialGood),
           },
-        };
-      });
-    },
-    [],
-  );
+        },
+      };
+    });
+  }, []);
+
+  // Hydrate from localStorage; if nothing is persisted yet, reconcile reserved/sold from the
+  // real (already-hydrated) order history instead of the frozen seed orders array.
+  useEffect(() => {
+    if (typeof window === "undefined" || bootstrapped.current) return;
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        setState(JSON.parse(raw) as InventoryState);
+        bootstrapped.current = true;
+        return;
+      }
+    } catch {
+      /* ignore */
+    }
+    if (!storeHydrated) return; // wait for StoreProvider to finish its own hydration first
+    bootstrapped.current = true;
+    for (const order of orders) {
+      if (order.status === "Delivered") {
+        fulfillOrder(order, "System (migration)");
+      } else if (order.status !== "Cancelled") {
+        reserveForOrder(order, "System (migration)");
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [storeHydrated, orders]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    } catch {
+      /* ignore */
+    }
+  }, [state]);
 
   const value = useMemo<InventoryContextValue>(() => {
-    const reserved = (id: string) => reservedFromOrders(id);
+    const reserved = (id: string) => state.records[id]?.reserved ?? 0;
     const goodStock = (id: string) => state.records[id]?.good ?? 0;
     const available = (id: string) => Math.max(0, goodStock(id) - reserved(id));
     return {
@@ -420,6 +576,9 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
       available,
       goodStock,
       adjust,
+      reserveForOrder,
+      releaseReservation,
+      fulfillOrder,
       logReturn,
       resolveReturn,
       logDamaged,
@@ -430,6 +589,9 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
   }, [
     state,
     adjust,
+    reserveForOrder,
+    releaseReservation,
+    fulfillOrder,
     logReturn,
     resolveReturn,
     logDamaged,
@@ -437,9 +599,6 @@ export function InventoryProvider({ children }: { children: ReactNode }) {
     setReorderLevel,
     registerProduct,
   ]);
-
-  // touch ensureRecord to keep referenced (used in future imports)
-  void ensureRecord;
 
   return <InventoryContext.Provider value={value}>{children}</InventoryContext.Provider>;
 }

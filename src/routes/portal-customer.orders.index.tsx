@@ -7,22 +7,14 @@ import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 import { ORDER_REQUEST_STATUS_COLOR, useOrderRequests, type OrderRequest } from "@/lib/order-requests";
-import type { OrderStatus } from "@/data/types";
+import { ORDER_STATUS_COLOR } from "@/lib/order-workflow";
 
 export const Route = createFileRoute("/portal-customer/orders/")({
   head: () => ({ meta: [{ title: "My Orders — Portal" }] }),
   component: OrdersPage,
 });
 
-const statusVariant: Record<OrderStatus, string> = {
-  Pending: "bg-muted text-muted-foreground",
-  Confirmed: "bg-accent/20 text-accent-foreground",
-  Processing: "bg-blue-100 text-blue-800",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
-  Cancelled: "bg-destructive/10 text-destructive",
-  "On Hold": "bg-amber-100 text-amber-800",
-};
+const statusVariant = ORDER_STATUS_COLOR;
 
 function OrdersPage() {
   const { orders, user } = useStore();

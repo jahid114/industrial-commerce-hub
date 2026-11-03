@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
 import { products } from "@/data/products";
 import { agents } from "@/data/agents";
 import { getAgentPrice, useCurrentAgentCommission, getEffectivePrice } from "@/lib/pricing";
@@ -43,6 +44,7 @@ type Mode = "existing" | "new";
 
 export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart, onPlaced }: Props) {
   const { dispatch, cart, user } = useStore();
+  const inv = useInventory();
   const commissionPct = useCurrentAgentCommission();
 
   const [customers, setCustomers] = useState<AgentCustomer[]>([]);
@@ -190,6 +192,7 @@ export function NewOrderDialog({ open, onOpenChange, presetCustomer, preloadCart
       }],
     };
     dispatch({ type: "ADD_ORDER", order });
+    inv.reserveForOrder(order, user?.name ?? "Agent");
     if (preloadCart) dispatch({ type: "CLEAR_CART" });
     toast.success(`Order ${order.id} placed for ${displayName}`);
     onPlaced?.(order);

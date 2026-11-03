@@ -7,7 +7,6 @@ import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { useStore } from "@/lib/store";
-import { InventoryProvider } from "@/lib/inventory-store";
 import { RbacProvider } from "@/lib/rbac-store";
 import { useSidebarCollapsed } from "@/hooks/use-sidebar-collapsed";
 import { toast } from "sonner";
@@ -53,7 +52,6 @@ function AdminLayout() {
   if (!isAuthenticated || !isAdmin) return null;
 
   return (
-    <InventoryProvider>
     <RbacProvider>
     <TooltipProvider delayDuration={0}>
     <div className="flex min-h-screen bg-secondary">
@@ -138,6 +136,5 @@ function AdminLayout() {
     </div>
     </TooltipProvider>
     </RbacProvider>
-    </InventoryProvider>
   );
 }

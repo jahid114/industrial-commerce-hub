@@ -13,6 +13,8 @@ import { resolveAgentInfo } from "@/data/agents";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderRequestsPanel } from "@/components/admin/OrderRequestsPanel";
 import { useOrderRequests } from "@/lib/order-requests";
+import { RefundsPanel } from "@/components/admin/RefundsPanel";
+import { useRefundRequests } from "@/lib/refund-requests";
 import type { OrderStatus, PaymentStatus } from "@/data/types";
 
 export const Route = createFileRoute("/admin/orders/")({
@@ -42,6 +44,7 @@ function AdminOrdersPage() {
   const requests = useOrderRequests();
   const returnCount = requests.filter((r) => r.type === "return" && r.status === "Requested").length;
   const cancelCount = requests.filter((r) => r.type === "cancellation" && r.status === "Requested").length;
+  const refundCount = useRefundRequests().filter((r) => r.status === "Pending").length;
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [payFilter, setPayFilter] = useState<string>("all");
@@ -81,8 +84,10 @@ function AdminOrdersPage() {
           <TabsTrigger value="orders">Orders</TabsTrigger>
           <TabsTrigger value="returns">Returns{returnCount ? ` (${returnCount})` : ""}</TabsTrigger>
           <TabsTrigger value="cancellations">Cancellations{cancelCount ? ` (${cancelCount})` : ""}</TabsTrigger>
+          <TabsTrigger value="refunds">Refunds{refundCount ? ` (${refundCount})` : ""}</TabsTrigger>
         </TabsList>
 
+        <TabsContent value="refunds"><RefundsPanel /></TabsContent>
         <TabsContent value="returns"><OrderRequestsPanel type="return" /></TabsContent>
         <TabsContent value="cancellations"><OrderRequestsPanel type="cancellation" /></TabsContent>
 

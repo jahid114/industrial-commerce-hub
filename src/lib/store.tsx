@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useReducer, useCallback, type ReactNode } from "react";
+import { createContext, useContext, useEffect, useReducer, useCallback, useState, type ReactNode } from "react";
 import type { Order, Quotation, Role } from "@/data/types";
 import { orders as seedOrders } from "@/data/orders";
 import { quotations as seedQuotations } from "@/data/quotations";
@@ -108,6 +108,8 @@ interface StoreContextValue extends State {
   isAdmin: boolean;
   isAgent: boolean;
   isPartner: boolean;
+  /** True once the initial localStorage hydration attempt has completed (success or not). */
+  hydrated: boolean;
 }
 
 const StoreContext = createContext<StoreContextValue | null>(null);
@@ -116,10 +118,14 @@ const STORAGE_KEY = "megahaus-store-v1";
 
 export function StoreProvider({ children }: { children: ReactNode }) {
   const [state, dispatch] = useReducer(reducer, initialState);
+  const [hydrated, setHydrated] = useState(false);
 
   // hydrate from localStorage
   useEffect(() => {
-    if (typeof window === "undefined") return;
+    if (typeof window === "undefined") {
+      setHydrated(true);
+      return;
+    }
     try {
       const raw = localStorage.getItem(STORAGE_KEY);
       if (raw) {
@@ -151,12 +157,18 @@ export function StoreProvider({ children }: { children: ReactNode }) {
             // Drop any entry we still can't render safely.
             .filter((q: any) => q.id && Array.isArray(q.items));
         }
+        // Demo data: bring in refund-demo orders (1022–1030) that older saved state lacks.
+        if (Array.isArray(parsed.orders)) {
+          const have = new Set(parsed.orders.map((o) => o.id));
+          const num = (id: string) => Number(id.split("-").pop());
+          parsed.orders = [...parsed.orders, ...seedOrders.filter((o) => !have.has(o.id) && num(o.id) >= 1022 && num(o.id) <= 1030)];
+        }
         dispatch({ type: "HYDRATE", state: { ...initialState, ...parsed } });
       }
     } catch {
       /* ignore */
     }
-
+    setHydrated(true);
   }, []);
 
   // persist
@@ -184,6 +196,7 @@ export function StoreProvider({ children }: { children: ReactNode }) {
     isAdmin: state.user?.role === "admin",
     isAgent: state.user?.role === "agent",
     isPartner: state.user?.role === "partner",
+    hydrated,
   };
 
   return <StoreContext.Provider value={value}>{children}</StoreContext.Provider>;

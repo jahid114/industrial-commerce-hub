@@ -54,6 +54,7 @@ import {
   DialogFooter,
 } from "@/components/ui/dialog";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 import { resolveAgentInfo } from "@/data/agents";
@@ -61,6 +62,8 @@ import {
   ALL_ORDER_STATUSES,
   PAYMENT_STATUSES,
   STAGE_INFO,
+  ORDER_STATUS_COLOR,
+  PAYMENT_STATUS_COLOR,
   currentStageIndex,
   nextActionFor,
   derivePaymentStatus,
@@ -71,6 +74,7 @@ import {
   appendEvent,
   nowIso,
 } from "@/lib/order-workflow";
+import { cancelOrder as buildCancelPatch } from "@/lib/order-actions";
 import type {
   Order,
   OrderStatus,
@@ -84,27 +88,16 @@ export const Route = createFileRoute("/admin/orders/$orderId")({
   component: AdminOrderDetail,
 });
 
-const statusColor: Record<OrderStatus, string> = {
-  Pending: "bg-muted text-muted-foreground",
-  Confirmed: "bg-accent/20 text-accent-foreground",
-  Processing: "bg-blue-100 text-blue-800",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
-  Cancelled: "bg-destructive/10 text-destructive",
-  "On Hold": "bg-amber-100 text-amber-800",
-};
-
-const paymentColor: Record<PaymentStatus, string> = {
-  Unpaid: "bg-destructive/10 text-destructive",
-  Partial: "bg-amber-100 text-amber-800",
-  Paid: "bg-success/20 text-success",
-  Refunded: "bg-muted text-muted-foreground",
-};
+const statusColor = ORDER_STATUS_COLOR;
+const paymentColor = PAYMENT_STATUS_COLOR;
+/** Cancellation must always go through cancelOrder()/the request workflow so inventory gets released. */
+const MANUAL_OVERRIDE_STATUSES = ALL_ORDER_STATUSES.filter((s) => s !== "Cancelled");
 
 
 function AdminOrderDetail() {
   const { orderId } = Route.useParams();
   const { orders, dispatch, user } = useStore();
+  const inv = useInventory();
   const order = orders.find((o) => o.id === orderId);
   if (!order) throw notFound();
 
@@ -128,6 +121,40 @@ function AdminOrderDetail() {
   const [note, setNote] = useState("");
   const [internalNotes, setInternalNotes] = useState(order.internalNotes ?? "");
   const [priority, setPriority] = useState(order.priority ?? "Normal");
+  const [paidAmount, setPaidAmount] = useState(String(order.paidAmount ?? (paymentStatus === "Paid" ? grandTotal : 0)));
+  const [txnNo, setTxnNo] = useState(order.transactionNo ?? "");
+
+  const [editingPayment, setEditingPayment] = useState(false);
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [payStatus, setPayStatus] = useState<PaymentStatus>(paymentStatus);
+  const [payMethod, setPayMethod] = useState<Order["paymentMethod"]>(order.paymentMethod);
+
+  const startEditPayment = () => {
+    setPayStatus(paymentStatus);
+    setPayMethod(order.paymentMethod);
+    setPaidAmount(String(order.paidAmount ?? (paymentStatus === "Paid" ? grandTotal : 0)));
+    setTxnNo(order.transactionNo ?? "");
+    setProofFile(null);
+    setEditingPayment(true);
+  };
+
+  const savePayment = () => {
+    const amt = Number(paidAmount);
+    if (!Number.isFinite(amt) || amt < 0) return toast.error("Enter a valid paid amount");
+    const finish = (paymentProof = order.paymentProof) => {
+      patchOrder(
+        { paidAmount: amt, transactionNo: txnNo.trim() || undefined, paymentProof, paymentStatus: payStatus, paymentMethod: payMethod },
+        `Payment details updated (paid ${formatBDT(amt)})`,
+        "payment",
+      );
+      setEditingPayment(false);
+      toast.success("Payment details saved");
+    };
+    if (!proofFile) return finish();
+    const reader = new FileReader();
+    reader.onload = () => finish({ name: proofFile.name, dataUrl: String(reader.result) });
+    reader.readAsDataURL(proofFile);
+  };
 
   const shippingReady = !!(order.carrier && order.trackingNumber);
   const requiresShipping = nextAction?.next === "Shipped";
@@ -146,6 +173,9 @@ function AdminOrderDetail() {
       extra.paymentStatus = "Paid";
     }
     patchOrder(extra, `Status advanced to ${nextAction.next}`);
+    if (nextAction.next === "Delivered") {
+      inv.fulfillOrder(order, actor);
+    }
     toast.success(`Order moved to ${nextAction.next}`);
   };
 
@@ -212,17 +242,19 @@ function AdminOrderDetail() {
   };
 
   const cancelOrder = () => {
-    patchOrder({ status: "Cancelled", paymentStatus: paymentStatus === "Paid" ? "Refunded" : paymentStatus }, "Order cancelled");
+    const { patch } = buildCancelPatch(order, { actor });
+    dispatch({ type: "UPDATE_ORDER", id: order.id, patch });
+    inv.releaseReservation(order, actor);
     toast.success("Order cancelled");
   };
 
   const holdOrder = () => {
-    patchOrder({ status: "On Hold" }, "Order placed on hold");
+    patchOrder({ status: "On Hold", previousStatus: order.status }, "Order placed on hold");
     toast.success("Order on hold");
   };
 
   const resumeOrder = () => {
-    patchOrder({ status: "Confirmed" }, "Order resumed");
+    patchOrder({ status: order.previousStatus ?? "Confirmed", previousStatus: undefined }, "Order resumed");
     toast.success("Order resumed");
   };
 
@@ -502,6 +534,118 @@ function AdminOrderDetail() {
 
         {/* Right column */}
         <div className="space-y-4">
+          {/* Payment details */}
+          <div className="rounded-lg border border-border bg-card p-5">
+            <div className="mb-3 flex items-center gap-2">
+              <CreditCard className="size-4 text-primary" />
+              <h3 className="font-semibold">Payment Details</h3>
+              {!editingPayment && (
+                <Button size="sm" variant="outline" className="ml-auto h-7" onClick={startEditPayment}>
+                  <Pencil className="size-3 mr-1" /> Edit
+                </Button>
+              )}
+            </div>
+            <div className="space-y-3 text-sm">
+              {editingPayment ? (
+                <>
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs">Payment Status</Label>
+                    <Select value={payStatus} onValueChange={(v) => setPayStatus(v as PaymentStatus)}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {PAYMENT_STATUSES.map((s) => (
+                          <SelectItem key={s} value={s}>{s}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs">Payment Method</Label>
+                    <Select value={payMethod} onValueChange={(v) => setPayMethod(v as Order["paymentMethod"])}>
+                      <SelectTrigger><SelectValue /></SelectTrigger>
+                      <SelectContent>
+                        {["COD", "Bank Transfer", "bKash", "Nagad"].map((m) => (
+                          <SelectItem key={m} value={m}>{m}</SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs">Paid Amount (of {formatBDT(grandTotal)})</Label>
+                    <Input type="number" min={0} value={paidAmount} onChange={(e) => setPaidAmount(e.target.value)} />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs">Transaction No.</Label>
+                    <Input value={txnNo} onChange={(e) => setTxnNo(e.target.value)} placeholder="e.g. TrxID / bank ref" />
+                  </div>
+                  <div className="grid gap-1.5">
+                    <Label className="text-xs">Proof of Payment</Label>
+                    {order.paymentProof && !proofFile && (
+                      <span className="truncate text-muted-foreground">Current: {order.paymentProof.name}</span>
+                    )}
+                    <Input
+                      type="file"
+                      accept="image/*,application/pdf"
+                      onChange={(e) => {
+                        const f = e.target.files?.[0] ?? null;
+                        if (f && f.size > 2 * 1024 * 1024) {
+                          e.target.value = "";
+                          return toast.error("File must be under 2 MB");
+                        }
+                        setProofFile(f);
+                      }}
+                    />
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" className="flex-1" onClick={savePayment}>
+                      <Save className="size-3.5 mr-1" /> Save
+                    </Button>
+                    <Button size="sm" variant="outline" className="flex-1" onClick={() => setEditingPayment(false)}>
+                      Cancel
+                    </Button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Status</span>
+                    <Badge className={paymentColor[paymentStatus]} variant="outline">{paymentStatus}</Badge>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Method</span>
+                    <span className="font-medium">{order.paymentMethod}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Paid Amount</span>
+                    <span className="font-medium">
+                      {formatBDT(order.paidAmount ?? (paymentStatus === "Paid" ? grandTotal : 0))}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground">Transaction No.</span>
+                    <span className="font-medium truncate">{order.transactionNo || "—"}</span>
+                  </div>
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-muted-foreground">Proof</span>
+                    {order.paymentProof ? (
+                      <a
+                        href={order.paymentProof.dataUrl}
+                        download={order.paymentProof.name}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="truncate text-primary underline"
+                      >
+                        {order.paymentProof.name}
+                      </a>
+                    ) : (
+                      <span className="font-medium">—</span>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
           {/* Customer */}
           <div className="rounded-lg border border-border bg-card p-5">
             <div className="mb-3 flex items-center gap-2">
@@ -582,11 +726,14 @@ function AdminOrderDetail() {
               <Select value={order.status} onValueChange={(v) => setStatus(v as OrderStatus)}>
                 <SelectTrigger><SelectValue /></SelectTrigger>
                 <SelectContent>
-                  {ALL_ORDER_STATUSES.map((s) => (
+                  {MANUAL_OVERRIDE_STATUSES.map((s) => (
                     <SelectItem key={s} value={s}>{s}</SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                To cancel this order, use the Cancel Order button above — it also releases reserved inventory.
+              </p>
             </div>
             <div>
               <Label className="text-xs">Payment Status</Label>

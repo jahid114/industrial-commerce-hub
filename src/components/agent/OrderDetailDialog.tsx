@@ -1,4 +1,4 @@
-import { Check, Circle, Clock, Package, CreditCard, MapPin, User as UserIcon, Truck, StickyNote } from "lucide-react";
+import { Check, Circle, Clock, Package, CreditCard, MapPin, User as UserIcon, Truck, StickyNote, Undo2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription,
@@ -6,29 +6,18 @@ import {
 import { formatBDT, formatDate } from "@/lib/format";
 import {
   STAGE_INFO,
+  ORDER_STATUS_COLOR,
+  PAYMENT_STATUS_COLOR,
   currentStageIndex,
   derivePaymentStatus,
   computeSubtotal,
   computeTax,
 } from "@/lib/order-workflow";
-import type { Order, OrderStatus, PaymentStatus, OrderEvent } from "@/data/types";
+import { ORDER_REQUEST_STATUS_COLOR, requestsForOrder, useOrderRequests } from "@/lib/order-requests";
+import type { Order, OrderEvent } from "@/data/types";
 
-const statusColor: Record<OrderStatus, string> = {
-  Pending: "bg-muted text-muted-foreground",
-  Confirmed: "bg-accent/20 text-accent-foreground",
-  Processing: "bg-blue-100 text-blue-800",
-  Shipped: "bg-primary text-primary-foreground",
-  Delivered: "bg-success/20 text-success",
-  Cancelled: "bg-destructive/10 text-destructive",
-  "On Hold": "bg-amber-100 text-amber-800",
-};
-
-const paymentColor: Record<PaymentStatus, string> = {
-  Unpaid: "bg-destructive/10 text-destructive",
-  Partial: "bg-amber-100 text-amber-800",
-  Paid: "bg-success/20 text-success",
-  Refunded: "bg-muted text-muted-foreground",
-};
+const statusColor = ORDER_STATUS_COLOR;
+const paymentColor = PAYMENT_STATUS_COLOR;
 
 interface Props {
   order: Order | null;
@@ -57,6 +46,7 @@ export function OrderDetailDialog({ order, onOpenChange }: Props) {
         {order && (
           <div className="space-y-5">
             <ProcessTimeline order={order} />
+            <RequestStatus orderId={order.id} />
 
             <div className="grid gap-3 md:grid-cols-2">
               <InfoCard icon={<UserIcon className="size-4 text-primary" />} title="Customer">
@@ -87,6 +77,26 @@ export function OrderDetailDialog({ order, onOpenChange }: Props) {
         )}
       </DialogContent>
     </Dialog>
+  );
+}
+
+function RequestStatus({ orderId }: { orderId: string }) {
+  const all = useOrderRequests();
+  const requests = requestsForOrder(all, orderId);
+  if (requests.length === 0) return null;
+  return (
+    <div className="rounded-lg border border-border bg-secondary/30 p-3">
+      <div className="mb-1.5 flex items-center gap-2 text-xs uppercase tracking-wide text-muted-foreground">
+        <Undo2 className="size-4 text-primary" /> Return / Cancellation Requests
+      </div>
+      <div className="flex flex-wrap gap-2">
+        {requests.map((r) => (
+          <Badge key={r.id} className={ORDER_REQUEST_STATUS_COLOR[r.status]} variant="outline">
+            {r.type === "return" ? "Return" : "Cancellation"}: {r.status}
+          </Badge>
+        ))}
+      </div>
+    </div>
   );
 }
 

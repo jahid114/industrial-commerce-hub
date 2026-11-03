@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { StoreProvider } from "@/lib/store";
+import { InventoryProvider } from "@/lib/inventory-store";
 import { DirectoryProvider } from "@/lib/directory-store";
 import { CustomersProvider } from "@/lib/customers-store";
 import { Toaster } from "@/components/ui/sonner";
@@ -117,12 +118,14 @@ function RootComponent() {
   return (
     <QueryClientProvider client={queryClient}>
       <StoreProvider>
-        <DirectoryProvider>
-          <CustomersProvider>
-          <Outlet />
-          <Toaster richColors position="top-right" />
-          </CustomersProvider>
-        </DirectoryProvider>
+        <InventoryProvider>
+          <DirectoryProvider>
+            <CustomersProvider>
+            <Outlet />
+            <Toaster richColors position="top-right" />
+            </CustomersProvider>
+          </DirectoryProvider>
+        </InventoryProvider>
       </StoreProvider>
     </QueryClientProvider>
   );

@@ -11,6 +11,7 @@ import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
 import { getAgentPrice, canSeeAgentPrice } from "@/lib/pricing";
 import { toast } from "sonner";
 
@@ -38,6 +39,7 @@ function PortalProductDetail() {
   const category = getCategory(product.categoryId);
   const supplier = getSupplier(product.supplierId);
   const { dispatch, wishlist, compare, user } = useStore();
+  const inv = useInventory();
   const showAgent = canSeeAgentPrice(user?.role);
   const navigate = useNavigate();
   const [qty, setQty] = useState(product.moq);
@@ -103,7 +105,7 @@ function PortalProductDetail() {
             <dl className="grid grid-cols-2 gap-3 text-sm mb-6">
               <Stat icon={Package} label="MOQ" value={`${product.moq} units`} />
               <Stat icon={Truck} label="Delivery" value={product.deliveryDays} />
-              <Stat icon={Check} label="Stock" value={`${product.stock} available`} />
+              <Stat icon={Check} label="Stock" value={`${inv.available(product.id)} available`} />
               <Stat icon={ShieldCheck} label="Origin" value={product.country} />
             </dl>
 

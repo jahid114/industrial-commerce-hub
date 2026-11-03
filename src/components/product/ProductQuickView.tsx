@@ -8,11 +8,13 @@ import { getCategory } from "@/data/categories";
 import { getSupplier } from "@/data/suppliers";
 import { formatBDT } from "@/lib/format";
 import { useStore } from "@/lib/store";
+import { useInventory } from "@/lib/inventory-store";
 import { getAgentPrice, canSeeAgentPrice, useCurrentAgentCommission, getEffectivePrice, getDiscountPct } from "@/lib/pricing";
 import { toast } from "sonner";
 
 export function ProductQuickView({ product, open, onOpenChange, hideAddToCart = false }: { product: Product | null; open: boolean; onOpenChange: (v: boolean) => void; hideAddToCart?: boolean }) {
   const { dispatch, user } = useStore();
+  const inv = useInventory();
   const commissionPct = useCurrentAgentCommission();
   const showAgent = canSeeAgentPrice(user?.role);
   if (!product) return null;
@@ -100,7 +102,7 @@ export function ProductQuickView({ product, open, onOpenChange, hideAddToCart = 
               <dl className="grid grid-cols-2 gap-2 text-xs">
                 <MiniStat icon={Package} label="MOQ" value={`${product.moq} units`} />
                 <MiniStat icon={Truck} label="Delivery" value={product.deliveryDays} />
-                <MiniStat icon={Check} label="Stock" value={`${product.stock}`} />
+                <MiniStat icon={Check} label="Stock" value={`${inv.available(product.id)}`} />
                 <MiniStat icon={ShieldCheck} label="SKU" value={product.sku} />
                 <MiniStat icon={Factory} label="Supplier" value={supplier?.name ?? product.supplierId} />
                 <MiniStat icon={Tag} label="Category" value={category?.name ?? product.categoryId} />
