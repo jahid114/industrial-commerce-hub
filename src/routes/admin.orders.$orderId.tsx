@@ -21,6 +21,7 @@ import {
   Clock,
   Pencil,
   Headset,
+  X,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -55,16 +56,13 @@ import {
 } from "@/components/ui/dialog";
 import { useStore } from "@/lib/store";
 import { useInventory } from "@/lib/inventory-store";
+import { useOrderRequests, mergeTimeline, returnEventsForOrder, orderFlow } from "@/lib/order-requests";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 import { resolveAgentInfo } from "@/data/agents";
 import {
-  ALL_ORDER_STATUSES,
   PAYMENT_STATUSES,
-  STAGE_INFO,
-  ORDER_STATUS_COLOR,
   PAYMENT_STATUS_COLOR,
-  currentStageIndex,
   nextActionFor,
   derivePaymentStatus,
   computeSubtotal,
@@ -77,7 +75,6 @@ import {
 import { cancelOrder as buildCancelPatch } from "@/lib/order-actions";
 import type {
   Order,
-  OrderStatus,
   PaymentStatus,
   OrderEvent,
 } from "@/data/types";
@@ -88,17 +85,14 @@ export const Route = createFileRoute("/admin/orders/$orderId")({
   component: AdminOrderDetail,
 });
 
-const statusColor = ORDER_STATUS_COLOR;
 const paymentColor = PAYMENT_STATUS_COLOR;
-/** Cancellation must always go through cancelOrder()/the request workflow so inventory gets released. */
-const MANUAL_OVERRIDE_STATUSES = ALL_ORDER_STATUSES.filter((s) => s !== "Cancelled");
-
 
 function AdminOrderDetail() {
   const { orderId } = Route.useParams();
   const { orders, dispatch, user } = useStore();
   const inv = useInventory();
   const order = orders.find((o) => o.id === orderId);
+  const requests = useOrderRequests();
   if (!order) throw notFound();
 
   const paymentStatus = derivePaymentStatus(order);
@@ -109,7 +103,8 @@ function AdminOrderDetail() {
   const discount = computeDiscount(order);
   const grandTotal = subtotal + tax + shipping - discount;
 
-  const stageIdx = currentStageIndex(order.status);
+  const flow = orderFlow(order, requests);
+  const stageIdx = flow.idx;
   const nextAction = nextActionFor(order.status);
   const isTerminal = order.status === "Cancelled" || order.status === "Delivered";
 
@@ -177,16 +172,6 @@ function AdminOrderDetail() {
       inv.fulfillOrder(order, actor);
     }
     toast.success(`Order moved to ${nextAction.next}`);
-  };
-
-  const setStatus = (s: OrderStatus) => {
-    patchOrder({ status: s }, `Status changed to ${s}`);
-    toast.success(`Status: ${s}`);
-  };
-
-  const setPay = (s: PaymentStatus) => {
-    patchOrder({ paymentStatus: s }, `Payment status set to ${s}`, "payment");
-    toast.success(`Payment: ${s}`);
   };
 
   const openShippingModal = (forAdvance = false) => {
@@ -270,7 +255,7 @@ function AdminOrderDetail() {
           </Link>
           <div className="flex items-center gap-3">
             <h1 className="font-display text-2xl font-bold">Order {order.id}</h1>
-            <Badge className={statusColor[order.status]}>{order.status}</Badge>
+            <Badge className={flow.color}>{flow.label}</Badge>
             <Badge className={paymentColor[paymentStatus]} variant="outline">
               <CreditCard className="size-3 mr-1" /> {paymentStatus}
             </Badge>
@@ -346,23 +331,31 @@ function AdminOrderDetail() {
               <Badge className="bg-amber-100 text-amber-800">On Hold</Badge>
             )}
           </div>
-          <div className="flex items-center">
-            {STAGE_INFO.map((stage, i) => {
+          <div className="overflow-x-auto">
+          <div className="flex min-w-[46rem]">
+            {flow.stages.map((stage, i) => {
               const done = i <= stageIdx;
               const active = i === stageIdx;
+              const bad = !!flow.rejected && active;
               return (
-                <div key={stage.key} className="flex flex-1 items-start">
-                  <div className="flex flex-col items-center">
+                <div key={stage.key} className="relative flex-1 basis-0">
+                  {/* connector runs from this circle's centre to the next one's */}
+                  {i < flow.stages.length - 1 && (
+                    <div className={`absolute left-1/2 top-[17px] h-0.5 w-full ${i < stageIdx ? "bg-primary" : "bg-border"}`} />
+                  )}
+                  <div className="relative flex flex-col items-center">
                     <div
                       className={`flex size-9 items-center justify-center rounded-full border-2 ${
-                        done
+                        bad
+                          ? "border-destructive bg-destructive text-destructive-foreground"
+                          : done
                           ? "border-primary bg-primary text-primary-foreground"
                           : "border-border bg-muted text-muted-foreground"
                       } ${active ? "ring-4 ring-primary/20" : ""}`}
                     >
-                      {done ? <Check className="size-4" /> : <Circle className="size-3" />}
+                      {bad ? <X className="size-4" /> : done ? <Check className="size-4" /> : <Circle className="size-3" />}
                     </div>
-                    <div className="mt-2 max-w-[9rem] text-center">
+                    <div className="mt-2 px-1 text-center">
                       <div className={`text-xs font-semibold ${done ? "" : "text-muted-foreground"}`}>
                         {stage.label}
                       </div>
@@ -371,12 +364,10 @@ function AdminOrderDetail() {
                       </div>
                     </div>
                   </div>
-                  {i < STAGE_INFO.length - 1 && (
-                    <div className={`mt-4 h-0.5 flex-1 ${i < stageIdx ? "bg-primary" : "bg-border"}`} />
-                  )}
                 </div>
               );
             })}
+          </div>
           </div>
         </div>
       )}
@@ -512,7 +503,7 @@ function AdminOrderDetail() {
               <Button onClick={addNote} size="sm">Add</Button>
             </div>
             <ol className="relative space-y-4 border-l border-border pl-5">
-              {[...(order.timeline ?? [])].reverse().map((ev, i) => (
+              {mergeTimeline(order.timeline ?? [], returnEventsForOrder(requests, order.id)).reverse().map((ev, i) => (
                 <li key={i} className="relative">
                   <span className="absolute -left-[26px] top-1.5 size-3 rounded-full border-2 border-primary bg-background" />
                   <div className="text-sm">{ev.message}</div>
@@ -715,36 +706,6 @@ function AdminOrderDetail() {
                   <div>{order.billingAddress}</div>
                 </div>
               )}
-            </div>
-          </div>
-
-          {/* Manual state overrides */}
-          <div className="rounded-lg border border-border bg-card p-5 space-y-3">
-            <h3 className="font-semibold">Manual Overrides</h3>
-            <div>
-              <Label className="text-xs">Order Status</Label>
-              <Select value={order.status} onValueChange={(v) => setStatus(v as OrderStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {MANUAL_OVERRIDE_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              <p className="mt-1 text-[11px] text-muted-foreground">
-                To cancel this order, use the Cancel Order button above — it also releases reserved inventory.
-              </p>
-            </div>
-            <div>
-              <Label className="text-xs">Payment Status</Label>
-              <Select value={paymentStatus} onValueChange={(v) => setPay(v as PaymentStatus)}>
-                <SelectTrigger><SelectValue /></SelectTrigger>
-                <SelectContent>
-                  {PAYMENT_STATUSES.map((s) => (
-                    <SelectItem key={s} value={s}>{s}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
             </div>
           </div>
 

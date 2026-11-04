@@ -6,15 +6,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useStore } from "@/lib/store";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
-import { ORDER_REQUEST_STATUS_COLOR, useOrderRequests, type OrderRequest } from "@/lib/order-requests";
-import { ORDER_STATUS_COLOR } from "@/lib/order-workflow";
+import { ORDER_REQUEST_STATUS_COLOR, useOrderRequests, orderFlow, type OrderRequest } from "@/lib/order-requests";
 
 export const Route = createFileRoute("/portal-customer/orders/")({
   head: () => ({ meta: [{ title: "My Orders — Portal" }] }),
   component: OrdersPage,
 });
 
-const statusVariant = ORDER_STATUS_COLOR;
 
 function OrdersPage() {
   const { orders, user } = useStore();
@@ -61,7 +59,7 @@ function OrdersPage() {
                       <td className="px-4 py-3"><Link to="/portal-customer/orders/$orderId" params={{ orderId: o.id }} className="font-semibold hover:text-primary">{o.id}</Link></td>
                       <td className="px-4 py-3 text-muted-foreground">{formatDate(o.date)}</td>
                       <td className="px-4 py-3">{o.items.length} items</td>
-                      <td className="px-4 py-3"><Badge className={statusVariant[o.status]}>{o.status}</Badge></td>
+                      <td className="px-4 py-3"><Badge className={orderFlow(o, requests).color}>{orderFlow(o, requests).label}</Badge></td>
                       <td className="px-4 py-3 text-right font-display font-bold text-primary">{formatBDT(o.total)}</td>
                       <td className="px-4 py-3 text-right">
                         <Button size="sm" variant="outline" asChild className="mr-2">

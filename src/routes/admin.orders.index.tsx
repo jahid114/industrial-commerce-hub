@@ -12,7 +12,7 @@ import { ALL_ORDER_STATUSES, derivePaymentStatus } from "@/lib/order-workflow";
 import { resolveAgentInfo } from "@/data/agents";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { OrderRequestsPanel } from "@/components/admin/OrderRequestsPanel";
-import { useOrderRequests } from "@/lib/order-requests";
+import { useOrderRequests, orderFlow } from "@/lib/order-requests";
 import { RefundsPanel } from "@/components/admin/RefundsPanel";
 import { useRefundRequests } from "@/lib/refund-requests";
 import type { OrderStatus, PaymentStatus } from "@/data/types";
@@ -167,7 +167,7 @@ function AdminOrdersPage() {
                     </div>
                   </td>
                   <td className="px-4 py-3">
-                    <Badge className={statusColor[o.status]}>{o.status}</Badge>
+                    <Badge className={orderFlow(o, requests).color}>{orderFlow(o, requests).label}</Badge>
                   </td>
                   <td className="px-4 py-3 text-right font-display font-bold text-primary">{formatBDT(o.total)}</td>
                   <td className="px-4 py-3 text-right">

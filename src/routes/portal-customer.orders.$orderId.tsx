@@ -1,11 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { useState } from "react";
 import { toast } from "sonner";
-import { ArrowLeft, Download, Check, Circle, Clock, Package, CreditCard, MapPin, Truck, StickyNote, XCircle, Undo2 } from "lucide-react";
+import { ArrowLeft, Download, Check, Circle, Clock, Package, CreditCard, MapPin, Truck, StickyNote, XCircle, Undo2, X } from "lucide-react";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { addOrderRequest, hasRequest, useOrderRequests, type OrderRequestType } from "@/lib/order-requests";
+import { addOrderRequest, hasRequest, useOrderRequests, mergeTimeline, returnEventsForOrder, orderFlow, type OrderRequestType } from "@/lib/order-requests";
 import {
   addRefundRequest, useRefundRequests, validateRefundAccount, REFUND_STATUS_COLOR,
   type RefundAccount, type RefundMethod,
@@ -21,10 +21,7 @@ import { cancelOrder } from "@/lib/order-actions";
 import { formatBDT, formatDate } from "@/lib/format";
 import { generateInvoice } from "@/lib/pdf";
 import {
-  STAGE_INFO,
-  ORDER_STATUS_COLOR,
   PAYMENT_STATUS_COLOR,
-  currentStageIndex,
   derivePaymentStatus,
   computeSubtotal,
   computeTax,
@@ -36,7 +33,6 @@ export const Route = createFileRoute("/portal-customer/orders/$orderId")({
   component: OrderDetail,
 });
 
-const statusColor = ORDER_STATUS_COLOR;
 const paymentColor = PAYMENT_STATUS_COLOR;
 
 function OrderDetail() {
@@ -49,6 +45,7 @@ function OrderDetail() {
   const [reason, setReason] = useState("");
   if (!order) throw notFound();
 
+  const flow = orderFlow(order, requests);
   const cancelled = order.status === "Cancelled";
   const activeCancellation = requests.find((r) => r.orderId === order.id && r.type === "cancellation" && r.status === "Requested");
   const canCancel = !cancelled && order.status !== "Delivered" && order.status !== "Shipped" && !activeCancellation;
@@ -249,7 +246,7 @@ function OrderDetail() {
         <div>
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="font-display text-2xl font-bold">Order {order.id}</h2>
-            <Badge className={statusColor[order.status]}>{order.status}</Badge>
+            <Badge className={flow.color}>{flow.label}</Badge>
             <Badge className={paymentColor[derivePaymentStatus(order)]} variant="outline">
               <CreditCard className="size-3 mr-1" /> {derivePaymentStatus(order)}
             </Badge>
@@ -273,7 +270,7 @@ function OrderDetail() {
         </div>
       )}
 
-      <ProcessTimeline order={order} />
+      <ProcessTimeline order={order} flow={flow} />
 
       <div className="grid gap-3 md:grid-cols-2">
 
@@ -292,7 +289,7 @@ function OrderDetail() {
       </div>
 
       <LineItems order={order} />
-      <ActivityLog events={order.timeline ?? []} />
+      <ActivityLog events={mergeTimeline(order.timeline ?? [], returnEventsForOrder(requests, order.id))} />
     </div>
   );
 }
@@ -306,7 +303,7 @@ function InfoCard({ icon, title, children }: { icon: React.ReactNode; title: str
   );
 }
 
-function ProcessTimeline({ order }: { order: Order }) {
+function ProcessTimeline({ order, flow }: { order: Order; flow: ReturnType<typeof orderFlow> }) {
   if (order.status === "Cancelled") {
     return (
       <div className="rounded-lg border border-destructive/30 bg-destructive/5 p-4 text-sm text-destructive">
@@ -314,33 +311,37 @@ function ProcessTimeline({ order }: { order: Order }) {
       </div>
     );
   }
-  const stageIdx = currentStageIndex(order.status);
+  const stageIdx = flow.idx;
   return (
     <div className="rounded-lg border border-border bg-card p-4">
       <div className="mb-3 flex items-center justify-between">
         <h3 className="font-semibold text-sm">Order Progress</h3>
         {order.status === "On Hold" && <Badge className="bg-amber-100 text-amber-800">On Hold</Badge>}
       </div>
-      <div className="flex items-start">
-        {STAGE_INFO.map((stage, i) => {
+      <div className="overflow-x-auto">
+      <div className="flex min-w-[38rem]">
+        {flow.stages.map((stage, i) => {
           const done = i <= stageIdx;
           const active = i === stageIdx;
+          const bad = !!flow.rejected && active;
           return (
-            <div key={stage.key} className="flex flex-1 items-start">
-              <div className="flex flex-col items-center">
-                <div className={`flex size-8 items-center justify-center rounded-full border-2 ${done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-muted text-muted-foreground"} ${active ? "ring-4 ring-primary/20" : ""}`}>
-                  {done ? <Check className="size-3.5" /> : <Circle className="size-2.5" />}
+            <div key={stage.key} className="relative flex-1 basis-0">
+              {/* connector runs from this circle's centre to the next one's */}
+              {i < flow.stages.length - 1 && (
+                <div className={`absolute left-1/2 top-[15px] h-0.5 w-full ${i < stageIdx ? "bg-primary" : "bg-border"}`} />
+              )}
+              <div className="relative flex flex-col items-center">
+                <div className={`flex size-8 items-center justify-center rounded-full border-2 ${bad ? "border-destructive bg-destructive text-destructive-foreground" : done ? "border-primary bg-primary text-primary-foreground" : "border-border bg-muted text-muted-foreground"} ${active ? "ring-4 ring-primary/20" : ""}`}>
+                  {bad ? <X className="size-3.5" /> : done ? <Check className="size-3.5" /> : <Circle className="size-2.5" />}
                 </div>
-                <div className="mt-1.5 max-w-[8rem] text-center">
+                <div className="mt-1.5 px-1 text-center">
                   <div className={`text-[11px] font-semibold ${done ? "" : "text-muted-foreground"}`}>{stage.label}</div>
                 </div>
               </div>
-              {i < STAGE_INFO.length - 1 && (
-                <div className={`mt-4 h-0.5 flex-1 ${i < stageIdx ? "bg-primary" : "bg-border"}`} />
-              )}
             </div>
           );
         })}
+      </div>
       </div>
       <p className="mt-3 text-[11px] text-muted-foreground">Status updates are managed by the admin team.</p>
     </div>

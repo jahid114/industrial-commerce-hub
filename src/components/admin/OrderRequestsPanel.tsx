@@ -91,20 +91,14 @@ export function OrderRequestsPanel({ type }: { type: OrderRequestType }) {
     });
   };
 
-  const markReceived = (req: OrderRequest, input: { productId: string; productName: string; quantity: number; reason: ReturnReason; condition: ReturnCondition; note?: string }) => {
-    const entryId = inv.logReturn({
-      productId: input.productId,
-      quantity: input.quantity,
-      reason: input.reason,
-      condition: input.condition,
-      orderId: req.orderId,
-      note: input.note,
-      user: actor,
-    });
+  const markReceived = (req: OrderRequest, input: { lines: { productId: string; productName: string; quantity: number; condition: ReturnCondition }[]; reason: ReturnReason; note?: string }) => {
+    const ids = input.lines.map((l) =>
+      inv.logReturn({ productId: l.productId, quantity: l.quantity, reason: input.reason, condition: l.condition, orderId: req.orderId, note: input.note, user: actor }),
+    );
     patchOrderRequest(req.id, {
       status: "Completed",
-      inventoryReturnEntryId: entryId,
-      timeline: appendRequestEvent(req, { at: nowIso(), by: actor, type: "status", message: `Return received: ${input.quantity} × ${input.productName} — sent to Inventory for restock / damage decision` }),
+      inventoryReturnEntryId: ids[0], // shortcut: only the first entry is linked back, upgrade if the request needs all of them
+      timeline: appendRequestEvent(req, { at: nowIso(), by: actor, type: "status", message: `Return received: ${input.lines.map((l) => `${l.quantity} × ${l.productName}`).join(", ")} — sent to Inventory for restock / damage decision` }),
     });
   };
 
@@ -272,75 +266,68 @@ function MarkReceivedDialog({
 }: {
   request: OrderRequest;
   order: { items: { productId: string; name: string; quantity: number; sku?: string }[] } | undefined;
-  onSubmit: (input: { productId: string; productName: string; quantity: number; reason: ReturnReason; condition: ReturnCondition; note?: string }) => void;
+  onSubmit: (input: { lines: { productId: string; productName: string; quantity: number; condition: ReturnCondition }[]; reason: ReturnReason; note?: string }) => void;
 }) {
   const [open, setOpen] = useState(false);
   const items = order?.items ?? [];
-  const [productId, setProductId] = useState(items[0]?.productId ?? "");
-  const [quantity, setQuantity] = useState(1);
+  // Per order line: qty actually received (0 = not returned) and its condition. No entry yet = full qty, needs inspection.
+  const [lineState, setLineState] = useState<Record<string, { qty: number; condition: ReturnCondition }>>({});
   const [reason, setReason] = useState<ReturnReason>(RETURN_REASONS[0]);
-  const [condition, setCondition] = useState<ReturnCondition>("Inspect");
   const [note, setNote] = useState("");
 
-  const selectedItem = items.find((i) => i.productId === productId);
+  const lineOf = (it: { productId: string; quantity: number }) => lineState[it.productId] ?? { qty: it.quantity, condition: "Inspect" as ReturnCondition };
+  const setLine = (it: { productId: string; quantity: number }, patch: Partial<{ qty: number; condition: ReturnCondition }>) =>
+    setLineState((s) => ({ ...s, [it.productId]: { ...lineOf(it), ...patch } }));
+
+  const lines = items
+    .map((it) => ({ productId: it.productId, productName: it.name, quantity: lineOf(it).qty, condition: lineOf(it).condition }))
+    .filter((l) => l.quantity > 0);
 
   const submit = () => {
-    if (!selectedItem) return;
-    if (quantity <= 0) return;
-    onSubmit({ productId, productName: selectedItem.name, quantity, reason, condition, note: note || undefined });
+    if (lines.length === 0) return;
+    onSubmit({ lines, reason, note: note || undefined });
     setOpen(false);
-    setQuantity(1);
+    setLineState({});
     setNote("");
   };
+
+  const selectCls = "h-9 rounded-md border border-input bg-background px-2 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring";
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button size="sm" className="rounded-lg">Mark Received</Button>
       </DialogTrigger>
-      <DialogContent className="max-w-lg">
+      <DialogContent className="max-w-2xl">
         <DialogHeader>
           <DialogTitle>Log physical return — {request.orderId}</DialogTitle>
-          <DialogDescription>Record what came back before it can be graded (restock / damage / scrap).</DialogDescription>
+          <DialogDescription>Enter the quantity that came back for each product on this order (0 = not returned). It is then graded in Inventory.</DialogDescription>
         </DialogHeader>
         <div className="grid gap-3">
-          <div>
-            <Label className="mb-1.5 block text-xs uppercase tracking-wider">Product</Label>
-            <select
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              value={productId}
-              onChange={(e) => setProductId(e.target.value)}
-            >
-              {items.length === 0 && <option value="">No line items on this order</option>}
-              {items.map((it) => <option key={it.productId} value={it.productId}>{it.name} (ordered {it.quantity})</option>)}
-            </select>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <Label className="mb-1.5 block text-xs uppercase tracking-wider">Quantity</Label>
-              <Input type="number" min={1} max={selectedItem?.quantity} value={quantity} onChange={(e) => setQuantity(Number(e.target.value))} />
-            </div>
-            <div>
-              <Label className="mb-1.5 block text-xs uppercase tracking-wider">Reason</Label>
-              <select
-                className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-                value={reason}
-                onChange={(e) => setReason(e.target.value as ReturnReason)}
-              >
-                {RETURN_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
-              </select>
-            </div>
+          <div className="divide-y divide-border rounded-md border border-border">
+            {items.length === 0 && <div className="p-3 text-sm text-muted-foreground">No line items on this order</div>}
+            {items.map((it) => {
+              const l = lineOf(it);
+              return (
+                <div key={it.productId} className="grid grid-cols-[1fr_5rem_9rem] items-center gap-3 p-3">
+                  <div className="min-w-0">
+                    <div className="truncate text-sm font-medium">{it.name}</div>
+                    <div className="text-xs text-muted-foreground">Ordered {it.quantity}{it.sku ? ` · ${it.sku}` : ""}</div>
+                  </div>
+                  <Input type="number" min={0} max={it.quantity} value={l.qty} onChange={(e) => setLine(it, { qty: Math.max(0, Math.min(it.quantity, Number(e.target.value) || 0)) })} />
+                  <select className={selectCls} value={l.condition} onChange={(e) => setLine(it, { condition: e.target.value as ReturnCondition })}>
+                    <option value="Resellable">Resellable</option>
+                    <option value="Inspect">Needs inspection</option>
+                    <option value="Damaged">Damaged</option>
+                  </select>
+                </div>
+              );
+            })}
           </div>
           <div>
-            <Label className="mb-1.5 block text-xs uppercase tracking-wider">Condition</Label>
-            <select
-              className="h-10 w-full rounded-md border border-input bg-background px-3 text-sm shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
-              value={condition}
-              onChange={(e) => setCondition(e.target.value as ReturnCondition)}
-            >
-              <option value="Resellable">Resellable</option>
-              <option value="Inspect">Needs inspection</option>
-              <option value="Damaged">Damaged</option>
+            <Label className="mb-1.5 block text-xs uppercase tracking-wider">Reason</Label>
+            <select className={`${selectCls} h-10 w-full`} value={reason} onChange={(e) => setReason(e.target.value as ReturnReason)}>
+              {RETURN_REASONS.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
           </div>
           <div>
@@ -350,7 +337,7 @@ function MarkReceivedDialog({
         </div>
         <DialogFooter>
           <Button variant="outline" className="rounded-lg" onClick={() => setOpen(false)}>Cancel</Button>
-          <Button className="rounded-lg font-bold uppercase" disabled={!selectedItem} onClick={submit}>Mark Received</Button>
+          <Button className="rounded-lg font-bold uppercase" disabled={lines.length === 0} onClick={submit}>Mark Received</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
